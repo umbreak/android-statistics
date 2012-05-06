@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DetailedListItem"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/name"
+        style="@android:style/TextAppearance.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="My Chart"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/date"
+        style="@android:style/TextAppearance.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:paddingBottom="5dp"
+        android:singleLine="true"
+        android:text="10/20/11 11:11"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/description"
+        style="@android:style/TextAppearance.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/layoutCategory"
+        android:layout_toLeftOf="@+id/layoutCategory"
+        android:text="Simple description about a chart in the application" />
+
+    <RelativeLayout
+        android:id="@+id/layoutCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/date"
+        android:background="#acd6ee" 
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/category"
+            style="@android:style/TextAppearance.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="Electronics"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+</RelativeLayout>
