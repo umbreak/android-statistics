@@ -16,7 +16,7 @@ import android.widget.TabWidget;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.chart.R;
 import com.chart.browser.fragments.CategoriesContentsFragment;
-import com.chart.browser.fragments.DetailedContentsFragment;
+import com.chart.browser.fragments.DetailedContentsActivity;
 
 public class HomeActivity extends SherlockFragmentActivity {
 	TabHost mTabHost;
@@ -42,42 +42,19 @@ public class HomeActivity extends SherlockFragmentActivity {
         args.putBoolean("visibility", true);
         
 		mTabsAdapter.addTab(mTabHost.newTabSpec("New").setIndicator("New"),
-				DetailedContentsFragment.ContentsFragment.class, args);
+				DetailedContentsActivity.ContentsFragment.class, args);
 		
 		args = new Bundle();
         args.putInt("id", -2);
         args.putBoolean("visibility", true);
 		mTabsAdapter.addTab(mTabHost.newTabSpec("Last Seen").setIndicator("Last Seen"),
-				DetailedContentsFragment.ContentsFragment.class, args);
+				DetailedContentsActivity.ContentsFragment.class, args);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}
 	}
 
-	//    @Override
-	//    public boolean onCreateOptionsMenu(Menu menu) {
-	//        // Place an action bar item for searching.
-	//        MenuItem item = menu.add("Search");
-	//        item.setIcon(android.R.drawable.ic_menu_search);
-	//        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-	//        View searchView = SearchViewCompat.newSearchView(getApplicationContext());
-	//        if (searchView != null) {
-	//            SearchViewCompat.setOnQueryTextListener(searchView,
-	//                    new OnQueryTextListenerCompat() {
-	//                @Override
-	//                public boolean onQueryTextChange(String newText) {
-	//                    // Called when the action bar search text has changed.  Since this
-	//                    // is a simple array adapter, we can just have it do the filtering.
-	////                    mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
-	////                    mAdapter.getFilter().filter(mCurFilter);
-	//                    return true;
-	//                }
-	//            });
-	//            item.setActionView(searchView).setIcon(android.R.drawable.ic_menu_search);
-	//        }
-	//		return true;
-	//    }
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -180,11 +157,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 			widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 			mTabHost.setCurrentTab(position);
 			widget.setDescendantFocusability(oldFocusability);
-			System.out.println("Position=" + position);
-			
-			if (position == 0) mContext.setTitle(mContext.getString(R.string.app_name) + " @ Categories");
-			else if (position ==1) mContext.setTitle(mContext.getString(R.string.app_name) + " @ News");
-			else mContext.setTitle(mContext.getString(R.string.app_name) + " @ Last Seen");
 
 		}
 

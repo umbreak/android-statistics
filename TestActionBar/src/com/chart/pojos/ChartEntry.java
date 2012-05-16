@@ -12,14 +12,14 @@ public class ChartEntry implements Parcelable, Comparable<ChartEntry>{
 	public String description;
 	public ChartCategory category;
 	public String date;
-	public int num_commetns;
+	public int num_comments;
 	public int votes;
 	
 	
 	public ChartEntry() {
 		super();
 		votes=0;
-		num_commetns=0;
+		num_comments=0;
 	}
 	
 	public ChartEntry(int id, String name) {
@@ -48,11 +48,11 @@ public class ChartEntry implements Parcelable, Comparable<ChartEntry>{
 	private ChartEntry(Parcel in) {
 		category=in.readParcelable(ChartCategory.class.getClassLoader());
 		id = in.readInt();
-		date= in.readString();
-		name= in.readString();
+		name= in.readString();	
 		description=in.readString();
+		date= in.readString();
+		num_comments=in.readInt();
 		votes=in.readInt();
-		num_commetns=in.readInt();
 	}
 	
 	public int describeContents() {
@@ -62,10 +62,10 @@ public class ChartEntry implements Parcelable, Comparable<ChartEntry>{
 		dest.writeParcelable(category, flags);
 		dest.writeInt(id);
 		dest.writeString(name);
-		dest.writeString(date);
 		dest.writeString(description);
+		dest.writeString(date);
+		dest.writeInt(num_comments);
 		dest.writeInt(votes);
-		dest.writeInt(num_commetns);
 	}
 	
 

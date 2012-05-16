@@ -18,7 +18,7 @@ public enum Categories {
 		num++;
 		electronics=new ChartCategory(num, "Electronics"); 
 		num++;
-		physics =all=new ChartCategory(num, "Physics");
+		physics=new ChartCategory(num, "Physics");
 		num++;
 		mechanics=new ChartCategory(num, "Mechanics");
 		num++;

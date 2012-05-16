@@ -3,7 +3,6 @@ package com.chart.browser.fragments;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -14,12 +13,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
+
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.chart.R;
 import com.chart.browser.adapters.CategoriesContentsAdapter;
 import com.chart.loaders.CategoriesContentsLoader;
 import com.chart.pojos.ChartCategory;
@@ -83,7 +81,7 @@ public class CategoriesContentsFragment extends SherlockListFragment implements 
 		// Insert desired behavior here.
 		Log.i("LoaderCustom", "Item clicked: " + mAdapter.getItem(position).name);
 		Intent intent = new Intent();
-		intent.setClass(getActivity(), DetailedContentsFragment.class);
+		intent.setClass(getActivity(), DetailedContentsActivity.class);
 		intent.putExtra("position", position);
 		intent.putParcelableArrayListExtra("categories", new ArrayList<ChartCategory>(mAdapter.categories));
 		startActivity(intent);

@@ -41,6 +41,7 @@ public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory
 		//**********************************
 
 		Collections.sort(categories);
+		System.out.println(categories);
 		return categories;
 	}
 

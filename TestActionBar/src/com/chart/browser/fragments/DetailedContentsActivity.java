@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -32,35 +32,53 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.chart.R;
+import com.chart.actionbar.HomeActivity;
 import com.chart.browser.adapters.ContentsAdapter;
 import com.chart.loaders.ContentsLoader;
 import com.chart.pojos.ChartCategory;
 import com.chart.pojos.ChartEntry;
 
-public class DetailedContentsFragment extends SherlockFragmentActivity{
+public class DetailedContentsActivity extends SherlockFragmentActivity{
 	private ArrayList<ChartCategory> categories;
 	private int position;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.simple_layout);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		setTitle("");
+
 		categories = getIntent().getParcelableArrayListExtra("categories");
 		if (savedInstanceState == null)
 			position = getIntent().getIntExtra("position", 0);
 		else
 			position = savedInstanceState.getInt("pos");
 
-			Context context = getSupportActionBar().getThemedContext();
+		Context context = getSupportActionBar().getThemedContext();
 		ArrayAdapter<ChartCategory> list = new ArrayAdapter<ChartCategory>(context, R.layout.sherlock_spinner_item, categories);
 		list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 		createSpinner(list);
 	}
 	
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("pos", position);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	        case android.R.id.home:
+	            // app icon in action bar clicked; go home
+	            Intent intent = new Intent(this, HomeActivity.class);
+	            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivity(intent);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("pos", position);
+	}
 
 	private void createSpinner(ArrayAdapter<ChartCategory> list){
 		// create ICS spinner 
@@ -72,9 +90,10 @@ public class DetailedContentsFragment extends SherlockFragmentActivity{
 			public void onItemSelected(IcsAdapterView<?> parent, View view,
 					int pos, long id) {
 				position=pos;
-				FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-				fragmentTransaction.replace(android.R.id.content, ContentsFragment.newInstance(categories.get(pos).id, false));
-				fragmentTransaction.commit();
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
+				ft.replace(android.R.id.content, ContentsFragment.newInstance(categories.get(pos).id, false));
+				ft.commit();
 			}
 
 			@Override
@@ -171,7 +190,10 @@ public class DetailedContentsFragment extends SherlockFragmentActivity{
 		@Override public void onListItemClick(ListView l, View v, int position, long id) {
 			// Insert desired behavior here.
 			Log.i("LoaderCustom", "Item clicked: " + id);
-			Toast.makeText(getActivity(), "Pos=" + String.valueOf(id) + " name="+ mAdapter.getItem(position).name, Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), ChartActivity.class);
+			intent.putExtra("chart", mAdapter.getItem(position));
+			startActivity(intent);			
 		}
 
 		@Override
