@@ -134,9 +134,10 @@ public class ChartActivity extends SherlockFragmentActivity{
 					(fm.getBackStackEntryCount()-1).getName());
 			FragmentTransaction ft= fm.beginTransaction();
 			ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
-			ft.remove(this);
-			fm.popBackStack("Chart", 0);
-			ft.add(android.R.id.content, frag, "Chart").commit();
+//			ft.remove(this);
+//			ft.add(android.R.id.content, frag, "Chart").commit();
+			ft.replace(android.R.id.content, frag, "Chart");
+			fm.popBackStack("Chart", FragmentManager.POP_BACK_STACK_INCLUSIVE);
 			return true;
 		}
 

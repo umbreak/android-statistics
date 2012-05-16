@@ -50,9 +50,10 @@ public class ChartFragment extends SherlockFragment{
 		Fragment frag=ChartActivity.InfoFragment.newInstance(chart);
 		FragmentTransaction ft= fm.beginTransaction();
 		ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
-		ft.remove(this);	
-		
-		ft.add(android.R.id.content, frag, "Info").addToBackStack("Chart").commit();
+//		ft.remove(this);
+//		ft.add(android.R.id.content, frag, "Info");
+		ft.replace(android.R.id.content, frag, "Info");
+		ft.addToBackStack("Chart").commit();
 		return true;
 	}
 }
