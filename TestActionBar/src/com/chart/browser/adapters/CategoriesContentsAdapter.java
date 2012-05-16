@@ -16,6 +16,7 @@ import com.chart.pojos.ChartCategory;
 public class CategoriesContentsAdapter extends ArrayAdapter<ChartCategory>{
 	private final LayoutInflater mInflater;
 	private final Context context;
+	public List<ChartCategory> categories;
 
 	public CategoriesContentsAdapter(Context context) {
 		super(context, R.layout.list_item_categories);
@@ -26,6 +27,7 @@ public class CategoriesContentsAdapter extends ArrayAdapter<ChartCategory>{
 
 
 	public void setData(List<ChartCategory> data) {
+		categories=data;
 		clear();
 		if (data != null) {
 			for (ChartCategory category : data) {
@@ -52,10 +54,10 @@ public class CategoriesContentsAdapter extends ArrayAdapter<ChartCategory>{
 		((TextView) view.findViewById(android.R.id.text1)).setText(item.name);
 
 		final ImageView iconView = (ImageView) view.findViewById(R.id.imageView1);
-		iconView.setImageResource(getFlagResource(context, "bezel"+ Math.abs(item.name.hashCode())%10));
+		final Integer id= Integer.valueOf(item.id);
+		iconView.setImageResource(getFlagResource(context, "bezel"+ Math.abs(id.hashCode())%10));
 		if (item.name.startsWith("(All")) iconView.setVisibility(View.INVISIBLE);
 		else iconView.setVisibility(View.VISIBLE);
-
 		return view;
 	}
 

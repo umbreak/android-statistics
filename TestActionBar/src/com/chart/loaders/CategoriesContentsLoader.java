@@ -7,6 +7,7 @@ import java.util.List;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.chart.pojos.Categories;
 import com.chart.pojos.ChartCategory;
 
 public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory>> {
@@ -28,15 +29,15 @@ public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory
 		System.out.println("Here");
 		List<ChartCategory> categories=new ArrayList<ChartCategory>();
 		
-		categories.add(new ChartCategory(1,"(All categories)"));
-		categories.add(new ChartCategory(2,"Electronics"));
-		categories.add(new ChartCategory(3,"Physics"));
-		categories.add(new ChartCategory(4,"Mechanics"));
-		categories.add(new ChartCategory(5,"Internet"));
-		categories.add(new ChartCategory(6,"Nanotechnology"));
-		categories.add(new ChartCategory(7,"Signal Processing"));
-		categories.add(new ChartCategory(8,"Economics"));
-		categories.add(new ChartCategory(9,"Multimedia"));
+		categories.add(Categories.i.all);
+		categories.add(Categories.i.electronics);
+		categories.add(Categories.i.physics);
+		categories.add(Categories.i.mechanics);
+		categories.add(Categories.i.internet);
+		categories.add(Categories.i.nanotech);
+		categories.add(Categories.i.signal);
+		categories.add(Categories.i.economics);
+		categories.add(Categories.i.multimedia);
 		//**********************************
 
 		Collections.sort(categories);

@@ -15,7 +15,7 @@
         android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
 
         <activity
-            android:name="com.chart.actionbar.TestActionBarActivity"
+            android:name=".actionbar.HomeActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+                <!-- DETAILED_DATA activity -->
+        <activity
+            android:name=".browser.fragments.DetailedContentsFragment"
+            android:label="@string/app_name" >
+        </activity>
+        
     </application>
 
 </manifest>

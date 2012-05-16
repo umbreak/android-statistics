@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chart.R;
@@ -14,10 +15,10 @@ import com.chart.pojos.ChartEntry;
 //Adapter for the AllContentsFragment
 public class ContentsAdapter extends ArrayAdapter<ChartEntry>{
 	private final LayoutInflater mInflater;
-
-	public ContentsAdapter(Context context) {
+	private final boolean categoryVisibility;
+	public ContentsAdapter(Context context, boolean categoryVisibility) {
 		super(context, R.layout.list_item_chart);
-
+		this.categoryVisibility= categoryVisibility;
 		mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -48,7 +49,12 @@ public class ContentsAdapter extends ArrayAdapter<ChartEntry>{
 
 		((TextView) view.findViewById(R.id.name)).setText(item.name);
 		((TextView) view.findViewById(R.id.description)).setText(item.description);
-		((TextView) view.findViewById(R.id.category)).setText(item.category);
+		((TextView) view.findViewById(R.id.category)).setText(item.category.name);
+		if (categoryVisibility)
+			((RelativeLayout) view.findViewById(R.id.layoutCategory)).setVisibility(View.VISIBLE);
+		else
+			((RelativeLayout) view.findViewById(R.id.layoutCategory)).setVisibility(View.INVISIBLE);
+
 		((TextView) view.findViewById(R.id.date)).setText(item.date);
 		return view;
 	}

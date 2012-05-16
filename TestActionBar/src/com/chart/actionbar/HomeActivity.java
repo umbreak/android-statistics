@@ -16,10 +16,9 @@ import android.widget.TabWidget;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.chart.R;
 import com.chart.browser.fragments.CategoriesContentsFragment;
-import com.chart.browser.fragments.ContentsFragment;
-import com.chart.browser.fragments.RecentContentsFragment;
+import com.chart.browser.fragments.DetailedContentsFragment;
 
-public class TestActionBarActivity extends SherlockFragmentActivity {
+public class HomeActivity extends SherlockFragmentActivity {
 	TabHost mTabHost;
 	ViewPager  mViewPager;
 	TabsAdapter mTabsAdapter;
@@ -37,10 +36,19 @@ public class TestActionBarActivity extends SherlockFragmentActivity {
 
 		mTabsAdapter.addTab(mTabHost.newTabSpec("category").setIndicator("Categories"),
 				CategoriesContentsFragment.class, null);
+		
+		Bundle args = new Bundle();
+        args.putInt("id", -1);
+        args.putBoolean("visibility", true);
+        
 		mTabsAdapter.addTab(mTabHost.newTabSpec("New").setIndicator("New"),
-				ContentsFragment.class, null);
+				DetailedContentsFragment.ContentsFragment.class, args);
+		
+		args = new Bundle();
+        args.putInt("id", -2);
+        args.putBoolean("visibility", true);
 		mTabsAdapter.addTab(mTabHost.newTabSpec("Last Seen").setIndicator("Last Seen"),
-				RecentContentsFragment.class, null);
+				DetailedContentsFragment.ContentsFragment.class, args);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));

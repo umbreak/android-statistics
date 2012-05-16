@@ -1,8 +1,10 @@
 package com.chart.browser.fragments;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -80,7 +82,11 @@ public class CategoriesContentsFragment extends SherlockListFragment implements 
 	@Override public void onListItemClick(ListView l, View v, int position, long id) {
 		// Insert desired behavior here.
 		Log.i("LoaderCustom", "Item clicked: " + mAdapter.getItem(position).name);
-		Toast.makeText(getActivity(), "Pos=" + String.valueOf(id) + " name="+ mAdapter.getItem(position).name, Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent();
+		intent.setClass(getActivity(), DetailedContentsFragment.class);
+		intent.putExtra("position", position);
+		intent.putParcelableArrayListExtra("categories", new ArrayList<ChartCategory>(mAdapter.categories));
+		startActivity(intent);
 	}
 
 	@Override
