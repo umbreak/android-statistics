@@ -17,8 +17,8 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.chart.HomeActivity;
 import com.chart.R;
-import com.chart.actionbar.HomeActivity;
 import com.chart.pojos.ChartEntry;
 
 public class ChartActivity extends SherlockFragmentActivity{

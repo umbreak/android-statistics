@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +23,20 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.chart.ChartGenerator;
 import com.chart.R;
+import com.chart.loaders.CategoriesContentsLoader;
+import com.chart.loaders.ValuesLoader;
+import com.chart.pojos.Point;
 import com.chart.pojos.ChartEntry;
 import com.chart.pojos.Point;
 
-public class ChartFragment extends SherlockFragment{
+public class ChartFragment extends SherlockFragment implements LoaderCallbacks<List<Point>>{
 	private ChartEntry chart;
 	private FragmentManager fm;
-	private ChartExample chartBuilder;
-	GraphicalView mChart;
+	private ChartGenerator chartBuilder;
+	private GraphicalView mChart;
+	private LinearLayout mLayout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,7 +44,7 @@ public class ChartFragment extends SherlockFragment{
 		super.onCreate(savedInstanceState);
 		chart = (ChartEntry) (getArguments() != null ? getArguments().getParcelable("chart") : null);
 		fm = getActivity().getSupportFragmentManager();
-		chartBuilder =  new ChartExample();
+		chartBuilder =  new ChartGenerator();
 
 		setHasOptionsMenu(true);
 	}
@@ -46,10 +53,11 @@ public class ChartFragment extends SherlockFragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.hello_world, container, false);
-		LinearLayout layout= (LinearLayout) v.findViewById(R.id.chart);
-		mChart= chartBuilder.getView(v.getContext(), getPoints(),chart);
-		layout.addView(mChart, new LayoutParams(LayoutParams.FILL_PARENT,
-		          LayoutParams.FILL_PARENT));
+		mLayout= (LinearLayout) v.findViewById(R.id.chart);
+//		mChart= chartBuilder.getView(v.getContext(), getPoints(),chart);
+//		mLayout.addView(mChart, new LayoutParams(LayoutParams.FILL_PARENT,
+//		          LayoutParams.FILL_PARENT));
+		getLoaderManager().initLoader(0, null, this);
 		return v;
 	}
 
@@ -61,14 +69,13 @@ public class ChartFragment extends SherlockFragment{
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		System.out.println("BEFORE");
-		if (chartBuilder != null)
-			mChart.repaint();
-		System.out.println("AFTER");
-	}
+//	@Override
+//	public void onResume() {
+//		super.onResume();
+//		if (chartBuilder != null)
+//			mChart.repaint();
+//		System.out.println("AFTER");
+//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -81,37 +88,34 @@ public class ChartFragment extends SherlockFragment{
 		ft.addToBackStack("Chart").commit();
 		return true;
 	}
-
-	private List<Point> getPoints() {
-		Calendar c = Calendar.getInstance();
-		List<Point> results = new ArrayList<Point>();
-		c.set(2012, 9, 1);
-		results.add(new Point(c.getTime(), 8.8));
-		c.clear();
-		c.set(2012, 9, 8);
-		results.add(new Point(c.getTime(), 9.0));
-		c.clear();
-		c.set(2012, 9, 15);
-		results.add(new Point(c.getTime(), 10.0));
-		c.clear();
-		c.set(2012, 9, 22);
-		results.add(new Point(c.getTime(), 9.5));
-		c.clear();
-		c.set(2012, 9, 23);
-		results.add(new Point(c.getTime(), 11.0));
-		c.clear();
-		c.set(2012, 9, 25);
-		results.add(new Point(c.getTime(), 10.8));
-		c.clear();
-		c.set(2012, 9, 27);
-		results.add(new Point(c.getTime(), 12.5));
-		c.clear();
-		c.set(2012, 9, 28);
-		results.add(new Point(c.getTime(), 6.5));
-		c.clear();
-		c.set(2012, 9, 29);
-		results.add(new Point(c.getTime(), 9.5));
-		return results;
+	
+	@Override
+	public Loader<List<Point>> onCreateLoader(int id, Bundle args) {
+		return new ValuesLoader(getActivity(), chart.id);
 	}
 
+	@Override
+	public void onLoadFinished(Loader<List<Point>> loader, List<Point> data) {
+
+		// Draw the graph
+		mChart= chartBuilder.getView(getActivity().getBaseContext(), data,chart);
+		mLayout.addView(mChart, new LayoutParams(LayoutParams.FILL_PARENT,
+		          LayoutParams.FILL_PARENT));
+
+		// The list should now be shown.
+		if (isResumed()) {
+			if (chartBuilder != null)
+				mChart.repaint();
+		} 
+//		else {
+//			setListShownNoAnimation(true);
+//		}
+
+	}
+
+	@Override
+	public void onLoaderReset(Loader<List<Point>> arg0) {
+		// Clear the data in the adapter.
+//		mAdapter.setData(null);
+	}
 }

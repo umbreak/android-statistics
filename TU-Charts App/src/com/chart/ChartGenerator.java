@@ -1,4 +1,4 @@
-package com.chart.browser.fragments;
+package com.chart;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +20,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
 
-public class ChartExample {
+public class ChartGenerator {
 
 	private static final String DATE_FORMAT = "dd/MM/yyyy";
 
@@ -50,7 +50,10 @@ public class ChartExample {
 			String title, String xTitle, String yTitle, double xMin,
 			double xMax, double yMin, double yMax, int axesColor,
 			int labelsColor, Context context) {
-		renderer.setChartTitle(title);
+//		renderer.setChartTitle(title);
+		renderer.setChartTitle("");
+		renderer.setAntialiasing(true);
+
 		renderer.setXTitle(xTitle);
 		renderer.setYTitle(yTitle);
 		renderer.setXAxisMin(xMin);
@@ -94,7 +97,7 @@ public class ChartExample {
 		renderer.setLabelsTextSize(15);
 		renderer.setLegendTextSize(15);
 		renderer.setPointSize(5f);
-		renderer.setMargins(new int[] { 20, 30, 15, 20 });
+		renderer.setMargins(new int[] { 15, 30, 15, 15 });
 		int length = colors.length;
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer r = new XYSeriesRenderer();
