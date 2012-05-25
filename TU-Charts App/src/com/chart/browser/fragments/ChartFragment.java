@@ -1,7 +1,5 @@
 package com.chart.browser.fragments;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.achartengine.GraphicalView;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
@@ -25,9 +22,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.chart.ChartGenerator;
 import com.chart.R;
-import com.chart.loaders.CategoriesContentsLoader;
 import com.chart.loaders.ValuesLoader;
-import com.chart.pojos.Point;
 import com.chart.pojos.ChartEntry;
 import com.chart.pojos.Point;
 

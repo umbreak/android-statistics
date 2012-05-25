@@ -3,8 +3,10 @@ package com.chart.loaders;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
+
 import com.chart.pojos.Point;
 
 public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
