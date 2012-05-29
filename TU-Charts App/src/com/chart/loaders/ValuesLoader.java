@@ -2,22 +2,24 @@ package com.chart.loaders;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.chart.pojos.Point;
+import com.chart.pojos.ChartModel;
+import com.chart.pojos.LineModel;
 
-public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
-
-	private List<Point> values;
+public class ValuesLoader extends AsyncTaskLoader<ChartModel> {
 	private Calendar c;
-	private int id;
+	private ChartModel chart=null;
+	private ChartModel realChart;
 
-	public ValuesLoader(Context context, int id) {
+
+	public ValuesLoader(Context context, ChartModel chart) {
 		super(context);
-		this.id=id;
+		this.realChart=chart;
 		c=Calendar.getInstance();
 	}
 
@@ -26,37 +28,51 @@ public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
 	 * called in a background thread and should generate a new set of
 	 * data to be published by the loader.
 	 */
-	@Override public List<Point> loadInBackground() {
-		// Retrieve all known data.
-		//****************** NOW IT'S FAKE ****************
-		List<Point> list_values=new ArrayList<Point>();
+	@Override public ChartModel loadInBackground() {
+		System.out.println("LoadBackground CharModel");
+		//Chart with 10 values (xAxis = DATE)
+		List<Date> xValues=new ArrayList<Date>();
+//		Date xValues[] = new Date[10];
 		c.set(2012, 9, 1);
-		list_values.add(new Point(c.getTime(), 8.8));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 8);
-		list_values.add(new Point(c.getTime(), 9.0));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 15);
-		list_values.add(new Point(c.getTime(), 10.0));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 22);
-		list_values.add(new Point(c.getTime(), 9.5));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 23);
-		list_values.add(new Point(c.getTime(), 11.0));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 25);
-		list_values.add(new Point(c.getTime(), 10.8));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 27);
-		list_values.add(new Point(c.getTime(), 12.5));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 28);
-		list_values.add(new Point(c.getTime(), 6.5));
-		c.clear();
+		xValues.add(c.getTime());
 		c.set(2012, 9, 29);
-		list_values.add(new Point(c.getTime(), 9.5));
-		return list_values;
+		xValues.add(c.getTime());
+		c.set(2012, 9, 30);
+		xValues.add(c.getTime());
+
+		//2 Lines with 10 values (yAxis = int)
+		double yValues0[] = new double[10];
+		double yValues1[] = new double[10];
+
+
+		for (int i=0; i < 10; i++){
+			yValues0[i] = getRandom(6, 20);
+			yValues1[i] = getRandom(4, 9);
+		}
+		List<LineModel> yValues = new ArrayList<LineModel>();
+		yValues.add(new LineModel(0,"Line 0", yValues0));
+		yValues.add(new LineModel(1,"Line 1", yValues1));
+		
+		realChart.xValues=xValues;
+		realChart.yValues=yValues;
+		return realChart;
+	}
+	private Double getRandom(int min, int max){
+		return Double.valueOf((min+ (int)(Math.random()*((max-min)+1))));
 	}
 
 	/**
@@ -64,28 +80,28 @@ public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
 	 * super class will take care of delivering it; the implementation
 	 * here just adds a little more logic.
 	 */
-	@Override public void deliverResult(List<Point> apps) {
+	@Override public void deliverResult(ChartModel model) {
 		if (isReset()) {
 			// An async query came in while the loader is stopped.  We
 			// don't need the result.
-			if (apps != null) {
-				onReleaseResources(apps);
+			if (model != null) {
+				onReleaseResources(model);
 			}
 		}
-		List<Point> oldApps = apps;
-		values = apps;
+		ChartModel oldModel = model;
+		chart = model;
 
 		if (isStarted()) {
 			// If the Loader is currently started, we can immediately
 			// deliver its results.
-			super.deliverResult(apps);
+			super.deliverResult(model);
 		}
 
 		// At this point we can release the resources associated with
 		// 'oldApps' if needed; now that the new result is delivered we
 		// know that it is no longer in use.
-		if (oldApps != null) {
-			onReleaseResources(oldApps);
+		if (oldModel != null) {
+			onReleaseResources(oldModel);
 		}
 	}
 
@@ -93,12 +109,12 @@ public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
 	 * Handles a request to start the Loader.
 	 */
 	@Override protected void onStartLoading() {
-		if (values != null) {
+		if (chart != null) {
 			// If we currently have a result available, deliver it
 			// immediately.
-			deliverResult(values);
+			deliverResult(chart);
 		}
-		if (values == null) forceLoad();
+		if (chart == null) forceLoad();
 
 		//		if (takeContentChanged() || values == null || configChange) {
 		//			// If the data has changed since the last time it was loaded
@@ -118,7 +134,7 @@ public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
 	/**
 	 * Handles a request to cancel a load.
 	 */
-	@Override public void onCanceled(List<Point> apps) {
+	@Override public void onCanceled(ChartModel apps) {
 		super.onCanceled(apps);
 
 		// At this point we can release the resources associated with 'apps'
@@ -137,9 +153,9 @@ public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
 
 		// At this point we can release the resources associated with 'charts'
 		// if needed.
-		if (values != null) {
-			onReleaseResources(values);
-			values = null;
+		if (chart != null) {
+			onReleaseResources(chart);
+			chart = null;
 		}
 
 	}
@@ -148,7 +164,7 @@ public class ValuesLoader extends AsyncTaskLoader<List<Point>> {
 	 * Helper function to take care of releasing resources associated
 	 * with an actively loaded data set.
 	 */
-	protected void onReleaseResources(List<Point> apps) {
+	protected void onReleaseResources(ChartModel apps) {
 		// For a simple List<> there is nothing to do.  For something
 		// like a Cursor, we would close it here.
 	}

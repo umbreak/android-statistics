@@ -19,10 +19,10 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.chart.HomeActivity;
 import com.chart.R;
-import com.chart.pojos.ChartEntry;
+import com.chart.pojos.ChartModel;
 
 public class ChartActivity extends SherlockFragmentActivity{
-	private ChartEntry chart;
+	private ChartModel chart;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,10 +54,10 @@ public class ChartActivity extends SherlockFragmentActivity{
 		}
 	}
 	public static class InfoFragment extends SherlockListFragment{
-		private ChartEntry chart;
+		private ChartModel chart;
 		private FragmentManager fm;
 
-		public static InfoFragment newInstance(ChartEntry chart) {
+		public static InfoFragment newInstance(ChartModel chart) {
 			InfoFragment f = new InfoFragment();
 			// Supply index input as an argument.
 			Bundle args = new Bundle();
@@ -69,7 +69,7 @@ public class ChartActivity extends SherlockFragmentActivity{
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-			chart = (ChartEntry) (getArguments() != null ? getArguments().getParcelable("chart") : null);
+			chart = (ChartModel) (getArguments() != null ? getArguments().getParcelable("chart") : null);
 			fm = getActivity().getSupportFragmentManager();
 		}
 

@@ -8,11 +8,11 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.chart.pojos.Categories;
-import com.chart.pojos.ChartEntry;
+import com.chart.pojos.ChartModel;
 
-public class ContentsLoader extends AsyncTaskLoader<List<ChartEntry>> {
+public class ContentsLoader extends AsyncTaskLoader<List<ChartModel>> {
 
-	private List<ChartEntry> mCharts;
+	private List<ChartModel> mCharts;
 	private int id;
 
 	public ContentsLoader(Context context, int id) {
@@ -25,40 +25,40 @@ public class ContentsLoader extends AsyncTaskLoader<List<ChartEntry>> {
 	 * called in a background thread and should generate a new set of
 	 * data to be published by the loader.
 	 */
-	@Override public List<ChartEntry> loadInBackground() {
+	@Override public List<ChartModel> loadInBackground() {
 		// Retrieve all known data.
 		//****************** NOW IT'S FAKE ****************
-		List<ChartEntry> charts=new ArrayList<ChartEntry>();
+		List<ChartModel> charts=new ArrayList<ChartModel>();
 		if (id==-1 || id == 0){
-			charts.add(new ChartEntry(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
-			charts.add(new ChartEntry(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
-			charts.add(new ChartEntry(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
-			charts.add(new ChartEntry(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
-			charts.add(new ChartEntry(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
-			charts.add(new ChartEntry(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
-			charts.add(new ChartEntry(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
-			charts.add(new ChartEntry(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
-			charts.add(new ChartEntry(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
+			charts.add(new ChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
+			charts.add(new ChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
+			charts.add(new ChartModel(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
+			charts.add(new ChartModel(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
+			charts.add(new ChartModel(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
+			charts.add(new ChartModel(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
+			charts.add(new ChartModel(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
+			charts.add(new ChartModel(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
+			charts.add(new ChartModel(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
 		}else if (id == -2){
-			charts.add(new ChartEntry(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
-			charts.add(new ChartEntry(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
+			charts.add(new ChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
+			charts.add(new ChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
 		}
 		else if (id == 1){
-			charts.add(new ChartEntry(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
-			charts.add(new ChartEntry(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
+			charts.add(new ChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
+			charts.add(new ChartModel(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
 
 		}else if (id == 2)
-			charts.add(new ChartEntry(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
+			charts.add(new ChartModel(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
 		else if (id == 4){
-			charts.add(new ChartEntry(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
-			charts.add(new ChartEntry(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
-			charts.add(new ChartEntry(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
+			charts.add(new ChartModel(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
+			charts.add(new ChartModel(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
+			charts.add(new ChartModel(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
 
 		}else if (id == 6)
-			charts.add(new ChartEntry(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
+			charts.add(new ChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
 		else if (id == 7){
-			charts.add(new ChartEntry(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
-			charts.add(new ChartEntry(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
+			charts.add(new ChartModel(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
+			charts.add(new ChartModel(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
 		}
 
 		Collections.sort(charts);
@@ -70,7 +70,7 @@ public class ContentsLoader extends AsyncTaskLoader<List<ChartEntry>> {
 	 * super class will take care of delivering it; the implementation
 	 * here just adds a little more logic.
 	 */
-	@Override public void deliverResult(List<ChartEntry> apps) {
+	@Override public void deliverResult(List<ChartModel> apps) {
 		if (isReset()) {
 			// An async query came in while the loader is stopped.  We
 			// don't need the result.
@@ -78,7 +78,7 @@ public class ContentsLoader extends AsyncTaskLoader<List<ChartEntry>> {
 				onReleaseResources(apps);
 			}
 		}
-		List<ChartEntry> oldApps = apps;
+		List<ChartModel> oldApps = apps;
 		mCharts = apps;
 
 		if (isStarted()) {
@@ -124,7 +124,7 @@ public class ContentsLoader extends AsyncTaskLoader<List<ChartEntry>> {
 	/**
 	 * Handles a request to cancel a load.
 	 */
-	@Override public void onCanceled(List<ChartEntry> apps) {
+	@Override public void onCanceled(List<ChartModel> apps) {
 		super.onCanceled(apps);
 
 		// At this point we can release the resources associated with 'apps'
@@ -154,7 +154,7 @@ public class ContentsLoader extends AsyncTaskLoader<List<ChartEntry>> {
 	 * Helper function to take care of releasing resources associated
 	 * with an actively loaded data set.
 	 */
-	protected void onReleaseResources(List<ChartEntry> apps) {
+	protected void onReleaseResources(List<ChartModel> apps) {
 		// For a simple List<> there is nothing to do.  For something
 		// like a Cursor, we would close it here.
 	}

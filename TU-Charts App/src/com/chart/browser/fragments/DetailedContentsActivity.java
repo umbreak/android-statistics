@@ -34,11 +34,11 @@ import com.chart.HomeActivity;
 import com.chart.R;
 import com.chart.browser.adapters.ContentsAdapter;
 import com.chart.loaders.ContentsLoader;
-import com.chart.pojos.ChartCategory;
-import com.chart.pojos.ChartEntry;
+import com.chart.pojos.CategoryModel;
+import com.chart.pojos.ChartModel;
 
 public class DetailedContentsActivity extends SherlockFragmentActivity{
-	private ArrayList<ChartCategory> categories;
+	private ArrayList<CategoryModel> categories;
 	private int position;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 			position = savedInstanceState.getInt("pos");
 
 		Context context = getSupportActionBar().getThemedContext();
-		ArrayAdapter<ChartCategory> list = new ArrayAdapter<ChartCategory>(context, R.layout.sherlock_spinner_item, categories);
+		ArrayAdapter<CategoryModel> list = new ArrayAdapter<CategoryModel>(context, R.layout.sherlock_spinner_item, categories);
 		list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 		createSpinner(list);
 	}
@@ -79,7 +79,7 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		outState.putInt("pos", position);
 	}
 
-	private void createSpinner(ArrayAdapter<ChartCategory> list){
+	private void createSpinner(ArrayAdapter<CategoryModel> list){
 		// create ICS spinner 
 		IcsSpinner spinner = new IcsSpinner(this, null, 
 				R.attr.actionDropDownStyle); 
@@ -115,7 +115,7 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		spinner.setSelection(position, true);
 	}
 
-	public static class ContentsFragment extends SherlockListFragment implements LoaderCallbacks<List<ChartEntry>>{
+	public static class ContentsFragment extends SherlockListFragment implements LoaderCallbacks<List<ChartModel>>{
 
 		public static ContentsFragment newInstance(int id, boolean visibility) {
 			ContentsFragment f = new ContentsFragment();
@@ -196,12 +196,12 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		}
 
 		@Override
-		public Loader<List<ChartEntry>> onCreateLoader(int id, Bundle args) {
+		public Loader<List<ChartModel>> onCreateLoader(int id, Bundle args) {
 			return new ContentsLoader(getActivity(), id_fragment);
 		}
 
 		@Override
-		public void onLoadFinished(Loader<List<ChartEntry>> loader, List<ChartEntry> data) {
+		public void onLoadFinished(Loader<List<ChartModel>> loader, List<ChartModel> data) {
 
 			// Set the new data in the adapter.
 			mAdapter.setData(data);
@@ -216,7 +216,7 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		}
 
 		@Override
-		public void onLoaderReset(Loader<List<ChartEntry>> arg0) {
+		public void onLoaderReset(Loader<List<ChartModel>> arg0) {
 			// Clear the data in the adapter.
 			mAdapter.setData(null);
 		}

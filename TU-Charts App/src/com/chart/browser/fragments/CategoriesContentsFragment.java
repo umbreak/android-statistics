@@ -20,9 +20,9 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.chart.browser.adapters.CategoriesContentsAdapter;
 import com.chart.loaders.CategoriesContentsLoader;
-import com.chart.pojos.ChartCategory;
+import com.chart.pojos.CategoryModel;
 
-public class CategoriesContentsFragment extends SherlockListFragment implements LoaderCallbacks<List<ChartCategory>>{
+public class CategoriesContentsFragment extends SherlockListFragment implements LoaderCallbacks<List<CategoryModel>>{
 	CategoriesContentsAdapter mAdapter;
 
 	// If non-null, this is the current filter the user has provided.
@@ -83,17 +83,17 @@ public class CategoriesContentsFragment extends SherlockListFragment implements 
 		Intent intent = new Intent();
 		intent.setClass(getActivity(), DetailedContentsActivity.class);
 		intent.putExtra("position", position);
-		intent.putParcelableArrayListExtra("categories", new ArrayList<ChartCategory>(mAdapter.categories));
+		intent.putParcelableArrayListExtra("categories", new ArrayList<CategoryModel>(mAdapter.categories));
 		startActivity(intent);
 	}
 
 	@Override
-	public Loader<List<ChartCategory>> onCreateLoader(int id, Bundle args) {
+	public Loader<List<CategoryModel>> onCreateLoader(int id, Bundle args) {
 		return new CategoriesContentsLoader(getActivity());
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<ChartCategory>> loader, List<ChartCategory> data) {
+	public void onLoadFinished(Loader<List<CategoryModel>> loader, List<CategoryModel> data) {
 
 		// Set the new data in the adapter.
 		mAdapter.setData(data);
@@ -108,7 +108,7 @@ public class CategoriesContentsFragment extends SherlockListFragment implements 
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<ChartCategory>> arg0) {
+	public void onLoaderReset(Loader<List<CategoryModel>> arg0) {
 		// Clear the data in the adapter.
 		mAdapter.setData(null);
 	}

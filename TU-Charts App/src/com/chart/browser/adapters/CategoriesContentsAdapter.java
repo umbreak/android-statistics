@@ -11,12 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chart.R;
-import com.chart.pojos.ChartCategory;
+import com.chart.pojos.CategoryModel;
 //Adapter for the AllContentsFragment
-public class CategoriesContentsAdapter extends ArrayAdapter<ChartCategory>{
+public class CategoriesContentsAdapter extends ArrayAdapter<CategoryModel>{
 	private final LayoutInflater mInflater;
 	private final Context context;
-	public List<ChartCategory> categories;
+	public List<CategoryModel> categories;
 
 	public CategoriesContentsAdapter(Context context) {
 		super(context, R.layout.list_item_categories);
@@ -26,11 +26,11 @@ public class CategoriesContentsAdapter extends ArrayAdapter<ChartCategory>{
 	}
 
 
-	public void setData(List<ChartCategory> data) {
+	public void setData(List<CategoryModel> data) {
 		categories=data;
 		clear();
 		if (data != null) {
-			for (ChartCategory category : data) {
+			for (CategoryModel category : data) {
 				add(category);
 			}
 		}
@@ -49,7 +49,7 @@ public class CategoriesContentsAdapter extends ArrayAdapter<ChartCategory>{
 		}
 
 		//Recover ChartCategory Data and fill the list_item_categories layout with it.
-		ChartCategory item = getItem(position);
+		CategoryModel item = getItem(position);
 
 		((TextView) view.findViewById(android.R.id.text1)).setText(item.name);
 

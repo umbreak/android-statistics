@@ -8,11 +8,11 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.chart.pojos.Categories;
-import com.chart.pojos.ChartCategory;
+import com.chart.pojos.CategoryModel;
 
-public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory>> {
+public class CategoriesContentsLoader extends AsyncTaskLoader<List<CategoryModel>> {
 
-	List<ChartCategory> mCharts;
+	List<CategoryModel> mCharts;
 
 	public CategoriesContentsLoader(Context context) {
 		super(context);
@@ -23,11 +23,11 @@ public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory
 	 * called in a background thread and should generate a new set of
 	 * data to be published by the loader.
 	 */
-	@Override public List<ChartCategory> loadInBackground() {
+	@Override public List<CategoryModel> loadInBackground() {
 		// Retrieve all known data.
 		//****************** NOW IT'S FAKE ****************
 		System.out.println("Here");
-		List<ChartCategory> categories=new ArrayList<ChartCategory>();
+		List<CategoryModel> categories=new ArrayList<CategoryModel>();
 		
 		categories.add(Categories.i.all);
 		categories.add(Categories.i.electronics);
@@ -50,7 +50,7 @@ public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory
 	 * super class will take care of delivering it; the implementation
 	 * here just adds a little more logic.
 	 */
-	@Override public void deliverResult(List<ChartCategory> apps) {
+	@Override public void deliverResult(List<CategoryModel> apps) {
 		if (isReset()) {
 			// An async query came in while the loader is stopped.  We
 			// don't need the result.
@@ -58,7 +58,7 @@ public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory
 				onReleaseResources(apps);
 			}
 		}
-		List<ChartCategory> oldApps = apps;
+		List<CategoryModel> oldApps = apps;
 		mCharts = apps;
 
 		if (isStarted()) {
@@ -104,7 +104,7 @@ public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory
 	/**
 	 * Handles a request to cancel a load.
 	 */
-	@Override public void onCanceled(List<ChartCategory> apps) {
+	@Override public void onCanceled(List<CategoryModel> apps) {
 		super.onCanceled(apps);
 
 		// At this point we can release the resources associated with 'apps'
@@ -134,7 +134,7 @@ public class CategoriesContentsLoader extends AsyncTaskLoader<List<ChartCategory
 	 * Helper function to take care of releasing resources associated
 	 * with an actively loaded data set.
 	 */
-	protected void onReleaseResources(List<ChartCategory> apps) {
+	protected void onReleaseResources(List<CategoryModel> apps) {
 		// For a simple List<> there is nothing to do.  For something
 		// like a Cursor, we would close it here.
 	}

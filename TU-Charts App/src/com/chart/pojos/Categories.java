@@ -2,35 +2,35 @@ package com.chart.pojos;
 
 public enum Categories {
 	i;
-	public ChartCategory all;
-	public ChartCategory electronics;
-	public ChartCategory physics;
-	public ChartCategory mechanics;
-	public ChartCategory internet;
-	public ChartCategory nanotech;
-	public ChartCategory signal;
-	public ChartCategory economics;
-	public ChartCategory multimedia;
+	public CategoryModel all;
+	public CategoryModel electronics;
+	public CategoryModel physics;
+	public CategoryModel mechanics;
+	public CategoryModel internet;
+	public CategoryModel nanotech;
+	public CategoryModel signal;
+	public CategoryModel economics;
+	public CategoryModel multimedia;
 	private int num;
 	private Categories() {
 		num=0;
-		all=new ChartCategory(num, "(All categories)");
+		all=new CategoryModel(num, "(All categories)");
 		num++;
-		electronics=new ChartCategory(num, "Electronics"); 
+		electronics=new CategoryModel(num, "Electronics"); 
 		num++;
-		physics=new ChartCategory(num, "Physics");
+		physics=new CategoryModel(num, "Physics");
 		num++;
-		mechanics=new ChartCategory(num, "Mechanics");
+		mechanics=new CategoryModel(num, "Mechanics");
 		num++;
-		internet=new ChartCategory(num, "Internet");
+		internet=new CategoryModel(num, "Internet");
 		num++;
-		nanotech=new ChartCategory(num, "Nanotechnology");
+		nanotech=new CategoryModel(num, "Nanotechnology");
 		num++;
-		signal=new ChartCategory(num, "Signal Processing");
+		signal=new CategoryModel(num, "Signal Processing");
 		num++;
-		economics=new ChartCategory(num, "Economics");
+		economics=new CategoryModel(num, "Economics");
 		num++;
-		multimedia=new ChartCategory(num, "Multimedia");
+		multimedia=new CategoryModel(num, "Multimedia");
 		
 	}
 }

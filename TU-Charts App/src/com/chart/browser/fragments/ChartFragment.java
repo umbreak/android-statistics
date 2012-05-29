@@ -23,11 +23,11 @@ import com.actionbarsherlock.view.MenuItem;
 import com.chart.ChartGenerator;
 import com.chart.R;
 import com.chart.loaders.ValuesLoader;
-import com.chart.pojos.ChartEntry;
+import com.chart.pojos.ChartModel;
 import com.chart.pojos.Point;
 
-public class ChartFragment extends SherlockFragment implements LoaderCallbacks<List<Point>>{
-	private ChartEntry chart;
+public class ChartFragment extends SherlockFragment implements LoaderCallbacks<ChartModel>{
+	private ChartModel chart;
 	private FragmentManager fm;
 	private ChartGenerator chartBuilder;
 	private GraphicalView mChart;
@@ -37,7 +37,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<L
 	public void onCreate(Bundle savedInstanceState) {
 		System.out.println("Original");
 		super.onCreate(savedInstanceState);
-		chart = (ChartEntry) (getArguments() != null ? getArguments().getParcelable("chart") : null);
+		chart = (ChartModel) (getArguments() != null ? getArguments().getParcelable("chart") : null);
 		fm = getActivity().getSupportFragmentManager();
 		chartBuilder =  new ChartGenerator();
 
@@ -85,15 +85,14 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<L
 	}
 	
 	@Override
-	public Loader<List<Point>> onCreateLoader(int id, Bundle args) {
-		return new ValuesLoader(getActivity(), chart.id);
+	public Loader<ChartModel> onCreateLoader(int id, Bundle args) {
+		return new ValuesLoader(getActivity(), chart);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<Point>> loader, List<Point> data) {
-
+	public void onLoadFinished(Loader<ChartModel> loader, ChartModel data) {
 		// Draw the graph
-		mChart= chartBuilder.getView(getActivity().getBaseContext(), data,chart);
+		mChart= chartBuilder.getView(getActivity().getBaseContext(), data);
 		mLayout.addView(mChart, new LayoutParams(LayoutParams.FILL_PARENT,
 		          LayoutParams.FILL_PARENT));
 
@@ -109,7 +108,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<L
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<Point>> arg0) {
+	public void onLoaderReset(Loader<ChartModel> arg0) {
 		// Clear the data in the adapter.
 //		mAdapter.setData(null);
 	}

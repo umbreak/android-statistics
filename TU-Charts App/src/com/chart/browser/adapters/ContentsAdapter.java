@@ -11,9 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chart.R;
-import com.chart.pojos.ChartEntry;
+import com.chart.pojos.ChartModel;
 //Adapter for the AllContentsFragment
-public class ContentsAdapter extends ArrayAdapter<ChartEntry>{
+public class ContentsAdapter extends ArrayAdapter<ChartModel>{
 	private final LayoutInflater mInflater;
 	private final boolean categoryVisibility;
 	public ContentsAdapter(Context context, boolean categoryVisibility) {
@@ -23,10 +23,10 @@ public class ContentsAdapter extends ArrayAdapter<ChartEntry>{
 	}
 
 
-	public void setData(List<ChartEntry> data) {
+	public void setData(List<ChartModel> data) {
 		clear();
 		if (data != null) {
-			for (ChartEntry category : data) {
+			for (ChartModel category : data) {
 				add(category);
 			}
 		}
@@ -45,7 +45,7 @@ public class ContentsAdapter extends ArrayAdapter<ChartEntry>{
 		}
 
 		//Recover ChartEntry Data and fill the list_item_chart layout with it.
-		ChartEntry item = getItem(position);
+		ChartModel item = getItem(position);
 
 		((TextView) view.findViewById(R.id.name)).setText(item.name);
 		((TextView) view.findViewById(R.id.description)).setText(item.description);
