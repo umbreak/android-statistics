@@ -1,28 +1,20 @@
 package com.chart;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
-import org.achartengine.model.TimeSeries;
-import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
-import com.actionbarsherlock.R;
-import com.chart.pojos.ChartModel;
-import com.chart.pojos.LineModel;
-import com.chart.pojos.Point;
-
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint.Align;
+
+import com.chart.pojos.ChartModel;
+import com.chart.pojos.LineModel;
 
 public class ChartGenerator extends AbstractDemoChart{
 
@@ -70,7 +62,7 @@ public class ChartGenerator extends AbstractDemoChart{
 		min=(int)results.get(results.size()-1).values[0];
 		max=min;
 		for (LineModel line : results) {
-			double[] values=line.values.clone();
+			float[] values=line.values.clone();
 			Arrays.sort(values);
 			if (min > values[0])
 				min=(int)values[0];

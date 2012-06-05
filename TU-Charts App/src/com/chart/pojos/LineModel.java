@@ -1,3 +1,4 @@
+
 package com.chart.pojos;
 
 import java.util.ArrayList;
@@ -13,11 +14,11 @@ public class LineModel implements Parcelable{
 	public int id;
 	public String name;
 	public String description;
-	public double[] values;
+	public float[] values;
 	public LineModel() {
 		super();
 	}
-	public LineModel(int id, String name, double[] values){
+	public LineModel(int id, String name, float[] values){
 		super();
 		this.id=id;
 		this.name=name;
@@ -37,7 +38,7 @@ public class LineModel implements Parcelable{
 	
 	private LineModel(Parcel in) {
 //		this();
-		in.readDoubleArray(values);
+		in.readFloatArray(values);
 		id=in.readInt();
 		name=in.readString();
 		description=in.readString();
@@ -47,7 +48,7 @@ public class LineModel implements Parcelable{
 		return 0;
 	}
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeDoubleArray(values);
+		dest.writeFloatArray(values);
 		dest.writeInt(id);
 		dest.writeString(name);
 		dest.writeString(description);

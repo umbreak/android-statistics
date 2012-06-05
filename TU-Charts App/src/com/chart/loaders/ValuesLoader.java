@@ -55,8 +55,8 @@ public class ValuesLoader extends AsyncTaskLoader<ChartModel> {
 		xValues.add(c.getTime());
 
 		//2 Lines with 10 values (yAxis = int)
-		double yValues0[] = new double[10];
-		double yValues1[] = new double[10];
+		float yValues0[] = new float[10];
+		float yValues1[] = new float[10];
 
 
 		for (int i=0; i < 10; i++){
@@ -71,8 +71,8 @@ public class ValuesLoader extends AsyncTaskLoader<ChartModel> {
 		realChart.yValues=yValues;
 		return realChart;
 	}
-	private Double getRandom(int min, int max){
-		return Double.valueOf((min+ (int)(Math.random()*((max-min)+1))));
+	private Float getRandom(int min, int max){
+		return Float.valueOf((min+ (int)(Math.random()*((max-min)+1))));
 	}
 
 	/**

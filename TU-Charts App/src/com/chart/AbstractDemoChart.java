@@ -150,7 +150,7 @@ public abstract class AbstractDemoChart {
     int length = yValues.size();
     for (int i = 0; i < length; i++) {
       TimeSeries series = new TimeSeries(yValues.get(i).name);
-      double[] yV = yValues.get(i).values;
+      float[] yV = yValues.get(i).values;
       int seriesLength = xValues.length;
       for (int k = 0; k < seriesLength; k++) {
         series.add(xValues[k], yV[k]);
