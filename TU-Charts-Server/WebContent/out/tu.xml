@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="tu" type="MySQL - 5.5.24">
+   <tables>
+      <table name="categories" numRows="8" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="category_id" nullable="false" remarks="" size="10" type="INT">
+            <child column="category_id" foreignKey="FKAED72455E602D701" implied="false" onDeleteCascade="false" table="charts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="description" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="name" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <primaryKey column="category_id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="category_id"/>
+         </index>
+      </table>
+      <table name="charts" numRows="5" remarks="" type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="discriminator" nullable="false" remarks="" size="31" type="VARCHAR"/>
+         <column autoUpdated="true" digits="0" id="1" name="chart_id" nullable="false" remarks="" size="10" type="INT">
+            <child column="chart_id" foreignKey="FKDC17DDF4E5465F0D" implied="false" onDeleteCascade="false" table="comments"/>
+            <child column="chart_id" foreignKey="FKCA01FE77E5465F0D" implied="false" onDeleteCascade="false" table="series"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="date" nullable="true" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="3" name="description" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="name" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="type" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="6" name="votes" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="7" name="xLegend" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="8" name="yLegend" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="9" name="max" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="10" name="min" nullable="true" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="11" name="xValues" nullable="true" remarks="" size="2147483647" type="LONGTEXT"/>
+         <column autoUpdated="false" digits="0" id="12" name="category_id" nullable="true" remarks="" size="10" type="INT">
+            <parent column="category_id" foreignKey="FKAED72455E602D701" implied="false" onDeleteCascade="false" table="categories"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="13" name="user_email" nullable="true" remarks="" size="255" type="VARCHAR">
+            <parent column="email" foreignKey="FKAED724558702B780" implied="false" onDeleteCascade="false" table="users"/>
+         </column>
+         <primaryKey column="chart_id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="chart_id"/>
+         </index>
+         <index name="FKAED724558702B780" unique="false">
+            <column ascending="true" name="user_email"/>
+         </index>
+         <index name="FKAED72455E602D701" unique="false">
+            <column ascending="true" name="category_id"/>
+         </index>
+      </table>
+      <table name="comments" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="comment_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="author" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="date" nullable="true" remarks="" size="19" type="DATETIME"/>
+         <column autoUpdated="false" digits="0" id="3" name="text" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="chart_id" nullable="true" remarks="" size="10" type="INT">
+            <parent column="chart_id" foreignKey="FKDC17DDF4E5465F0D" implied="false" onDeleteCascade="false" table="charts"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="5" name="user_id" nullable="true" remarks="" size="255" type="VARCHAR">
+            <parent column="email" foreignKey="FKDC17DDF4BB34F67" implied="false" onDeleteCascade="false" table="users"/>
+         </column>
+         <primaryKey column="comment_id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="comment_id"/>
+         </index>
+         <index name="FKDC17DDF4BB34F67" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="FKDC17DDF4E5465F0D" unique="false">
+            <column ascending="true" name="chart_id"/>
+         </index>
+      </table>
+      <table name="series" numRows="9" remarks="" type="TABLE">
+         <column autoUpdated="true" digits="0" id="0" name="series_id" nullable="false" remarks="" size="10" type="INT"/>
+         <column autoUpdated="false" digits="0" id="1" name="description" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="2" name="name" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="3" name="yvalues" nullable="true" remarks="" size="2147483647" type="LONGTEXT"/>
+         <column autoUpdated="false" digits="0" id="4" name="chart_id" nullable="true" remarks="" size="10" type="INT">
+            <parent column="chart_id" foreignKey="FKCA01FE77E5465F0D" implied="false" onDeleteCascade="false" table="charts"/>
+         </column>
+         <primaryKey column="series_id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="series_id"/>
+         </index>
+         <index name="FKCA01FE77E5465F0D" unique="false">
+            <column ascending="true" name="chart_id"/>
+         </index>
+      </table>
+      <table name="users" numRows="4" remarks="" type="TABLE">
+         <column autoUpdated="false" digits="0" id="0" name="email" nullable="false" remarks="" size="255" type="VARCHAR">
+            <child column="user_email" foreignKey="FKAED724558702B780" implied="false" onDeleteCascade="false" table="charts"/>
+            <child column="user_id" foreignKey="FKDC17DDF4BB34F67" implied="false" onDeleteCascade="false" table="comments"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="categories_denied" nullable="true" remarks="" size="2147483647" type="LONGTEXT"/>
+         <column autoUpdated="false" digits="0" id="2" name="charts_denied" nullable="true" remarks="" size="2147483647" type="LONGTEXT"/>
+         <column autoUpdated="false" digits="0" id="3" name="description" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="4" name="password" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="5" name="surname" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <column autoUpdated="false" digits="0" id="6" name="username" nullable="true" remarks="" size="255" type="VARCHAR"/>
+         <primaryKey column="email" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="email"/>
+         </index>
+         <index name="email" unique="true">
+            <column ascending="true" name="email"/>
+         </index>
+      </table>
+   </tables>
+</database>

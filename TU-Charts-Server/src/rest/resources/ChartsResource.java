@@ -1,10 +1,14 @@
 package rest.resources;
 
-import hibernate.db.SessionFactoryHibernate;
+import hibernate.db.DB_Process;
 import jabx.model.BaseChartModel;
 import jabx.model.ChartModel;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -21,8 +25,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-
-import rest.tables.ModelTables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Ordering;
 
 @Path("/charts")
 public class ChartsResource {
@@ -36,7 +40,7 @@ public class ChartsResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<BaseChartModel> getCharts(){
 		try{
-			return new ArrayList<BaseChartModel>(ModelTables.i.getCharts().values());
+			return new ArrayList<BaseChartModel>(DB_Process.getCharts());
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -45,12 +49,22 @@ public class ChartsResource {
 	@GET
 	@Path("new")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Set<ChartModel> getNewCharts(){
+	public ArrayList<BaseChartModel> getNewCharts(){
 		try{
-			Set<ChartModel> newCharts= new HashSet<>();
-			newCharts.add(ModelTables.i.getCharts().get(0));
-			newCharts.add(ModelTables.i.getCharts().get(2));
-			return newCharts;
+			Comparator<BaseChartModel> date_comparator = new Comparator<BaseChartModel>() {
+				@Override
+				public int compare(BaseChartModel o1, BaseChartModel o2) {
+					return o1.getDate().compareTo(o2.getDate());
+				}
+			};
+
+			ArrayList<BaseChartModel> charts=new ArrayList<BaseChartModel>(DB_Process.getCharts());
+//			Collections.sort(charts,date_comparator);
+			
+			
+			return new ArrayList<BaseChartModel> (Iterables.get(Iterables.partition
+					(Ordering.from(date_comparator).reverse().sortedCopy(charts), 5),0));
+			
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}

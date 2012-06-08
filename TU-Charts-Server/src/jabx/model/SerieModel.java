@@ -3,15 +3,12 @@ package jabx.model;
 import hibernate.types.StringLongType;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.annotations.Loader;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 

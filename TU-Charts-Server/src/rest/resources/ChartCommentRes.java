@@ -1,8 +1,8 @@
 package rest.resources;
 
+import hibernate.db.DB_Process;
 import jabx.model.CommentModel;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.Set;
 
@@ -20,8 +20,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import rest.tables.ModelTables;
-
 
 public class ChartCommentRes {
 	@Context UriInfo uriInfo;
@@ -37,7 +35,7 @@ public class ChartCommentRes {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Set<CommentModel> getComments() {
 		try{
-			return ModelTables.i.getCharts().get(id).getComments();
+			return DB_Process.getChart(id).getComments();
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -48,11 +46,7 @@ public class ChartCommentRes {
 	@Path("/{id}")
 	public CommentModel getComment(@PathParam("id") int comment_id){
 		try{
-			Set<CommentModel> comments= ModelTables.i.getCharts().get(id).getComments();
-			for (CommentModel commentModel : comments) 
-				if (commentModel.getId() == comment_id)
-					return commentModel;
-			throw new WebApplicationException(Response.Status.NOT_FOUND);
+			return DB_Process.getComment(id, comment_id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -63,7 +57,7 @@ public class ChartCommentRes {
 	public CommentModel putComment(JAXBElement<CommentModel> comment) {
 		CommentModel c=comment.getValue();
 		c.setDate(new Date());
-		ModelTables.i.getCharts().get(id).addComment(c);
+		DB_Process.setComment(c);
 		return c;
 	}
 }

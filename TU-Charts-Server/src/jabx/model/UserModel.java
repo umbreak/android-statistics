@@ -1,5 +1,7 @@
 package jabx.model;
 
+import hibernate.types.StringIntType;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,19 +17,23 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 @XmlRootElement
 @Entity
 @Table (name ="users")
+@TypeDef(name="StringInt", typeClass = StringIntType.class)
+
 public class UserModel {
-	private int id;
 	private String username;
 	private String password;
-	private String surname;
 	private String description;
 	private String email;
 	private Set<ChartModel> charts = new HashSet<>();
 	private Set<CommentModel> comments = new HashSet<>();
+	private int[] charts_denied;
+	private int[] categories_denied;
 	
 	public UserModel() {
 		super();
@@ -40,15 +46,10 @@ public class UserModel {
 		this.password = password;
 		this.email = email;
 	}
-
-
-	@Id @GeneratedValue @Column(name = "user_id")
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
+	public UserModel(String username, String password, String email, int cats[], int charts[]) {
+		this(username,password,email);
+		this.charts_denied=charts;
+		this.categories_denied=cats;
 	}
 
 	public String getUsername() {
@@ -67,14 +68,6 @@ public class UserModel {
 		this.password = password;
 	}
 
-	public String getSurname() {
-		return surname;
-	}
-
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-
 	public String getDescription() {
 		return description;
 	}
@@ -82,7 +75,9 @@ public class UserModel {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
+	@Column(nullable = false, unique = true)
+	@Id
 	public String getEmail() {
 		return email;
 	}
@@ -118,5 +113,28 @@ public class UserModel {
 		comment.setUser(this);
 		comments.add(comment);
 	}
+
+	@Type(type="StringInt")
+	@XmlTransient
+	public int[] getCharts_denied() {
+		return charts_denied;
+	}
+
+
+	public void setCharts_denied(int[] charts_denied) {
+		this.charts_denied = charts_denied;
+	}
+
+	@Type(type="StringInt")
+	@XmlTransient
+	public int[] getCategories_denied() {
+		return categories_denied;
+	}
+
+
+	public void setCategories_denied(int[] categories_denied) {
+		this.categories_denied = categories_denied;
+	}
+	
 	
 }

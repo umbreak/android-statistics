@@ -12,6 +12,9 @@ import java.util.Arrays;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
+
+import com.google.common.base.Strings;
+import com.google.common.primitives.Doubles;
 //Convert String to Long[]
 
 public class StringLongType implements UserType{
@@ -57,7 +60,8 @@ public class StringLongType implements UserType{
 		double[] resul=null;
 		if (!rs.wasNull()) {
 			String value=rs.getString(names[0]);
-			if (!value.isEmpty()){
+			if (!Strings.isNullOrEmpty(value)){
+				
 				String [] res_string=value.split(",");
 				resul = new double[res_string.length];
 				for (int j = 0; j < resul.length; j++) 
@@ -74,9 +78,7 @@ public class StringLongType implements UserType{
 			ps.setNull(index, Types.LONGVARCHAR);
 
 		} else {
-			String res=Arrays.toString((double[])value);
-			res=res.replace("[", "");
-			res=res.replace("]", "");			
+			String res=Doubles.join(",", (double[])value);		
 			ps.setString(index, res);
 		}
 	}

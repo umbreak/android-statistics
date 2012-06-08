@@ -1,5 +1,6 @@
 package rest.resources;
 
+import hibernate.db.DB_Process;
 import jabx.model.ChartModel;
 import jabx.model.SerieModel;
 
@@ -15,8 +16,6 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import rest.tables.ModelTables;
-
 public class ChartRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
@@ -31,18 +30,18 @@ public class ChartRes {
 	@Produces({MediaType.APPLICATION_JSON})
 	public ChartModel getChart() {
 		try{
-			return ModelTables.i.getCharts().get(id);
+			return DB_Process.getChart(id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 	}
 
 	@GET
-	@Path("line")
+	@Path("series")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Set<SerieModel> getValues(){
 		try{
-			return ModelTables.i.getCharts().get(id).getyValues();
+			return DB_Process.getChart(id).getyValues();
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}

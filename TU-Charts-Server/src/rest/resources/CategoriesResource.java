@@ -1,8 +1,8 @@
 package rest.resources;
 
+import hibernate.db.DB_Process;
 import jabx.model.BaseChartModel;
 import jabx.model.CategoryModel;
-import jabx.model.ChartModel;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -20,8 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import rest.tables.ModelTables;
 @Path("/categories")
 public class CategoriesResource {
 	@Context UriInfo uriInfo;
@@ -34,7 +32,7 @@ public class CategoriesResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<CategoryModel> getCategories(){
 		try{
-			return new ArrayList<CategoryModel>(ModelTables.i.getCategories().values());
+			return new ArrayList<CategoryModel>(DB_Process.getCategories());
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -45,7 +43,7 @@ public class CategoriesResource {
 	@Path("/{id}/charts")
 	public Set<BaseChartModel> getCategoryCharts(@PathParam("id") int id){
 		try{
-			return ModelTables.i.getCategories().get(id).getCharts();
+			return DB_Process.getCategory(id).getCharts();
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -56,7 +54,7 @@ public class CategoriesResource {
 	@Path("/{id}")
 	public CategoryModel getCategory(@PathParam("id") int id){
 		try{
-			return ModelTables.i.getCategories().get(id);
+			return DB_Process.getCategory(id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}

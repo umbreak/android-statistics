@@ -14,9 +14,8 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.chart.R;
-import com.chart.browser.fragments.CategoriesContentsFragment;
-import com.chart.browser.fragments.DetailedContentsActivity;
+import com.chart.ui.CategoriesContentsFragment;
+import com.chart.ui.DetailedContentsActivity;
 
 public class HomeActivity extends SherlockFragmentActivity {
 	TabHost mTabHost;
@@ -38,14 +37,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 				CategoriesContentsFragment.class, null);
 		
 		Bundle args = new Bundle();
-        args.putInt("id", -1);
+        args.putInt("id_fragment", -1);
         args.putBoolean("visibility", true);
         
 		mTabsAdapter.addTab(mTabHost.newTabSpec("New").setIndicator("New"),
 				DetailedContentsActivity.ContentsFragment.class, args);
 		
 		args = new Bundle();
-        args.putInt("id", -2);
+        args.putInt("id_fragment", -2);
         args.putBoolean("visibility", true);
 		mTabsAdapter.addTab(mTabHost.newTabSpec("Last Seen").setIndicator("Last Seen"),
 				DetailedContentsActivity.ContentsFragment.class, args);

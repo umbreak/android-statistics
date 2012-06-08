@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.sun.istack.NotNull;
 
@@ -24,6 +25,7 @@ public class CommentModel {
 	private String text;
 	private Date date;
 	private UserModel user;
+	private ChartModel chart;
 	public CommentModel() {
 		super();
 	}
@@ -47,7 +49,7 @@ public class CommentModel {
 		this.text = text;
 	}
 	
-	@Temporal(TemporalType.DATE) @NotNull @Column(updatable=false)
+	@Temporal(TemporalType.TIMESTAMP) @NotNull @Column(updatable=false)
 	public Date getDate() {
 		return date;
 	}
@@ -63,5 +65,15 @@ public class CommentModel {
 	public void setUser(UserModel user) {
 		this.user = user;
 	}
+	@ManyToOne (cascade = CascadeType.MERGE)
+	@JoinColumn(name="chart_id")
+	@XmlTransient
+	public ChartModel getChart() {
+		return chart;
+	}
+	public void setChart(ChartModel chart) {
+		this.chart = chart;
+	}
+	
 	
 }

@@ -107,10 +107,10 @@
 					<div class="art-nav-inner">
 						<div class="art-nav-center">
 							<ul class="art-hmenu">
-								<li><a href="./charts.jsp">Charts</a></li>
+								<li><a href="./index.jsp">Charts</a></li>
 								<li><a href="./categories.jsp" class="active">Categories</a>
 								</li>
-								<li><a href="./users.html">Users</a></li>
+								<li><a href="./users.jsp">Users</a></li>
 							</ul>
 						</div>
 					</div>
@@ -219,9 +219,7 @@
 
 																	<tr>
 
-																		<td colspan="3" class="rounded-foot-left"><em>Categories
-																				data obtained from the Database. The manager is able
-																				to Modify or Delete categories.</em></td>
+																		<td colspan="3" class="rounded-foot-left"><em>Categories data obtained from the Database. The manager is able to Modify or Delete categories. More info about the database structure <a href="out/">HERE</a></em></td>
 
 																		<td class="rounded-foot-right">&nbsp;</td>
 
@@ -268,7 +266,7 @@
 					<div class="art-footer-body">
 						<div class="art-footer-text">
 							<p>
-								Copyright Â© 2011, Natural Nutrition. All Rights Reserved.<br />
+								Copyright © 2012, TU-Charts.<br /> <br />
 								<br />
 							</p>
 						</div>
@@ -280,8 +278,7 @@
 		</div>
 		<div class="cleared"></div>
 		<p class="art-page-footer">
-			<a href="http://www.artisteer.com/?p=website_templates"
-				target="_blank">Website Template</a> created with Artisteer.
+
 		</p>
 		<div class="cleared"></div>
 	</div>

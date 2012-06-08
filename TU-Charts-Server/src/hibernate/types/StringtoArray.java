@@ -1,7 +1,6 @@
 package hibernate.types;
 
 import jabx.model.ChartModel;
-import jabx.model.SerieModel;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -13,7 +12,8 @@ import java.util.Arrays;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
-//Convert String to Long[]
+
+import com.google.common.base.Strings;
 
 public class StringtoArray implements UserType{
 
@@ -58,7 +58,7 @@ public class StringtoArray implements UserType{
 		String[] resul=null;
 		if (!rs.wasNull()) {
 			String value=rs.getString(names[0]);
-			if (!value.isEmpty()){
+			if (!Strings.isNullOrEmpty(value)){
 				resul=value.split(",");
 			}
 		}

@@ -7,6 +7,7 @@ import jabx.model.ChartModel;
 import jabx.model.SerieModel;
 import jabx.model.UserModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -42,7 +43,7 @@ public class SessionFactoryHibernate {
 		configuration.configure();
 		serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();        
 		sessionFactory = configuration.buildSessionFactory(serviceRegistry);		
-		LoadDefaultData();
+//		LoadDefaultData();
 
 	}
 
@@ -63,44 +64,78 @@ public class SessionFactoryHibernate {
 		"Show the Backbone traffic on the NETCATt"};
 		//Chart with 10 values (xAxis = DATE)
 		Calendar c=Calendar.getInstance();
+		SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+		
 		String[] xValues=new String[9];
 		c.set(2012, 9, 1);
-		xValues[0]=c.getTime().toString();
+		xValues[0]=format1.format(c.getTime());
 		c.set(2012, 9, 8);
-		xValues[0]=c.getTime().toString();
+		xValues[0]=format1.format(c.getTime());
 		c.set(2012, 9, 15);
-		xValues[1]=c.getTime().toString();
+		xValues[1]=format1.format(c.getTime());
 		c.set(2012, 9, 22);
-		xValues[2]=c.getTime().toString();
+		xValues[2]=format1.format(c.getTime());
 		c.set(2012, 9, 23);
-		xValues[3]=c.getTime().toString();
+		xValues[3]=format1.format(c.getTime());
 		c.set(2012, 9, 25);
-		xValues[4]=c.getTime().toString();
+		xValues[4]=format1.format(c.getTime());
 		c.set(2012, 9, 27);
-		xValues[5]=c.getTime().toString();
+		xValues[5]=format1.format(c.getTime());
 		c.set(2012, 9, 28);
-		xValues[6]=c.getTime().toString();
+		xValues[6]=format1.format(c.getTime());
 		c.set(2012, 9, 29);
-		xValues[7]=c.getTime().toString();
+		xValues[7]=format1.format(c.getTime());
 		c.set(2012, 9, 30);
-		xValues[8]=c.getTime().toString();
+		xValues[8]=format1.format(c.getTime());
 
-		//2 Lines with 10 values (yAxis = int)
-		double yValues0[] = new double[10];
-		double yValues1[] = new double[10];
+		//2 Lines with 50 values (yAxis = int)
+		double yValues0[] = new double[50];
+		double yValues1[] = new double[50];
 
+		double yValues2[] = new double[50];
+		double yValues3[] = new double[50];
+		double yValues4[] = new double[50];
 
-		for (int i=0; i < 10; i++){
+		double yValues5[] = new double[50];
+
+		double yValues6[] = new double[50];
+
+		double yValues7[] = new double[50];
+		double yValues8[] = new double[50];
+
+		for (int i=0; i < 50; i++){
 			yValues0[i] = getRandom(6, 20);
 			yValues1[i] = getRandom(4, 15);
+			yValues2[i] = getRandom(5, 18);
+			yValues3[i] = getRandom(6, 22);
+			yValues4[i] = getRandom(3, 10);
+			yValues5[i] = getRandom(6, 12);
+			yValues6[i] = getRandom(4, 21);
+			yValues7[i] = getRandom(5, 20);
+			yValues8[i] = getRandom(4, 17);
 		}
-		Set<SerieModel> lines = new HashSet<SerieModel>();
-		lines.add(new SerieModel("Line 0", yValues0));
-		lines.add(new SerieModel("Line 1", yValues1));
+		Set<SerieModel> lines[] = (Set<SerieModel>[])new HashSet[5];
+		for (int i = 0; i < lines.length; i++) {
+			lines[i]= new HashSet<SerieModel>();
+		}
+		lines[0].add(new SerieModel("Line 0", yValues0));
+		lines[0].add(new SerieModel("Line 1", yValues1));
+
+		lines[1].add(new SerieModel("Line 2", yValues2));
+		lines[1].add(new SerieModel("Line 3", yValues3));
+		lines[1].add(new SerieModel("Line 4", yValues4));
+
+		lines[2].add(new SerieModel("Line 5", yValues5));
+
+		lines[3].add(new SerieModel("Line 6", yValues6));
+
+		lines[4].add(new SerieModel("Line 7", yValues7));
+		lines[4].add(new SerieModel("Line 8", yValues8));
+
 
 		//Creation of the 5 Charts
 		for (id_charts=0; id_charts< 5; id_charts++)
-			charts.add(new ChartModel(name[id_charts], description[id_charts], xValues, lines));
+			charts.add(new ChartModel(name[id_charts], description[id_charts], xValues, lines[id_charts], 22,4));
 
 		//8 CATEGORIES -------------------------------------
 		String categories_name[] = {"Electronics","Physics","Mechanics","Internet","Nanotechnology","Signal Processing","Economics","Multimedia"};
@@ -111,9 +146,13 @@ public class SessionFactoryHibernate {
 
 		//4 USERS -------------------------------------
 		String users_name[] = {"Didac","Thomas","Paco","TU-Chemnitz"};
+		
+		int []categoies_denied= new int[]{1,2};
+		int []charts_denied= new int[]{1,6,3};
 
+		
 		for (id_user=0; id_user < 4; id_user++)
-			users.add(new UserModel(users_name[id_user], users_name[id_user], users_name[id_user]+ "@tu-chemnitz.de"));
+			users.add(new UserModel(users_name[id_user], users_name[id_user], users_name[id_user]+ "@tu-chemnitz.de", categoies_denied,charts_denied));
 
 
 
@@ -137,8 +176,10 @@ public class SessionFactoryHibernate {
 		users.get(1).setChart(charts.get(4));
 
 
-		for (SerieModel serie: lines) 
-			session.save(serie);
+		for (int i=0; i < lines.length; i++)
+			for (SerieModel serie: lines[i]) 
+				session.save(serie);
+
 
 		for (int i = 0; i < id_user; i++) 
 			session.save(users.get(i));

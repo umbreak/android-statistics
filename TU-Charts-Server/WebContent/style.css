@@ -235,7 +235,7 @@ html, body
    position: relative;
    top: 0;
    max-width:1200px;
-   min-width: 800px;
+   min-width: 950px;
    height:276px;
    margin: 0 auto;
    background-image: url('images/page_gl.png');
@@ -247,7 +247,7 @@ body
 {
    padding: 0;
    margin:0;
-   min-width: 800px;
+   min-width: 950px;
    color: #2D3B43;
    background-color: #FFFFFF;
    background-image: url('images/Bottom_texture.jpg');
@@ -443,7 +443,7 @@ div.art-header
    margin: 0 auto;
    position: relative;
    z-index: -5;
-   width:800px;
+   width:950px;
    height: 154px;
    margin-top: 0;
    margin-bottom: -3px;
@@ -460,7 +460,7 @@ div.art-header
 {
    position: relative;
    top:0;
-   width:800px;
+   width:950px;
    margin:0 auto;
 }
 .art-header-inner 
@@ -704,7 +704,7 @@ div.art-nav-center{
 
 .art-nav
 {
-   width:800px;
+   width:950px;
    margin:0 auto;
    min-height: 55px;
    z-index: 100;
@@ -729,7 +729,7 @@ div.art-nav-center{
 .art-nav-wrapper 
 {
    position: relative;
-   width:800px;
+   width:950px;
    margin:0 auto;
 }
 
@@ -883,11 +883,11 @@ ul.art-hmenu>li:first-child {
 /* begin Box, Sheet */
 .art-sheet
 {
-   max-width:800px;
+   max-width:950px;
    margin-top: 7px;
    margin-bottom: -3px;
    cursor:auto;
-   width: 800px;
+   width: 950px;
 }
 .art-sheet-body 
 {
@@ -904,7 +904,7 @@ ul.art-hmenu>li:first-child {
    background-image: url('images/sheet_b.png');
 }
 .art-sheet:after{
-   clip:rect(auto, auto, auto, 782px);
+   clip:rect(auto, auto, auto, 932px);
 }
 .art-sheet:before,.art-sheet-body:before{
    right:18px;
@@ -952,7 +952,7 @@ ul.art-hmenu>li:first-child {
 /* begin Box, Block */
 .art-block
 {
-   max-width:792px;
+   max-width:942px;
    margin: 7px;
 }
 .art-block-body 
@@ -966,7 +966,7 @@ ul.art-hmenu>li:first-child {
    background-image: url('images/block_b.png');
 }
 .art-block:after{
-   clip:rect(auto, auto, auto, 785px);
+   clip:rect(auto, auto, auto, 935px);
 }
 .art-block:before,.art-block-body:before{
    right:7px;
@@ -1024,7 +1024,7 @@ div.art-block img
 /* begin Box, BlockContent */
 .art-blockcontent
 {
-   max-width:792px;
+   max-width:942px;
 }
 .art-blockcontent-body 
 {
@@ -1129,7 +1129,7 @@ span.art-button-wrapper
    white-space: nowrap;
    text-indent: 0;
    width: auto;
-   max-width:792px;
+   max-width:942px;
    margin: 0;
    padding: 0;
    z-index: 0;
@@ -1222,7 +1222,7 @@ span.art-button-wrapper input
 /* begin Box, Post */
 .art-post
 {
-   max-width:792px;
+   max-width:942px;
    margin: 7px;
 }
 .art-post-body 

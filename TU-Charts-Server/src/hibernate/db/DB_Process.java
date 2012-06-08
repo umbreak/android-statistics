@@ -3,6 +3,7 @@ package hibernate.db;
 import jabx.model.BaseChartModel;
 import jabx.model.CategoryModel;
 import jabx.model.ChartModel;
+import jabx.model.CommentModel;
 import jabx.model.SerieModel;
 import jabx.model.UserModel;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -24,7 +26,19 @@ public enum DB_Process {
 
 	}
 
-	//SITE
+	//CHART ------------------------------------------>
+	public static List <BaseChartModel> getCharts(int max) {
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();
+		Query q= session.createQuery("FROM jabx.model.BaseChartModel as BaseChartModel");
+		q.setMaxResults(max);
+		List<BaseChartModel> charts = q.list();
+		//		Collections.sort(sites);
+		//crit.setMaxResults(50);
+		trans.commit();
+		return charts;
+	}
+
 	public static List <BaseChartModel> getCharts() {
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
@@ -52,13 +66,13 @@ public enum DB_Process {
 		//		session.update(chart.getUser());
 		trans.commit();		
 	}
-	
+
 	public static void delChart(int chart_id){
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
 		ChartModel chart = (ChartModel) session.get(ChartModel.class, chart_id);
-//		UserModel user=chart.getUser();
-//		CategoryModel category = chart.getCategory();
+		//		UserModel user=chart.getUser();
+		//		CategoryModel category = chart.getCategory();
 		for (SerieModel serie: chart.getyValues()) 
 			session.delete(serie);		
 		session.delete(chart);
@@ -68,12 +82,35 @@ public enum DB_Process {
 	}
 
 
+
+	//COMMENT ------------------------------------------>
+
+	public static CommentModel getComment(int chart_id, int comment_id){
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();
+		CommentModel comment=(CommentModel)session.createQuery("jabx.model.CommentModel as comment where comment.chart.id =:chart_id and comment.id =:comment_id").setParameter("chart_id", chart_id).setParameter("comment_id", comment_id).uniqueResult();
+		trans.commit();
+		return comment;
+	}
+
+	public static void setComment(CommentModel comment){
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();	
+
+		session.save(comment);
+		session.update(comment.getChart());
+		session.update(comment.getUser());
+		trans.commit();		
+	}
+
+
+
+	//CATEGORY ------------------------------------------>
+
 	public static List <CategoryModel> getCategories() {
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
 		List<CategoryModel> categories = session.createQuery("FROM jabx.model.CategoryModel as CategoryModel").list();
-		//		Collections.sort(sites);
-		//crit.setMaxResults(50);
 		trans.commit();
 		return categories;
 	}
@@ -95,14 +132,14 @@ public enum DB_Process {
 		trans.commit();
 		return category; 		
 	}
-	
+
 	public static void setCategory(CategoryModel category){
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();	
 		session.save(category);
 		trans.commit();		
 	}
-	
+
 	public static void delCategory(int category_id){
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
@@ -111,66 +148,44 @@ public enum DB_Process {
 		trans.commit();		
 	}
 
+
+	//USER ------------------------------------------>
+
+	public static List <UserModel> getUsers() {
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();
+		List<UserModel> users = session.createQuery("FROM jabx.model.UserModel as UserModel").list();
+		trans.commit();
+		return users;
+	}
+	public static UserModel getUser(String email){
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();
+		UserModel user = (UserModel) session.get(UserModel.class, email);		
+		trans.commit();
+		return user; 		
+	}
+	public static boolean setUser(UserModel user){
+		try{
+			session=SessionFactoryHibernate.getSingleton().getSession();
+			final Transaction trans = session.beginTransaction();	
+			session.save(user);
+			trans.commit();
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
 	
-	public static ChartModel fromCSV(String name, String description, File file){
-		try {
-			Scanner scanner = new Scanner(file);
-			if (scanner.hasNext()){
-				String titles[]=scanner.nextLine().split(";");
-
-
-				ArrayList<Double>[] yVal = (ArrayList<Double>[])new ArrayList[titles.length-1];
-				List<String> xVal = new ArrayList<>();
-
-				for (int j = 0; j < yVal.length; j++) 
-					yVal[j] = new ArrayList<Double>();
-
-				while (scanner.hasNextLine()) {
-					String line = scanner.nextLine();
-					line=line.replace(",", ".");
-					if (!line.isEmpty()){
-						String values[]=line.split(";");
-						if (values.length > 1){
-							//The first element is the Xval
-							xVal.add(values[0]);     
-							for (int j=1; j < values.length; j++){
-								yVal[(j-1)].add(Double.valueOf(values[j]));
-
-							}
-						}
-					}
-				}
-
-				ArrayList<Double> a= new ArrayList<Double>();
-				System.out.println("X values="+ xVal);
-				Set<SerieModel> lines = new HashSet<SerieModel>();
-				for (int i=0; i< yVal.length; i++){
-					lines.add(new SerieModel(titles[i+1], toPrimitiveDouble(yVal[i])));
-				}
-				for (int j = 0; j < yVal.length; j++) 
-					System.out.println("Y values="+ yVal[j]);
-
-
-				scanner.close();
-				ChartModel chart = new ChartModel(name, description, xVal.toArray(new String[xVal.size()]), lines);
-				chart.setxLegend(titles[0]);
-				return chart;
-
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public static void delUser(String email){
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();
+		UserModel user = (UserModel) session.get(UserModel.class, email);	
+		session.delete(user);
+		trans.commit();		
 	}
-	private static double[] toPrimitiveDouble(List<Double> data){
-		double[] tempArray = new double[data.size()];
-		int i = 0;
-		for (Double d : data) {
-			tempArray[i] = (double) d;
-			i++;
-		}
-		return tempArray;
-	}
+
+
 
 
 }

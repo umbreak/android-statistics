@@ -97,7 +97,7 @@ public class BaseChartModel {
 	public void setType(int type) {
 		this.type = type;
 	}
-	@Temporal(TemporalType.DATE) @NotNull @Column(updatable=false)
+	@Temporal(TemporalType.TIMESTAMP) @NotNull @Column(updatable=false)
 	public Date getDate() {
 		return date;
 	}
