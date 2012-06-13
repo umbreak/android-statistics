@@ -4,4 +4,13 @@
     <color name="ab_background_pressed">#80003366</color>
     <color name="ab_background_focussed">#40003366</color>
     <color name="ab_background_normal">#00003366</color>
+    <color name="light_background">#eaeaea</color>
+    <color name="chart_blue">#002c9b</color>
+    <color name="chart_green">#509b00</color>
+    <color name="chart_brown">#8c5b33</color>
+    <color name="chart_violet">#76338c</color>
+    <color name="chart_pink">#923059</color>
+    <color name="chart_red">#b10000</color>
+    <color name="chart_darkgrey">#464646</color>
+
 </resources>

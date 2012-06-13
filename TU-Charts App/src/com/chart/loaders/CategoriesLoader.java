@@ -1,6 +1,7 @@
 package com.chart.loaders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.chart.pojos.Categories;
 import com.chart.pojos.CategoryModel;
+import com.chart.restclient.Processor;
 
 public class CategoriesLoader extends AsyncTaskLoader<List<CategoryModel>> {
 
@@ -24,23 +26,25 @@ public class CategoriesLoader extends AsyncTaskLoader<List<CategoryModel>> {
 	 * data to be published by the loader.
 	 */
 	@Override public List<CategoryModel> loadInBackground() {
-		// Retrieve all known data.
-		//****************** NOW IT'S FAKE ****************
-		List<CategoryModel> categories=new ArrayList<CategoryModel>();
-		
-		categories.add(Categories.i.all);
-		categories.add(Categories.i.electronics);
-		categories.add(Categories.i.physics);
-		categories.add(Categories.i.mechanics);
-		categories.add(Categories.i.internet);
-		categories.add(Categories.i.nanotech);
-		categories.add(Categories.i.signal);
-		categories.add(Categories.i.economics);
-		categories.add(Categories.i.multimedia);
-		//**********************************
-
-		Collections.sort(categories);
-		return categories;
+//		System.out.println("** CategoriesLoader: Retrieve all the categories from the server");
+//
+//		// Retrieve all known data.
+//		//****************** NOW IT'S FAKE ****************
+//		List<CategoryModel> categories=new ArrayList<CategoryModel>();
+//		
+//		categories.add(Categories.i.all);
+//		categories.add(Categories.i.electronics);
+//		categories.add(Categories.i.physics);
+//		categories.add(Categories.i.mechanics);
+//		categories.add(Categories.i.internet);
+//		categories.add(Categories.i.nanotech);
+//		categories.add(Categories.i.signal);
+//		categories.add(Categories.i.economics);
+//		categories.add(Categories.i.multimedia);
+//		//**********************************
+//
+//		Collections.sort(categories);
+		return new ArrayList<CategoryModel>(Arrays.asList(Processor.i.getCategories()));
 	}
 
 	/**

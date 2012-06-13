@@ -7,6 +7,16 @@
         android:id="@+id/chart"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" />
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No values avaliable" 
+            android:visibility="gone"/>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.chart;
+package com.chart.ui;
 
 import java.util.ArrayList;
 
@@ -14,8 +14,9 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.chart.ui.CategoriesContentsFragment;
-import com.chart.ui.DetailedContentsActivity;
+import com.chart.R;
+import com.chart.R.id;
+import com.chart.R.layout;
 
 public class HomeActivity extends SherlockFragmentActivity {
 	TabHost mTabHost;

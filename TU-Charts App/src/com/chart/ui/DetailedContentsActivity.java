@@ -30,7 +30,6 @@ import com.actionbarsherlock.internal.widget.IcsSpinner;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.chart.HomeActivity;
 import com.chart.R;
 import com.chart.browser.adapters.BaseChartAdapter;
 import com.chart.loaders.BaseChartLoader;

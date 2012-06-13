@@ -1,6 +1,7 @@
 package com.chart.loaders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.chart.pojos.Categories;
 import com.chart.pojos.BaseChartModel;
+import com.chart.pojos.CategoryModel;
+import com.chart.restclient.Processor;
 
 public class BaseChartLoader extends AsyncTaskLoader<List<BaseChartModel>> {
 
@@ -26,43 +29,43 @@ public class BaseChartLoader extends AsyncTaskLoader<List<BaseChartModel>> {
 	 * data to be published by the loader.
 	 */
 	@Override public List<BaseChartModel> loadInBackground() {
+		System.out.println("** BaseChartLoader: Retrieve a List<BaseChartModel> from the server");
 		// Retrieve all known data.
+		return new ArrayList<BaseChartModel>(Arrays.asList(Processor.i.getCharts()));
 		//****************** NOW IT'S FAKE ****************
-		List<BaseChartModel> charts=new ArrayList<BaseChartModel>();
-		if (id==-1 || id == 0){
-			charts.add(new BaseChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
-			charts.add(new BaseChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
-			charts.add(new BaseChartModel(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
-			charts.add(new BaseChartModel(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
-			charts.add(new BaseChartModel(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
-			charts.add(new BaseChartModel(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
-			charts.add(new BaseChartModel(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
-			charts.add(new BaseChartModel(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
-			charts.add(new BaseChartModel(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
-		}else if (id == -2){
-			charts.add(new BaseChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
-			charts.add(new BaseChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
-		}
-		else if (id == 1){
-			charts.add(new BaseChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
-			charts.add(new BaseChartModel(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
-
-		}else if (id == 2)
-			charts.add(new BaseChartModel(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
-		else if (id == 4){
-			charts.add(new BaseChartModel(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
-			charts.add(new BaseChartModel(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
-			charts.add(new BaseChartModel(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
-
-		}else if (id == 6)
-			charts.add(new BaseChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
-		else if (id == 7){
-			charts.add(new BaseChartModel(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
-			charts.add(new BaseChartModel(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
-		}
-
-		Collections.sort(charts);
-		return charts;
+//		if (id==-1 || id == 0){
+//			charts.add(new BaseChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
+//			charts.add(new BaseChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
+//			charts.add(new BaseChartModel(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
+//			charts.add(new BaseChartModel(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
+//			charts.add(new BaseChartModel(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
+//			charts.add(new BaseChartModel(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
+//			charts.add(new BaseChartModel(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
+//			charts.add(new BaseChartModel(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
+//			charts.add(new BaseChartModel(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
+//		}else if (id == -2){
+//			charts.add(new BaseChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
+//			charts.add(new BaseChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
+//		}
+//		else if (id == 1){
+//			charts.add(new BaseChartModel(2, "Chart 2", "Simulation of an fjfdnjfd fdnfieo feifoefmoir iriojfiore firejfioreoif reifoierjfi iforiejif", Categories.i.electronics));
+//			charts.add(new BaseChartModel(5, "Piezoelectric 1", "Performance of the Piezoelectric IDONSIDS Sensor", Categories.i.electronics));
+//
+//		}else if (id == 2)
+//			charts.add(new BaseChartModel(3, "Phys Performance 3","Show the performance of an engine using IONODSD", Categories.i.physics));
+//		else if (id == 4){
+//			charts.add(new BaseChartModel(6, "TCP Comparision 2","Difference in performance between TCP Westwood and FastTCP in Wifi environments", Categories.i.internet));
+//			charts.add(new BaseChartModel(7, "Backbone Throughtput", "Show the Backbone traffic on the NETCAT", Categories.i.internet));
+//			charts.add(new BaseChartModel(4, "TCP Comparision 1","Difference in performance between TCP Westwood and TCP Reno in Wifi environments", Categories.i.internet));
+//
+//		}else if (id == 6)
+//			charts.add(new BaseChartModel(1, "Chart 1","Test of an idnosnds dsindios ffnieuehtur trui trubguitg euribguieif",Categories.i.signal));
+//		else if (id == 7){
+//			charts.add(new BaseChartModel(8, "Unemployement 1", "Unemployement state in the EU Countries", Categories.i.economics));
+//			charts.add(new BaseChartModel(9, "Salaries 1", "Minimum salaries in the EU state Countries", Categories.i.economics));
+//		}
+//
+//		Collections.sort(charts);
 	}
 
 	/**

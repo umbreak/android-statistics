@@ -4,4 +4,20 @@
     <string name="hello">Hello World, TestActionBarActivity!</string>
     <string name="app_name">TU-Charts</string>
 
+    <string-array name="months">
+        <item>All Months</item>
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>Aug</item>
+        <item>Sept</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+
 </resources>

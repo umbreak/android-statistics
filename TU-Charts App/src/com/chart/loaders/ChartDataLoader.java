@@ -1,26 +1,21 @@
 package com.chart.loaders;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.chart.AppUtils;
 import com.chart.pojos.ChartModel;
-import com.chart.pojos.SerieModel;
+import com.chart.restclient.Processor;
 
 public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
-	private Calendar c;
 	private ChartModel chart=null;
-	private ChartModel realChart;
+	private int chart_id;
 
 
-	public ChartDataLoader(Context context, ChartModel chart) {
+	public ChartDataLoader(Context context, int chart_id) {
 		super(context);
-		this.realChart=chart;
-		c=Calendar.getInstance();
+		this.chart_id=chart_id;
 	}
 
 	/**
@@ -29,53 +24,46 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	 * data to be published by the loader.
 	 */
 	@Override public ChartModel loadInBackground() {
-		Calendar c=Calendar.getInstance();	
-		String[] xValues=new String[9];
-		c.set(2012, 9, 1);
-		xValues[0]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 8);
-		xValues[0]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 15);
-		xValues[1]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 22);
-		xValues[2]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 23);
-		xValues[3]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 25);
-		xValues[4]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 27);
-		xValues[5]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 28);
-		xValues[6]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 29);
-		xValues[7]=AppUtils.i.date_format.format(c.getTime());
-		c.set(2012, 9, 30);
-		xValues[8]=AppUtils.i.date_format.format(c.getTime());
+		System.out.println("** ChartDataLoader: Retrieve the DATA from one Chart");
 
-		//2 Lines with 10 values (yAxis = int)
-		double yValues0[] = new double[50];
-		double yValues1[] = new double[50];
-		double yValues2[] = new double[50];
-		
-		for (int i=0; i < 50; i++){
-			yValues0[i] = getRandom(6, 20);
-			yValues1[i] = getRandom(4, 15);
-			yValues2[i] = getRandom(5, 18);
-		}
-		List<SerieModel> yValues = new ArrayList<SerieModel>();
-		yValues.add(new SerieModel(1,"Line 1", yValues0));
-		yValues.add(new SerieModel(2,"Line 2", yValues1));
-		yValues.add(new SerieModel(3,"Line 3", yValues2));
-		
-		realChart.xValues=xValues;
-		realChart.yValues=yValues;
-		realChart.min=4;
-		realChart.max=20;
-		return realChart;
+//		Calendar c=Calendar.getInstance();	
+//		String[] xValues=new String[NUM_VALUES];
+//		int month=2;
+//		int day[]=new int[]{1,5,8,14,22};
+//		int num_day=0;
+//		for (int i=0; i < NUM_VALUES; i++){
+//			c.set(2012,month, day[num_day]);
+//			xValues[i]=AppUtils.i.date_format.format(c.getTime());
+//			if (num_day == 4){
+//				num_day=0;
+//				month++;
+//			}else
+//				num_day++;
+//		}
+//
+//		System.out.println(Arrays.toString(xValues));
+//		//2 Lines with 10 values (yAxis = int)
+//		double yValues0[] = new double[NUM_VALUES];
+//		double yValues1[] = new double[NUM_VALUES];
+//		double yValues2[] = new double[NUM_VALUES];
+//		
+//		for (int i=0; i < NUM_VALUES; i++){
+//			yValues0[i] = getRandom(6, 20);
+//			yValues1[i] = getRandom(4, 10);
+//			yValues2[i] = getRandom(12, 18);
+//		}
+//		List<SerieModel> yValues = new ArrayList<SerieModel>();
+//		yValues.add(new SerieModel(1,"Line 1", yValues0));
+//		yValues.add(new SerieModel(2,"Line 2", yValues1));
+//		yValues.add(new SerieModel(3,"Line 3", yValues2));
+//		
+//		realChart.xValues=xValues;
+//		realChart.yValues=yValues;
+//		realChart.min=4;
+//		realChart.max=20;
+		return Processor.i.getChart(chart_id);
 	}
-	private Float getRandom(int min, int max){
-		return Float.valueOf((min+ (int)(Math.random()*((max-min)+1))));
-	}
+
 
 	/**
 	 * Called when there is new data to deliver to the client.  The

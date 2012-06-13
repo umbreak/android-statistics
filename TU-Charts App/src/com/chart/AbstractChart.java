@@ -30,6 +30,7 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint.Align;
 
 import com.actionbarsherlock.R;
@@ -163,10 +164,12 @@ public abstract class AbstractChart {
 		renderer.setYAxisMax(yMax);
 		renderer.setAxesColor(axesColor);
 		renderer.setLabelsColor(labelsColor);
+		renderer.setXLabelsColor(labelsColor);
+		renderer.setYLabelsColor(0,labelsColor);
 
 		renderer.setYLabelsAlign(Align.RIGHT);
 		renderer.setApplyBackgroundColor(true);
-		int holo_bg= context.getResources().getColor(R.color.abs__background_holo_light);
+		int holo_bg= context.getResources().getColor(R.color.light_background);
 		renderer.setBackgroundColor(holo_bg);
 		renderer.setMarginsColor(holo_bg);
 	}

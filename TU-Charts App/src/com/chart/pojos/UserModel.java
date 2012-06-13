@@ -8,6 +8,11 @@ public class UserModel implements Parcelable{
 	public String password;
 	public String description;
 	public String email;
+	
+	public UserModel() {
+		super();
+	}
+
 	public static final Parcelable.Creator<UserModel> CREATOR = new
 			Parcelable.Creator<UserModel>() {
 		public UserModel createFromParcel(Parcel in) {
