@@ -56,15 +56,15 @@ public class StringIntType implements UserType{
 			SessionImplementor arg2, Object owner) throws HibernateException,
 			SQLException {
 		int[] resul=null;
-		if (!rs.wasNull()) {
-			String value=rs.getString(names[0]);
+		try{
+		String value=rs.getString(names[0]);
 			if (!Strings.isNullOrEmpty(value)){
 				String [] res_string=value.split(",");
 				resul = new int[res_string.length];
 				for (int j = 0; j < resul.length; j++) 
 					resul[j]=Integer.valueOf(res_string[j]);
 			}
-		}
+		}catch (NullPointerException e){ return null;}
 		return resul;
 	}
 

@@ -157,11 +157,11 @@ public class SessionFactoryHibernate {
 
 
 		//Associate Categories & Charts & Users
-		//		charts.get(0).setCategory(categories.get(2)); //Chart 1 ->Physics
-		//		charts.get(1).setCategory(categories.get(4)); //TCP Comparision ->Internet
-		//		charts.get(2).setCategory(categories.get(7)); //Salaries 1 ->Economy
-		//		charts.get(3).setCategory(categories.get(1)); //Chart 2 ->Electronics
-		//		charts.get(4).setCategory(categories.get(4)); //Backbone Throughtput ->Internet
+				charts.get(0).setCategory(categories.get(2)); //Chart 1 ->Physics
+				charts.get(1).setCategory(categories.get(4)); //TCP Comparision ->Internet
+				charts.get(2).setCategory(categories.get(7)); //Salaries 1 ->Economy
+				charts.get(3).setCategory(categories.get(1)); //Chart 2 ->Electronics
+				charts.get(4).setCategory(categories.get(4)); //Backbone Throughtput ->Internet
 
 		categories.get(1).addChart(charts.get(0));
 		categories.get(3).addChart(charts.get(1));

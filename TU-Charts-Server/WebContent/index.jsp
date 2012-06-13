@@ -226,7 +226,7 @@
 																															// subido donde nos interese
 																															if (!uploaded.isFormField()) {
 																																// No es campo de formulario, guardamos el fichero en algún sitio
-																																File directory = new File("tmp");
+																																File directory = new File("webapps/TU-Charts-Server/tmp");
 																																if (!directory.exists())
 																																	directory.mkdir();
 																																fichero = new File(directory,(rand.nextInt(1000 - 100) + 100)+ uploaded.getName());
@@ -307,7 +307,7 @@
 												</tfoot>
 
 												<tbody>
-													<% out.println(application.getRealPath(request.getServletPath()));
+													<%
 														for (BaseChartModel chart : charts) {
 													%>
 													<tr>

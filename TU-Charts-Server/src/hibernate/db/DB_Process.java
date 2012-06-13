@@ -7,17 +7,14 @@ import jabx.model.CommentModel;
 import jabx.model.SerieModel;
 import jabx.model.UserModel;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 public enum DB_Process {
 	i;
@@ -30,6 +27,7 @@ public enum DB_Process {
 	public static List <BaseChartModel> getCharts(int max) {
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
+		Criteria crit = session.createCriteria(BaseChartModel.class);
 		Query q= session.createQuery("FROM jabx.model.BaseChartModel as BaseChartModel");
 		q.setMaxResults(max);
 		List<BaseChartModel> charts = q.list();
@@ -42,9 +40,14 @@ public enum DB_Process {
 	public static List <BaseChartModel> getCharts() {
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
-		List<BaseChartModel> charts = session.createQuery("FROM jabx.model.BaseChartModel as BaseChartModel").list();
+		BaseChartModel c= new BaseChartModel("name", "description");
+		List<BaseChartModel> charts = session.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c").list();
+		//		Criteria crit = session.createCriteria(BaseChartModel.class);
+//		crit.add(Restrictions.eq("base.class", BaseChartModel.class));
+//		List<BaseChartModel> charts =crit.list();
 		//		Collections.sort(sites);
 		//crit.setMaxResults(50);
+
 		trans.commit();
 		return charts;
 	}
@@ -102,6 +105,15 @@ public enum DB_Process {
 		session.update(comment.getUser());
 		trans.commit();		
 	}
+	public static void delComment(int comment_id){
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();	
+		CommentModel comment=(CommentModel)session.get(CommentModel.class, comment_id);
+		session.delete(comment);
+		session.update(comment.getChart());
+		session.update(comment.getUser());
+		trans.commit();		
+	}
 
 
 
@@ -111,6 +123,7 @@ public enum DB_Process {
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
 		List<CategoryModel> categories = session.createQuery("FROM jabx.model.CategoryModel as CategoryModel").list();
+		Collections.sort(categories);
 		trans.commit();
 		return categories;
 	}

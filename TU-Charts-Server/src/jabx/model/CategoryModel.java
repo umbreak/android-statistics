@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,13 +13,14 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 @XmlRootElement
 @Entity
 @Table(name = "categories")
-public class CategoryModel{
+public class CategoryModel implements Comparable<CategoryModel>{
 	
 	private int id;
 	private String name;
@@ -57,7 +57,7 @@ public class CategoryModel{
 	
 	@OneToMany(mappedBy="category", fetch=FetchType.EAGER)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@XmlTransient public Set<BaseChartModel> getCharts() {
+	@JsonIgnore public Set<BaseChartModel> getCharts() {
 		return charts;
 	}
 	
@@ -67,5 +67,9 @@ public class CategoryModel{
 	public void addChart(BaseChartModel chart){
 		chart.setCategory(this);
 		charts.add(chart);
+	}
+	@Override
+	public int compareTo(CategoryModel arg0) {
+		return this.getName().compareTo(arg0.getName());
 	}
 }

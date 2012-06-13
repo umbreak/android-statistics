@@ -5,6 +5,8 @@ import hibernate.types.StringtoArray;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -12,16 +14,23 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Polymorphism;
+import org.hibernate.annotations.PolymorphismType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 @XmlRootElement
-@Entity @DiscriminatorValue("chartModel")
+@Entity 
+//@PrimaryKeyJoinColumn(name="chart_id")
+
+@DiscriminatorValue("chartModel")
 @TypeDef(name="StringArray", typeClass = StringtoArray.class)
 
 public class ChartModel extends BaseChartModel{
@@ -118,7 +127,7 @@ public class ChartModel extends BaseChartModel{
 //	@LazyCollection(LazyCollectionOption.FALSE)
 	@OneToMany(mappedBy="chart", fetch=FetchType.EAGER)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@XmlTransient public Set<CommentModel> getComments() {
+	@JsonIgnore public Set<CommentModel> getComments() {
 		return comments;
 	}
 	public void setComments(Set<CommentModel> comments) {

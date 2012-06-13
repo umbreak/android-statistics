@@ -19,11 +19,21 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Polymorphism;
+import org.hibernate.annotations.PolymorphismType;
+
 import com.sun.istack.NotNull;
 
 @XmlRootElement
-@Entity @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@Table(name = "charts")
+@Entity
+//@Inheritance(strategy=InheritanceType.JOINED)
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Table(name = "chart")
+
+//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Polymorphism(type = PolymorphismType.EXPLICIT)
+
 @DiscriminatorValue("BaseChartModel") @DiscriminatorColumn(name="discriminator", discriminatorType=DiscriminatorType.STRING)
 public class BaseChartModel {
 	private int id;
@@ -38,6 +48,20 @@ public class BaseChartModel {
 
 
 
+	public BaseChartModel(int id, String name, String description,
+			String xLegend, String yLegend, int votes, int type, Date date,
+			CategoryModel category) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.xLegend = xLegend;
+		this.yLegend = yLegend;
+		this.votes = votes;
+		this.type = type;
+		this.date = date;
+		this.category = category;
+	}
 	public BaseChartModel() {
 		super();
 		votes=0;
@@ -146,5 +170,13 @@ public class BaseChartModel {
 			return false;
 		return true;
 	}
+	@Override
+	public String toString() {
+		return "BaseChartModel [id=" + id + ", name=" + name + ", description="
+				+ description + ", xLegend=" + xLegend + ", yLegend=" + yLegend
+				+ ", votes=" + votes + ", type=" + type + ", date=" + date
+				+ ", category=" + category + "]";
+	}
+	
 	
 }

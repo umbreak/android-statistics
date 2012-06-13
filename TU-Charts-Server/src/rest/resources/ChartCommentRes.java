@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -51,13 +52,28 @@ public class ChartCommentRes {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 	}
-	
+
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public CommentModel putComment(JAXBElement<CommentModel> comment) {
-		CommentModel c=comment.getValue();
-		c.setDate(new Date());
-		DB_Process.setComment(c);
-		return c;
+	public String putComment(JAXBElement<CommentModel> comment) {
+		try{
+			CommentModel c=comment.getValue();
+			c.setDate(new Date());
+			DB_Process.setComment(c);
+			return String.valueOf(c.getId());
+		}catch(NullPointerException e){
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
+	}
+	
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String delComment(@PathParam("id") int comment_id) {
+		try{
+			DB_Process.delComment(comment_id);
+			return String.valueOf(comment_id);
+		}catch(NullPointerException e){
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
+		}
 	}
 }

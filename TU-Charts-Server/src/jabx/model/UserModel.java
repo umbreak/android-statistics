@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
@@ -88,7 +89,7 @@ public class UserModel {
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.EAGER)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@XmlTransient public Set<ChartModel> getCharts() {
+	@JsonIgnore public Set<ChartModel> getCharts() {
 		return charts;
 	}
 
@@ -102,7 +103,7 @@ public class UserModel {
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.EAGER)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@XmlTransient public Set<CommentModel> getComments() {
+	@JsonIgnore public Set<CommentModel> getComments() {
 		return comments;
 	}
 
@@ -115,7 +116,7 @@ public class UserModel {
 	}
 
 	@Type(type="StringInt")
-	@XmlTransient
+	@JsonIgnore
 	public int[] getCharts_denied() {
 		return charts_denied;
 	}
@@ -126,7 +127,7 @@ public class UserModel {
 	}
 
 	@Type(type="StringInt")
-	@XmlTransient
+	@JsonIgnore
 	public int[] getCategories_denied() {
 		return categories_denied;
 	}

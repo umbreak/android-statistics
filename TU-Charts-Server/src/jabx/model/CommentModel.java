@@ -14,6 +14,8 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import com.sun.istack.NotNull;
 
 @XmlRootElement
@@ -67,7 +69,7 @@ public class CommentModel {
 	}
 	@ManyToOne (cascade = CascadeType.MERGE)
 	@JoinColumn(name="chart_id")
-	@XmlTransient
+	@JsonIgnore
 	public ChartModel getChart() {
 		return chart;
 	}

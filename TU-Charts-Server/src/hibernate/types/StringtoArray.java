@@ -56,12 +56,16 @@ public class StringtoArray implements UserType{
 			SessionImplementor arg2, Object owner) throws HibernateException,
 			SQLException {
 		String[] resul=null;
-		if (!rs.wasNull()) {
+		try{
+//		System.out.println("before=" + rs.getString(names[0]));
+//		if (!rs.wasNull()) {
 			String value=rs.getString(names[0]);
+//			System.out.println("size= " + names.length + " value="+ value);
 			if (!Strings.isNullOrEmpty(value)){
 				resul=value.split(",");
 			}
-		}
+		}catch (NullPointerException e){ return null;}
+//		}
 		return resul;
 	}
 
