@@ -33,8 +33,10 @@ import com.chart.pojos.SerieModel;
 
 public enum Processor {
 	i;
-//	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
-	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
+	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
+//	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
+
+	
 
 	//Date received from the server to make the hash
 
@@ -153,6 +155,17 @@ public enum Processor {
 	public BaseChartModel[] getNewCharts(){
 		try{
 			ResponseEntity<BaseChartModel[]> responseEntity = restTemplate.exchange(url + "charts/new", HttpMethod.GET, requestEntity, BaseChartModel[].class);
+			return responseEntity.getBody();
+
+		}catch(HttpClientErrorException e){
+			Log.d(TAG, e.toString());
+			return null;
+		}	
+	}
+	
+	public BaseChartModel[] getCharts(int category_id){
+		try{
+			ResponseEntity<BaseChartModel[]> responseEntity = restTemplate.exchange(url + "categories/" + category_id + "/charts", HttpMethod.GET, requestEntity, BaseChartModel[].class);
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){

@@ -20,6 +20,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import com.google.common.collect.Ordering;
 @Path("/categories")
 public class CategoriesResource {
 	@Context UriInfo uriInfo;
@@ -41,9 +43,9 @@ public class CategoriesResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{id}/charts")
-	public Set<BaseChartModel> getCategoryCharts(@PathParam("id") int id){
+	public ArrayList<BaseChartModel> getCategoryCharts(@PathParam("id") int id){
 		try{
-			return DB_Process.getCategory(id).getCharts();
+			return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getCategoryCharts(id)));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}

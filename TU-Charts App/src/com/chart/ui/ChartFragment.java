@@ -59,7 +59,7 @@ public class ChartFragment extends SherlockFragment implements ActionBar.OnNavig
 		else
 			month = savedInstanceState.getInt("month");
 
-		getSherlockActivity().getSupportLoaderManager().initLoader(0, null, this);
+		getSherlockActivity().getSupportLoaderManager().initLoader(2, null, this);
 
 
 		Context context = getSherlockActivity().getSupportActionBar().getThemedContext();

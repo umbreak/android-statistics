@@ -38,14 +38,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 				CategoriesContentsFragment.class, null);
 		
 		Bundle args = new Bundle();
-        args.putInt("id_fragment", -1);
+        args.putInt("id_category", -1);
         args.putBoolean("visibility", true);
-        
 		mTabsAdapter.addTab(mTabHost.newTabSpec("New").setIndicator("New"),
 				DetailedContentsActivity.ContentsFragment.class, args);
 		
 		args = new Bundle();
-        args.putInt("id_fragment", -2);
+        args.putInt("id_category", -2);
         args.putBoolean("visibility", true);
 		mTabsAdapter.addTab(mTabHost.newTabSpec("Last Seen").setIndicator("Last Seen"),
 				DetailedContentsActivity.ContentsFragment.class, args);

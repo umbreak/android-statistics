@@ -36,32 +36,12 @@ public class ChartsResource {
 	@Context ServletContext context;
 	@HeaderParam("chemnitz_token") @DefaultValue("") String token;
 	private int user_id;	
-	Comparator<BaseChartModel> date_comparator;
-	Comparator<BaseChartModel> name_comparator;
-	Comparator<BaseChartModel> popularity_comparator;
 
 
 
 	public ChartsResource() {
 		super();
-		date_comparator = new Comparator<BaseChartModel>() {
-			@Override
-			public int compare(BaseChartModel o1, BaseChartModel o2) {
-				return o2.getId() - o1.getId();
-			}
-		};
-		popularity_comparator = new Comparator<BaseChartModel>() {
-			@Override
-			public int compare(BaseChartModel o1, BaseChartModel o2) {
-				return o2.getVotes() - o1.getVotes();
-			}
-		};
-		name_comparator = new Comparator<BaseChartModel>() {
-			@Override
-			public int compare(BaseChartModel o1, BaseChartModel o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		};
+		
 
 	}
 
@@ -70,11 +50,11 @@ public class ChartsResource {
 	public ArrayList<BaseChartModel> getCharts(@DefaultValue("date") @QueryParam("sort") String sort){
 		try{
 			if (sort.equalsIgnoreCase("name"))
-				return new ArrayList<BaseChartModel> (Ordering.from(name_comparator).sortedCopy(DB_Process.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getName_comparator()).sortedCopy(DB_Process.getCharts()));
 			else if (sort.equalsIgnoreCase("popular"))
-				return new ArrayList<BaseChartModel> (Ordering.from(popularity_comparator).sortedCopy(DB_Process.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getPopularity_comparator()).sortedCopy(DB_Process.getCharts()));
 			else
-				return new ArrayList<BaseChartModel> (Ordering.from(date_comparator).sortedCopy(DB_Process.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getCharts()));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -92,7 +72,7 @@ public class ChartsResource {
 
 
 			return new ArrayList<BaseChartModel> (Iterables.get(Iterables.partition
-					(Ordering.from(date_comparator).reverse().sortedCopy(charts), 5),0));
+					(Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(charts), 5),0));
 
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);

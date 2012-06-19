@@ -44,7 +44,9 @@ public class CategoriesLoader extends AsyncTaskLoader<List<CategoryModel>> {
 //		//**********************************
 //
 //		Collections.sort(categories);
-		return new ArrayList<CategoryModel>(Arrays.asList(Processor.i.getCategories()));
+		ArrayList<CategoryModel> result=new ArrayList<CategoryModel>(Arrays.asList(Processor.i.getCategories()));;
+		result.add(0, new CategoryModel(0, "(All Categories)"));
+		return result;
 	}
 
 	/**

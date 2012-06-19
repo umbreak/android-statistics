@@ -8,6 +8,7 @@ import jabx.model.SerieModel;
 import jabx.model.UserModel;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -19,7 +20,40 @@ import org.hibernate.criterion.Restrictions;
 public enum DB_Process {
 	i;
 	private static Session session;
+	private final Comparator<BaseChartModel> date_comparator;
+	private final Comparator<BaseChartModel> name_comparator;
+	private final Comparator<BaseChartModel> popularity_comparator;
+	public Comparator<BaseChartModel> getDate_comparator() {
+		return date_comparator;
+	}
+
+	public Comparator<BaseChartModel> getName_comparator() {
+		return name_comparator;
+	}
+
+	public Comparator<BaseChartModel> getPopularity_comparator() {
+		return popularity_comparator;
+	}
+
 	private DB_Process(){
+		date_comparator = new Comparator<BaseChartModel>() {
+			@Override
+			public int compare(BaseChartModel o1, BaseChartModel o2) {
+				return o2.getId() - o1.getId();
+			}
+		};
+		popularity_comparator = new Comparator<BaseChartModel>() {
+			@Override
+			public int compare(BaseChartModel o1, BaseChartModel o2) {
+				return o2.getVotes() - o1.getVotes();
+			}
+		};
+		name_comparator = new Comparator<BaseChartModel>() {
+			@Override
+			public int compare(BaseChartModel o1, BaseChartModel o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		};
 
 	}
 
@@ -28,7 +62,7 @@ public enum DB_Process {
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
 		Criteria crit = session.createCriteria(BaseChartModel.class);
-		Query q= session.createQuery("FROM jabx.model.BaseChartModel as BaseChartModel");
+		Query q= session.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c");
 		q.setMaxResults(max);
 		List<BaseChartModel> charts = q.list();
 		//		Collections.sort(sites);
@@ -91,7 +125,7 @@ public enum DB_Process {
 	public static CommentModel getComment(int chart_id, int comment_id){
 		session=SessionFactoryHibernate.getSingleton().getSession();
 		final Transaction trans = session.beginTransaction();
-		CommentModel comment=(CommentModel)session.createQuery("jabx.model.CommentModel as comment where comment.chart.id =:chart_id and comment.id =:comment_id").setParameter("chart_id", chart_id).setParameter("comment_id", comment_id).uniqueResult();
+		CommentModel comment=(CommentModel)session.createQuery("jabx.model.CommentModel as comment WHERE comment.chart.id =:chart_id and comment.id =:comment_id").setParameter("chart_id", chart_id).setParameter("comment_id", comment_id).uniqueResult();
 		trans.commit();
 		return comment;
 	}
@@ -136,6 +170,14 @@ public enum DB_Process {
 		trans.commit();
 		return category; 		
 	}
+	public static List <BaseChartModel> getCategoryCharts(int category_id){
+		session=SessionFactoryHibernate.getSingleton().getSession();
+		final Transaction trans = session.beginTransaction();
+		List<BaseChartModel> charts = session.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.category.id =:category_id ").setParameter("category_id", category_id).list();
+		trans.commit();
+		return charts; 		
+	}
+	
 
 	public static CategoryModel getCategory(String name){
 		session=SessionFactoryHibernate.getSingleton().getSession();

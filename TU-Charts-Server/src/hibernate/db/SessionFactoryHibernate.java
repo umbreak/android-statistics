@@ -65,28 +65,21 @@ public class SessionFactoryHibernate {
 		//Chart with 10 values (xAxis = DATE)
 		Calendar c=Calendar.getInstance();
 		SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+		final int NUM_VALUES=50;
+		int month=2;
+		String[] xValues=new String[NUM_VALUES];
 		
-		String[] xValues=new String[9];
-		c.set(2012, 9, 1);
-		xValues[0]=format1.format(c.getTime());
-		c.set(2012, 9, 8);
-		xValues[0]=format1.format(c.getTime());
-		c.set(2012, 9, 15);
-		xValues[1]=format1.format(c.getTime());
-		c.set(2012, 9, 22);
-		xValues[2]=format1.format(c.getTime());
-		c.set(2012, 9, 23);
-		xValues[3]=format1.format(c.getTime());
-		c.set(2012, 9, 25);
-		xValues[4]=format1.format(c.getTime());
-		c.set(2012, 9, 27);
-		xValues[5]=format1.format(c.getTime());
-		c.set(2012, 9, 28);
-		xValues[6]=format1.format(c.getTime());
-		c.set(2012, 9, 29);
-		xValues[7]=format1.format(c.getTime());
-		c.set(2012, 9, 30);
-		xValues[8]=format1.format(c.getTime());
+		int day[]=new int[]{1,5,8,14,22};
+		int num_day=0;
+		for (int i=0; i < NUM_VALUES; i++){
+			c.set(2012,month, day[num_day]);
+			xValues[i]=format1.format(c.getTime());
+			if (num_day == 4){
+				num_day=0;
+				month++;
+			}else
+				num_day++;
+		}
 
 		//2 Lines with 50 values (yAxis = int)
 		double yValues0[] = new double[50];

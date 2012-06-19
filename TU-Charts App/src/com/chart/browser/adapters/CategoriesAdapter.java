@@ -56,7 +56,7 @@ public class CategoriesAdapter extends ArrayAdapter<CategoryModel>{
 		final ImageView iconView = (ImageView) view.findViewById(R.id.imageView1);
 		final Integer id= Integer.valueOf(item.id);
 		iconView.setImageResource(getFlagResource(context, "bezel"+ Math.abs(id.hashCode())%10));
-		if (item.name.startsWith("(All")) iconView.setVisibility(View.INVISIBLE);
+		if (item.id==0) iconView.setVisibility(View.INVISIBLE);
 		else iconView.setVisibility(View.VISIBLE);
 		return view;
 	}

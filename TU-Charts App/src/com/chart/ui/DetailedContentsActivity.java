@@ -120,7 +120,7 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 			ContentsFragment f = new ContentsFragment();
 			// Supply index input as an argument.
 			Bundle args = new Bundle();
-			args.putInt("id_fragment", id);
+			args.putInt("id_category", id);
 			args.putBoolean("visibility", visibility);
 			f.setArguments(args);
 			return f;
@@ -130,13 +130,13 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		// If non-null, this is the current filter the user has provided.
 		private String mCurFilter;
 		private boolean categoryVisibility;
-		private int id_fragment;
+		private int id_category;
 
 		OnQueryTextListenerCompat mOnQueryTextListenerCompat;
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
-			id_fragment = getArguments() != null ? getArguments().getInt("id_fragment") : -2;
+			id_category = getArguments() != null ? getArguments().getInt("id_category") : -2;
 			categoryVisibility =getArguments() != null ? getArguments().getBoolean("visibility") : false;
 
 		}
@@ -156,11 +156,10 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 			setListAdapter(mAdapter);
 
 			// Start out with a progress indicator.
-			setListShown(false);
 
 			// Prepare the loader.  Either re-connect with an existing one,
 			// or start a new one.
-			getLoaderManager().initLoader(0, null, this);
+			getLoaderManager().initLoader(1, null, this);
 		}
 
 		@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -183,6 +182,16 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 				});
 				item.setActionView(searchView);
 			}
+			
+			MenuItem item2 = menu.add("Update");
+			item2.setIcon(android.R.drawable.ic_popup_sync);
+			item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		}
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item) {
+			if (item.getTitle().equals("Update"))
+				getLoaderManager().restartLoader(1, null, this);
+			return super.onOptionsItemSelected(item);
 		}
 
 		@Override public void onListItemClick(ListView l, View v, int position, long id) {
@@ -197,7 +206,8 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 
 		@Override
 		public Loader<List<BaseChartModel>> onCreateLoader(int id, Bundle args) {
-			return new BaseChartLoader(getActivity(), id_fragment);
+			setListShown(false);
+			return new BaseChartLoader(getActivity(), id_category);
 		}
 
 		@Override
