@@ -96,8 +96,6 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 
 			@Override
 			public void onNothingSelected(IcsAdapterView<?> parent) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 
@@ -159,8 +157,9 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 
 			// Prepare the loader.  Either re-connect with an existing one,
 			// or start a new one.
-			getLoaderManager().initLoader(1, null, this);
-		}
+			System.out.println("category=" + id_category);
+			getSherlockActivity().getSupportLoaderManager().restartLoader(1, null, this);
+			}
 
 		@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 			// Place an action bar item for searching.
@@ -190,7 +189,7 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item) {
 			if (item.getTitle().equals("Update"))
-				getLoaderManager().restartLoader(1, null, this);
+				getSherlockActivity().getSupportLoaderManager().restartLoader(1, null, this);
 			return super.onOptionsItemSelected(item);
 		}
 

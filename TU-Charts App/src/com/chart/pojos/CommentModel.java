@@ -11,6 +11,18 @@ public class CommentModel implements Parcelable{
 	public UserModel user;
 	public Date date;
 	
+	
+	
+	public CommentModel(String text) {
+		super();
+		this.text = text;
+	}
+
+	public CommentModel() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public static final Parcelable.Creator<CommentModel> CREATOR = new
 			Parcelable.Creator<CommentModel>() {
 		public CommentModel createFromParcel(Parcel in) {

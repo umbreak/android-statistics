@@ -6,6 +6,7 @@ import org.achartengine.GraphicalView;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -36,7 +37,8 @@ import com.actionbarsherlock.app.ActionBar;
 
 public class ChartFragment extends SherlockFragment implements ActionBar.OnNavigationListener, LoaderCallbacks<ChartModel>{
 	//Change chart for chart_id -----> chart IT WON'T BE NECESSARY ANYMORE!!!
-	private ChartModel chart;
+	private BaseChartModel chart;
+	private ChartModel full_chart;
 	private FragmentManager fm;
 	private ChartGenerator chartBuilder;
 	private GraphicalView mChart;
@@ -44,13 +46,12 @@ public class ChartFragment extends SherlockFragment implements ActionBar.OnNavig
 	private int month;
 	private TextView textView;
 	private ArrayAdapter<CharSequence> list;
-	private DialogFragment dialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
-		BaseChartModel parent= (BaseChartModel)(getArguments() != null ? getArguments().getParcelable("chart") : null);
-		chart= new ChartModel(parent);
+		chart= (BaseChartModel)(getArguments() != null ? getArguments().getParcelable("chart") : null);
+		full_chart= new ChartModel(chart);
 		fm = getActivity().getSupportFragmentManager();
 
 		chartBuilder =  new ChartGenerator();
@@ -82,15 +83,7 @@ public class ChartFragment extends SherlockFragment implements ActionBar.OnNavig
 		View view = inflater.inflate(R.layout.chart_fragment, container, false);
 		mLayout= (LinearLayout) view.findViewById(R.id.chart);
 		textView=(TextView) view.findViewById(R.id.info);
-		//		try {
-		//				mChart= chartBuilder.getView(getActivity().getBaseContext(), chart);
-		//
-		//			mLayout.addView(mChart, new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
-		//			mChart.repaint();
-		//		} catch (ParseException e) {}
-		//		catch (NullPointerException e) {
-		//			getView().findViewById(R.id.info).setVisibility(View.VISIBLE);
-		//		}
+	
 		return view;
 	}
 
@@ -100,19 +93,27 @@ public class ChartFragment extends SherlockFragment implements ActionBar.OnNavig
 		MenuItem item = menu.add("Info");
 		item.setIcon(android.R.drawable.ic_menu_info_details);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+		MenuItem item2 = menu.add("Comments");
+		item2.setIcon(android.R.drawable.ic_menu_edit);
+		item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 	}
 
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Fragment frag=ChartActivity.InfoFragment.newInstance(chart);
-		FragmentTransaction ft= fm.beginTransaction();
-		ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
-		//		ft.remove(this);
-		//		ft.add(android.R.id.content, frag, "Info");
-		ft.replace(android.R.id.content, frag, "Info");
-		ft.addToBackStack("Chart").commit();
+		Intent intent = new Intent();
+		intent.setClass(getSherlockActivity(), ChartDetailsAcitivy.class);
+		intent.putExtra("chart", chart);
+		
+		if (item.getTitle().equals("Info"))
+			intent.putExtra("Option", 0);
+		else
+			intent.putExtra("Option", 1);
+
+		startActivity(intent);	
 		return true;
+
 	}
 
 	@Override
@@ -124,7 +125,7 @@ public class ChartFragment extends SherlockFragment implements ActionBar.OnNavig
 
 	@Override
 	public void onLoadFinished(Loader<ChartModel> loader, ChartModel data) {
-		chart=data;
+		full_chart=data;
 		getSherlockActivity().getSupportActionBar().setListNavigationCallbacks(list, this);
 		getSherlockActivity().getSupportActionBar().setSelectedNavigationItem(month);
 
@@ -134,6 +135,7 @@ public class ChartFragment extends SherlockFragment implements ActionBar.OnNavig
 	public void onLoaderReset(Loader<ChartModel> arg0) {
 		// Clear the data in the adapter.
 	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -145,9 +147,9 @@ public class ChartFragment extends SherlockFragment implements ActionBar.OnNavig
 		try {
 			mLayout.removeAllViews();
 			if (month != 0)
-				mChart= chartBuilder.getView(getActivity().getBaseContext(), chart, month);
+				mChart= chartBuilder.getView(getActivity().getBaseContext(), full_chart, month);
 			else
-				mChart= chartBuilder.getView(getActivity().getBaseContext(), chart);
+				mChart= chartBuilder.getView(getActivity().getBaseContext(), full_chart);
 			mLayout.addView(mChart);
 			//			mChart.repaint();
 		} catch (ParseException e) {}

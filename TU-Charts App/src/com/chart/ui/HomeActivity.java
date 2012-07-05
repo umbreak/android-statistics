@@ -3,11 +3,18 @@ package com.chart.ui;
 import java.util.ArrayList;
 
 import android.content.Context;
+import static com.chart.AppUtils.DISPLAY_H;
+import static com.chart.AppUtils.DISPLAY_W;
+
+import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TabHost;
@@ -17,6 +24,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.chart.R;
 import com.chart.R.id;
 import com.chart.R.layout;
+import com.chart.restclient.Processor;
 
 public class HomeActivity extends SherlockFragmentActivity {
 	TabHost mTabHost;
@@ -36,21 +44,37 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		mTabsAdapter.addTab(mTabHost.newTabSpec("category").setIndicator("Categories"),
 				CategoriesContentsFragment.class, null);
-		
+
 		Bundle args = new Bundle();
-        args.putInt("id_category", -1);
-        args.putBoolean("visibility", true);
+		args.putInt("id_category", -1);
+		args.putBoolean("visibility", true);
 		mTabsAdapter.addTab(mTabHost.newTabSpec("New").setIndicator("New"),
 				DetailedContentsActivity.ContentsFragment.class, args);
-		
+
 		args = new Bundle();
-        args.putInt("id_category", -2);
-        args.putBoolean("visibility", true);
+		args.putInt("id_category", -2);
+		args.putBoolean("visibility", true);
 		mTabsAdapter.addTab(mTabHost.newTabSpec("Last Seen").setIndicator("Last Seen"),
 				DetailedContentsActivity.ContentsFragment.class, args);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
+		}else{
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			int width=prefs.getInt(DISPLAY_W, 0);
+			int height=prefs.getInt(DISPLAY_H, 0);
+			if (width <= 0 && height <= 0){
+				Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
+				width = size.x;
+				height = size.y;
+				prefs.edit().putInt(DISPLAY_W, width).commit();
+				prefs.edit().putInt(DISPLAY_H, height).commit();
+			}
+			
+			Processor.i.width=width;
+			Processor.i.height=height;
 		}
 	}
 

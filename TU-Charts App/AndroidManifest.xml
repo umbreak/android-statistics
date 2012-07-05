@@ -46,6 +46,13 @@
             android:name=".ui.ChartActivity"
             android:label="@string/app_name" >
         </activity>
+        
+                <!-- CHART_DETAILS_ACTIVITY activity -->
+        <activity
+            android:name=".ui.ChartDetailsAcitivy"
+            android:label="@string/app_name" >
+        </activity>
+        
     </application>
 
 </manifest>

@@ -101,7 +101,7 @@ public abstract class AbstractChart {
 		renderer.setChartTitleTextSize(20);
 		renderer.setLabelsTextSize(15);
 		renderer.setLegendTextSize(15);
-		renderer.setPointSize(3f);
+		renderer.setPointSize(1.5f);
 		//margin size values, in this order: top, left, bottom, right
 		renderer.setMargins(new int[] { 8, 30, 5, 0 });
 
@@ -117,12 +117,12 @@ public abstract class AbstractChart {
 		}
 	}
 	protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors) {
-		PointStyle point = PointStyle.CIRCLE;
+//		PointStyle point = PointStyle.CIRCLE;
 		int length = colors.length;
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer r = new XYSeriesRenderer();
 			r.setColor(colors[i]);
-			r.setPointStyle(point);
+//			r.setPointStyle(point);
 			renderer.addSeriesRenderer(r);
 		}
 	}

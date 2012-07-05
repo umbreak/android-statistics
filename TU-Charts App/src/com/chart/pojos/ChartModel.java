@@ -51,17 +51,12 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 	private ChartModel(Parcel in) {
 		super(in);
 		yValues = new ArrayList<SerieModel>();
-		//		xValues=(Date[])in.readArray(Data.class.getClassLoader());
-		//		in.readList(xValues, null);
-//		in.readList(xValues, Date.class.getClassLoader()); <---Correct for reading an arraylist of Date
-		//		in.readTypedList(xValues, LineModel.CREATOR);
 		user=in.readParcelable(UserModel.class.getClassLoader());
 		in.readStringArray(xValues);
 		in.readTypedList(yValues, SerieModel.CREATOR);
 		id = in.readInt();
 		max=in.readInt();
-		min=in.readInt();
-		
+		min=in.readInt();	
 	}
 
 	public int describeContents() {

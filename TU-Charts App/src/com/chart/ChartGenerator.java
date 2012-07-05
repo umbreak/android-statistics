@@ -42,7 +42,7 @@ public class ChartGenerator extends AbstractChart{
 		for (int i = 0; i < colors.length; i++) 
 			colors[i]=all_colors[i];
 
-		XYMultipleSeriesRenderer renderer = buildRenderer(colors, PointStyle.CIRCLE);
+		XYMultipleSeriesRenderer renderer = buildRenderer(colors);
 		renderPointAtributes(renderer);
 
 		//Checking for the type of data on the X axis. It can be a double or a Date
@@ -75,7 +75,9 @@ public class ChartGenerator extends AbstractChart{
 		for (int i = 0; i < colors.length; i++) 
 			colors[i]=all_colors[i];
 
-		XYMultipleSeriesRenderer renderer = buildRenderer(colors, PointStyle.CIRCLE);
+//		XYMultipleSeriesRenderer renderer = buildRenderer(colors, PointStyle.CIRCLE);
+		XYMultipleSeriesRenderer renderer = buildRenderer(colors);
+
 		renderPointAtributes(renderer);
 
 		//Checking for the type of data on the X axis. It can be a double or a Date
@@ -102,19 +104,16 @@ public class ChartGenerator extends AbstractChart{
 		int length = renderer.getSeriesRendererCount();
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer seriesRenderer = (XYSeriesRenderer) renderer.getSeriesRendererAt(i);
-			seriesRenderer.setFillPoints(true);
-			seriesRenderer.setLineWidth(2f);
-			seriesRenderer.setDisplayChartValues(true);
-			seriesRenderer.setChartValuesTextSize(9f);
+//			seriesRenderer.setFillPoints(true);
+			seriesRenderer.setLineWidth(1.5f);
+//			seriesRenderer.setDisplayChartValues(true);
+//			seriesRenderer.setChartValuesTextSize(9f);
 		}
 	}
 
 	private boolean isNum(String s) {
-		try {
-			Double.parseDouble(s);
-		}catch (NumberFormatException nfe) {
-			return false;
-		}
+		try {Double.parseDouble(s);}
+		catch (NumberFormatException nfe) {return false;}
 		return true;
 	}
 	private List<Integer> getMatches(int month) throws ParseException{

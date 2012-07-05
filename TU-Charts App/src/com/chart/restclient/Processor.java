@@ -18,7 +18,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 
+import android.content.Context;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.CategoryModel;
@@ -33,17 +35,16 @@ import com.chart.pojos.SerieModel;
 
 public enum Processor {
 	i;
-	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
-//	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
-
-	
+//	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
+	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
+	public int width;
+	public int height;
 
 	//Date received from the server to make the hash
 
 	//Header: Eetac_token sent to the server
 	private static String token;
 
-	public static File cache_path;
 	public static final String TAG="RestClient";
 	private RestTemplate restTemplate;
 	private HttpEntity<?> requestEntity;
@@ -175,7 +176,9 @@ public enum Processor {
 	}
 	public ChartModel getChart(int chart_id){
 		try{
-			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id, HttpMethod.GET, requestEntity, ChartModel.class);
+			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?x="+width + "&y=" + height, HttpMethod.GET, requestEntity, ChartModel.class);
+//			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id, HttpMethod.GET, requestEntity, ChartModel.class);
+
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
@@ -217,15 +220,15 @@ public enum Processor {
 		}	
 	}
 
-	public Integer putComment(int chart_id, CommentModel c){
+	public CommentModel putComment(int chart_id, CommentModel c){
 		try{
 			HttpEntity<CommentModel> commentEntity = new HttpEntity<CommentModel>(c, requestHeaders);
-			ResponseEntity<Integer> responseEntity = restTemplate.exchange(url + "charts/"+chart_id+"/comments", HttpMethod.PUT, commentEntity, Integer.class);
+			ResponseEntity<CommentModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id+"/comments", HttpMethod.PUT, commentEntity, CommentModel.class);
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
 			Log.d(TAG, e.toString());
-			return 0;
+			return null;
 		}	
 	}
 	public boolean deleteComment(int chart_id, int comment_id){
