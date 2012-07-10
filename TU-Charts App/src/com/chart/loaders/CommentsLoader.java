@@ -23,6 +23,9 @@ public class CommentsLoader extends AsyncTaskLoader<List<CommentModel>> {
 		super(context);
 		this.chart_id=id;
 	}
+	public void addComment(CommentModel c){
+		mCharts.add(c);
+	}
 
 	/**
 	 * This is where the bulk of our work is done.  This function is

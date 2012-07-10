@@ -5,7 +5,7 @@
     <string name="app_name">TU-Charts</string>
 
     <string-array name="months">
-        <item>All Months</item>
+        <item>Months</item>
         <item>Jan</item>
         <item>Feb</item>
         <item>Mar</item>
@@ -18,6 +18,14 @@
         <item>Oct</item>
         <item>Nov</item>
         <item>Dec</item>
+    </string-array>
+    
+        <string-array name="scale">
+        <item>4:1</item>
+        <item>2:1</item>
+        <item>1:1</item>
+        <item>1:2</item>
+        <item>1:4</item>
     </string-array>
 
 </resources>

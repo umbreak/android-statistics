@@ -11,11 +11,13 @@ import com.chart.restclient.Processor;
 public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	private ChartModel chart=null;
 	private int chart_id;
+	private int scale;
 
 
-	public ChartDataLoader(Context context, int chart_id) {
+	public ChartDataLoader(Context context, int chart_id, int scale) {
 		super(context);
 		this.chart_id=chart_id;
+		this.scale=scale;
 	}
 
 	/**
@@ -25,43 +27,7 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	 */
 	@Override public ChartModel loadInBackground() {
 		System.out.println("** ChartDataLoader: Retrieve the DATA from one Chart");
-
-//		Calendar c=Calendar.getInstance();	
-//		String[] xValues=new String[NUM_VALUES];
-//		int month=2;
-//		int day[]=new int[]{1,5,8,14,22};
-//		int num_day=0;
-//		for (int i=0; i < NUM_VALUES; i++){
-//			c.set(2012,month, day[num_day]);
-//			xValues[i]=AppUtils.i.date_format.format(c.getTime());
-//			if (num_day == 4){
-//				num_day=0;
-//				month++;
-//			}else
-//				num_day++;
-//		}
-//
-//		System.out.println(Arrays.toString(xValues));
-//		//2 Lines with 10 values (yAxis = int)
-//		double yValues0[] = new double[NUM_VALUES];
-//		double yValues1[] = new double[NUM_VALUES];
-//		double yValues2[] = new double[NUM_VALUES];
-//		
-//		for (int i=0; i < NUM_VALUES; i++){
-//			yValues0[i] = getRandom(6, 20);
-//			yValues1[i] = getRandom(4, 10);
-//			yValues2[i] = getRandom(12, 18);
-//		}
-//		List<SerieModel> yValues = new ArrayList<SerieModel>();
-//		yValues.add(new SerieModel(1,"Line 1", yValues0));
-//		yValues.add(new SerieModel(2,"Line 2", yValues1));
-//		yValues.add(new SerieModel(3,"Line 3", yValues2));
-//		
-//		realChart.xValues=xValues;
-//		realChart.yValues=yValues;
-//		realChart.min=4;
-//		realChart.max=20;
-		return Processor.i.getChart(chart_id);
+		return Processor.i.getChart(chart_id, scale);
 	}
 
 

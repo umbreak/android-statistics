@@ -1,5 +1,7 @@
 package com.chart.ui;
 
+import static com.chart.AppUtils.LAST_SEEN;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,13 +11,16 @@ import java.util.Map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager.LayoutParams;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -53,14 +58,15 @@ public class ChartActivity extends SherlockFragmentActivity{
 		chart = getIntent().getParcelableExtra("chart");
 
 		setTitle("");
-
-		Bundle b = new Bundle();
-		b.putParcelable("chart", chart);
-		getSupportFragmentManager().beginTransaction()
-		.replace(android.R.id.content, Fragment.instantiate(this, ChartFragment.class.getName(), b), "Chart")
-		.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit)
-		.commit();
-
+		Fragment f= getSupportFragmentManager().findFragmentByTag("Chart_" + chart.id);
+		if (f == null){
+			Bundle b = new Bundle();
+			b.putParcelable("chart", chart);
+			getSupportFragmentManager().beginTransaction()
+			.replace(android.R.id.content, Fragment.instantiate(this, ChartFragment.class.getName(), b), "Chart_" + chart.id)
+			.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit)
+			.commit();
+		}
 	}
 
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -75,5 +81,4 @@ public class ChartActivity extends SherlockFragmentActivity{
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
 }

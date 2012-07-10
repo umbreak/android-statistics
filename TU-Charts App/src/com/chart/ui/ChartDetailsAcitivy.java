@@ -2,17 +2,17 @@ package com.chart.ui;
 
 
 
+import static com.chart.AppUtils.LOADER_ADD_COMMENTS;
+import static com.chart.AppUtils.LOADER_LIST_COMMENTS;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Comment;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,19 +21,15 @@ import android.support.v4.content.Loader;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -44,7 +40,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.chart.AppUtils;
 import com.chart.R;
 import com.chart.browser.adapters.CommentAdapter;
-import com.chart.loaders.AddCommentLoader;
 import com.chart.loaders.AddLoaderCallback;
 import com.chart.loaders.CommentsLoader;
 import com.chart.pojos.BaseChartModel;
@@ -72,16 +67,22 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 			option = getIntent().getIntExtra("Option", 0);
 		else
 			option = savedInstanceState.getInt("opt");
-		
+
 		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
 		if (option == 0){	
-			ft.replace(android.R.id.content,InfoFragment.newInstance(chart), "Info")
-			.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit)
-			.commit();
+			Fragment f= getSupportFragmentManager().findFragmentByTag("Info_" + chart.id);
+			if (f == null){
+				ft.replace(android.R.id.content,InfoFragment.newInstance(chart), "Info_" + chart.id)
+				.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit)
+				.commit();
+			}
 		}else if (option == 1){
-			ft.replace(android.R.id.content,CommentsFragment.newInstance(chart.id), "Comment")
-			.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit)
-			.commit();
+			Fragment f= getSupportFragmentManager().findFragmentByTag("Comment_" + chart.id);
+			if (f == null){
+				ft.replace(android.R.id.content,CommentsFragment.newInstance(chart.id), "Comment_" + chart.id)
+				.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit)
+				.commit();
+			}
 		}
 	}
 
@@ -92,19 +93,19 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 	}
 
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getTitle().equals("Info")){
+		if (item.getTitle().toString().startsWith("Info")){
 			option=0;
 			Fragment frag=InfoFragment.newInstance(chart);
 			FragmentTransaction ft= getSupportFragmentManager().beginTransaction();
 			ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
-			ft.replace(android.R.id.content, frag, "Info").commit();
+			ft.replace(android.R.id.content, frag, "Info_" + chart.id).commit();
 			return true;
-		}else if (item.getTitle().equals("Comments")){
+		}else if (item.getTitle().toString().startsWith("Comments")){
 			option=1;
 			Fragment frag=CommentsFragment.newInstance(chart.id);
 			FragmentTransaction ft= getSupportFragmentManager().beginTransaction();
 			ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
-			ft.replace(android.R.id.content, frag, "Comments").commit();
+			ft.replace(android.R.id.content, frag, "Comments_"+ chart.id).commit();
 			return true;
 		}else if (item.getItemId() == android.R.id.home){
 			Intent intent = new Intent();
@@ -207,7 +208,6 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 		private ProgressBar progress;
 		private AddLoaderCallback commentLoader;
 
-
 		public static CommentsFragment newInstance(int chart_id) {
 			CommentsFragment f = new CommentsFragment();
 			// Supply index input as an argument.
@@ -273,18 +273,14 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 			});
 			textManagment();
 			listView.setTextFilterEnabled(true);
-			//			getListView().addFooterView(footerView,null,true);
 
 			mAdapter = new CommentAdapter(getActivity());
 			listView.setAdapter(mAdapter);
-			//			listView.setListAdapter(mAdapter);
-			commentLoader = new AddLoaderCallback(getSherlockActivity(), mAdapter);
-
 
 			// Prepare the loader.  Either re-connect with an existing one,
 			// or start a new one.
-			getSherlockActivity().getSupportLoaderManager().restartLoader(3, null, this);
-			System.out.println("Here");
+			getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_LIST_COMMENTS, null, this);
+			commentLoader = new AddLoaderCallback(getSherlockActivity(), mAdapter, getSherlockActivity().getSupportLoaderManager());
 
 		}
 
@@ -311,10 +307,8 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 				Bundle b = new Bundle();
 				b.putInt("chart_id", chart_id);
 				b.putParcelable("comment", c);
-				System.out.println("HEMOS HECHO CLICK!");
-				getSherlockActivity().getSupportLoaderManager().restartLoader(4,b,commentLoader);
+				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_ADD_COMMENTS,b,commentLoader);
 				text.setText("");
-				//SEND IT TO THE LOADEEEEEEEEEEEER!!
 
 			}
 		}
@@ -324,15 +318,14 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 			MenuItem item = menu.add("Info");
 			item.setIcon(android.R.drawable.ic_menu_info_details);
 			item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
 		}
 
 		@Override
 		public Loader<List<CommentModel>> onCreateLoader(int id, Bundle args) {
-				System.out.println("Here2");
-				isLoading(true);
+			System.out.println("Here2");
+			isLoading(true);
 			return new CommentsLoader(getSherlockActivity(), chart_id);
-			
+
 		}
 
 

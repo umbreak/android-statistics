@@ -1,11 +1,20 @@
 package com.chart.ui;
 
+import static com.chart.AppUtils.LAST_SEEN;
+import static com.chart.AppUtils.LOADER_LAST_SEEN;
+import static com.chart.AppUtils.LOADER_LIST_CHARTS;
+
+
+
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -30,13 +39,14 @@ import com.actionbarsherlock.internal.widget.IcsSpinner;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
 import com.chart.R;
 import com.chart.browser.adapters.BaseChartAdapter;
 import com.chart.loaders.BaseChartLoader;
 import com.chart.pojos.CategoryModel;
 import com.chart.pojos.BaseChartModel;
 
-public class DetailedContentsActivity extends SherlockFragmentActivity{
+public class ListChartsActivity extends SherlockFragmentActivity{
 	private ArrayList<CategoryModel> categories;
 	private int position;
 	@Override
@@ -57,21 +67,21 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 		createSpinner(list);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	        case android.R.id.home:
-	            // app icon in action bar clicked; go home
-	            Intent intent = new Intent(this, HomeActivity.class);
-	            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(intent);
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			// app icon in action bar clicked; go home
+			Intent intent = new Intent(this, HomeActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -88,10 +98,14 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 			public void onItemSelected(IcsAdapterView<?> parent, View view,
 					int pos, long id) {
 				position=pos;
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-				ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
-				ft.replace(android.R.id.content, ContentsFragment.newInstance(categories.get(pos).id, false));
-				ft.commit();
+				String TAG="Detailed_Charts_" + categories.get(pos).id;
+				Fragment f= getSupportFragmentManager().findFragmentByTag(TAG);
+				if (f == null){
+					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+					ft.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit);
+					ft.replace(android.R.id.content, ListChartsFragment.newInstance(categories.get(pos).id, false),TAG);
+					ft.commit();
+				}
 			}
 
 			@Override
@@ -112,10 +126,10 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		spinner.setSelection(position, true);
 	}
 
-	public static class ContentsFragment extends SherlockListFragment implements LoaderCallbacks<List<BaseChartModel>>{
+	public static class ListChartsFragment extends SherlockListFragment implements LoaderCallbacks<List<BaseChartModel>>{
 
-		public static ContentsFragment newInstance(int id, boolean visibility) {
-			ContentsFragment f = new ContentsFragment();
+		public static ListChartsFragment newInstance(int id, boolean visibility) {
+			ListChartsFragment f = new ListChartsFragment();
 			// Supply index input as an argument.
 			Bundle args = new Bundle();
 			args.putInt("id_category", id);
@@ -136,8 +150,14 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 			super.onCreate(savedInstanceState);
 			id_category = getArguments() != null ? getArguments().getInt("id_category") : -2;
 			categoryVisibility =getArguments() != null ? getArguments().getBoolean("visibility") : false;
-
 		}
+
+		@Override
+		public void onSaveInstanceState(Bundle outState) {
+			super.onSaveInstanceState(outState);
+			outState.putInt("category", id_category);
+		}
+
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
@@ -157,9 +177,17 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 
 			// Prepare the loader.  Either re-connect with an existing one,
 			// or start a new one.
-			System.out.println("category=" + id_category);
-			getSherlockActivity().getSupportLoaderManager().restartLoader(1, null, this);
-			}
+
+			if (savedInstanceState == null)
+				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_LIST_CHARTS, null, this);
+			else
+				if (savedInstanceState.getInt("category") == id_category)
+					getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_LIST_CHARTS, null, this);
+				else
+					getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_LIST_CHARTS, null, this);
+					
+
+		}
 
 		@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 			// Place an action bar item for searching.
@@ -181,25 +209,27 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 				});
 				item.setActionView(searchView);
 			}
-			
+
 			MenuItem item2 = menu.add("Update");
-			item2.setIcon(android.R.drawable.ic_popup_sync);
+			item2.setIcon(R.drawable.ic_menu_refresh);
 			item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		}
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item) {
 			if (item.getTitle().equals("Update"))
-				getSherlockActivity().getSupportLoaderManager().restartLoader(1, null, this);
+				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_LIST_CHARTS, null, this);
 			return super.onOptionsItemSelected(item);
 		}
 
 		@Override public void onListItemClick(ListView l, View v, int position, long id) {
 			// Insert desired behavior here.
 			Log.i("LoaderCustom", "Item clicked: " + id);
+			BaseChartModel chart=mAdapter.getItem(position);
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), ChartActivity.class);
-			intent.putExtra("chart", mAdapter.getItem(position));
-		
+			intent.putExtra("chart", chart);			
+			addToLastSeen(chart.id);
+			
 			startActivity(intent);			
 		}
 
@@ -228,6 +258,29 @@ public class DetailedContentsActivity extends SherlockFragmentActivity{
 		public void onLoaderReset(Loader<List<BaseChartModel>> arg0) {
 			// Clear the data in the adapter.
 			mAdapter.setData(null);
+		}
+		
+		//Adding id to the String LAST_SEEN in SharedPreferences.
+		//Is a FIFO QUEUE of fixed lenght.
+		private void addToLastSeen(int id){
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
+			String result=prefs.getString(LAST_SEEN, "");
+			if (!result.isEmpty())
+				if (result.contains(";"+ id + ";"))
+					result=result.replace(id + ";", "");
+				else if (result.split(";")[0].equals(String.valueOf(id)))
+					result=result.replace(id + ";", "");
+			
+			result=id+";"+result;
+			if (result.split(";").length >= 5)
+				result=result.substring(0,result.lastIndexOf(";"));
+			System.out.println("result=" + result);
+			prefs.edit().putString(LAST_SEEN, result).commit();
+			try{
+				getSherlockActivity().getSupportLoaderManager().getLoader(LOADER_LAST_SEEN).forceLoad();
+			}catch (NullPointerException e){
+				System.out.println("Loader 5 doesn't exist right now");
+			}
 		}
 	}
 

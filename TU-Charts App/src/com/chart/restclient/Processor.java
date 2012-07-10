@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-
+import static com.chart.AppUtils.SCALE_1;
+import static com.chart.AppUtils.SCALE_1_2;
+import static com.chart.AppUtils.SCALE_1_4;
+import static com.chart.AppUtils.SCALE_4_1;
+import static com.chart.AppUtils.SCALE_2_1;
 import org.springframework.http.ContentCodingType;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -145,7 +149,17 @@ public enum Processor {
 	//sort types: name, popular
 	public BaseChartModel[] getCharts(String sort){
 		try{
-			ResponseEntity<BaseChartModel[]> responseEntity = restTemplate.exchange(url + "charts/sort?="+sort, HttpMethod.GET, requestEntity, BaseChartModel[].class);
+			ResponseEntity<BaseChartModel[]> responseEntity = restTemplate.exchange(url + "charts?sort="+sort, HttpMethod.GET, requestEntity, BaseChartModel[].class);
+			return responseEntity.getBody();
+
+		}catch(HttpClientErrorException e){
+			Log.d(TAG, e.toString());
+			return null;
+		}	
+	}
+	public BaseChartModel[] getConcreteCharts(String concrete){
+		try{
+			ResponseEntity<BaseChartModel[]> responseEntity = restTemplate.exchange(url + "charts?concrete="+concrete, HttpMethod.GET, requestEntity, BaseChartModel[].class);
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
@@ -174,9 +188,15 @@ public enum Processor {
 			return null;
 		}	
 	}
-	public ChartModel getChart(int chart_id){
+	public ChartModel getChart(int chart_id, int scale){
 		try{
-			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?x="+width + "&y=" + height, HttpMethod.GET, requestEntity, ChartModel.class);
+			int x=width;
+			if (scale == SCALE_4_1) x=width*4;
+			else if (scale == SCALE_2_1) x=width*2;
+			else if (scale == SCALE_1_2) x=width/2;
+			else if (scale == SCALE_1_4) x=width/4;
+
+			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?x="+x ,HttpMethod.GET, requestEntity, ChartModel.class);
 //			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id, HttpMethod.GET, requestEntity, ChartModel.class);
 
 			return responseEntity.getBody();

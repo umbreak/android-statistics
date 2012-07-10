@@ -2,7 +2,7 @@ package com.chart.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import static com.chart.AppUtils.LOADER_CATEGORIES;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -22,7 +22,7 @@ import com.chart.browser.adapters.CategoriesAdapter;
 import com.chart.loaders.CategoriesLoader;
 import com.chart.pojos.CategoryModel;
 
-public class CategoriesContentsFragment extends SherlockListFragment implements LoaderCallbacks<List<CategoryModel>>{
+public class CategoriesFragment extends SherlockListFragment implements LoaderCallbacks<List<CategoryModel>>{
 	CategoriesAdapter mAdapter;
 
 	// If non-null, this is the current filter the user has provided.
@@ -50,7 +50,8 @@ public class CategoriesContentsFragment extends SherlockListFragment implements 
 
 		// Prepare the loader.  Either re-connect with an existing one,
 		// or start a new one.
-		getLoaderManager().initLoader(0, null, this);
+		
+		getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_CATEGORIES, null, this);
 	}
 
 	@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -81,7 +82,7 @@ public class CategoriesContentsFragment extends SherlockListFragment implements 
 		// Insert desired behavior here.
 		Log.i("LoaderCustom", "Item clicked: " + mAdapter.getItem(position).name);
 		Intent intent = new Intent();
-		intent.setClass(getActivity(), DetailedContentsActivity.class);
+		intent.setClass(getActivity(), ListChartsActivity.class);
 		intent.putExtra("position", position);
 		intent.putParcelableArrayListExtra("categories", new ArrayList<CategoryModel>(mAdapter.categories));
 		startActivity(intent);

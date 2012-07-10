@@ -33,7 +33,7 @@ public class ChartGenerator extends AbstractChart{
 			return null;
 		List<SerieModel> y_results=modifYval(matches);
 		String[] x_results=modifXval(matches);
-		
+
 		Resources r=context.getResources();
 		int[] all_colors= new int[]{r.getColor(R.color.chart_blue),r.getColor(R.color.chart_red),
 				r.getColor(R.color.chart_green),r.getColor(R.color.chart_brown),r.getColor(R.color.chart_pink),r.getColor(R.color.chart_violet)};
@@ -75,7 +75,7 @@ public class ChartGenerator extends AbstractChart{
 		for (int i = 0; i < colors.length; i++) 
 			colors[i]=all_colors[i];
 
-//		XYMultipleSeriesRenderer renderer = buildRenderer(colors, PointStyle.CIRCLE);
+		//		XYMultipleSeriesRenderer renderer = buildRenderer(colors, PointStyle.CIRCLE);
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors);
 
 		renderPointAtributes(renderer);
@@ -104,10 +104,10 @@ public class ChartGenerator extends AbstractChart{
 		int length = renderer.getSeriesRendererCount();
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer seriesRenderer = (XYSeriesRenderer) renderer.getSeriesRendererAt(i);
-//			seriesRenderer.setFillPoints(true);
+			//			seriesRenderer.setFillPoints(true);
 			seriesRenderer.setLineWidth(1.5f);
-//			seriesRenderer.setDisplayChartValues(true);
-//			seriesRenderer.setChartValuesTextSize(9f);
+			//			seriesRenderer.setDisplayChartValues(true);
+			//			seriesRenderer.setChartValuesTextSize(9f);
 		}
 	}
 
@@ -116,15 +116,16 @@ public class ChartGenerator extends AbstractChart{
 		catch (NumberFormatException nfe) {return false;}
 		return true;
 	}
-	private List<Integer> getMatches(int month) throws ParseException{
+	private List<Integer> getMatches(int m) throws ParseException{
 		String[] xValues=chartEntry.xValues;
 		List<Integer> result=new ArrayList<Integer>();
 		SimpleDateFormat month_format=new SimpleDateFormat("MM");
+		String month=(m < 10 ? "0" : "") + m;
 		for (int i = 0; i < xValues.length; i++){
-			if (month_format.format(AppUtils.i.date_format.parse(xValues[i])).equals("0" +month))
+			//			if (month_format.format(AppUtils.i.date_format.parse(xValues[i])).equals(month))
+			if (xValues[i].substring(3, 5).equals(month))	
 				result.add(i);	
 		}
-		System.out.println("Result=" + result);
 		return result;
 	}
 	private List<SerieModel> modifYval(List<Integer> xValues){

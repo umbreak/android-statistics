@@ -3,8 +3,7 @@ package com.chart.ui;
 import java.util.ArrayList;
 
 import android.content.Context;
-import static com.chart.AppUtils.DISPLAY_H;
-import static com.chart.AppUtils.DISPLAY_W;
+import static com.chart.AppUtils.LAST_SEEN;
 
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -43,38 +42,30 @@ public class HomeActivity extends SherlockFragmentActivity {
 		mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
 
 		mTabsAdapter.addTab(mTabHost.newTabSpec("category").setIndicator("Categories"),
-				CategoriesContentsFragment.class, null);
+				CategoriesFragment.class, null);
 
 		Bundle args = new Bundle();
 		args.putInt("id_category", -1);
 		args.putBoolean("visibility", true);
 		mTabsAdapter.addTab(mTabHost.newTabSpec("New").setIndicator("New"),
-				DetailedContentsActivity.ContentsFragment.class, args);
+				ListChartsActivity.ListChartsFragment.class, args);
 
-		args = new Bundle();
-		args.putInt("id_category", -2);
-		args.putBoolean("visibility", true);
+
 		mTabsAdapter.addTab(mTabHost.newTabSpec("Last Seen").setIndicator("Last Seen"),
-				DetailedContentsActivity.ContentsFragment.class, args);
+				LastSeenFragment.class, null);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}else{
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			int width=prefs.getInt(DISPLAY_W, 0);
-			int height=prefs.getInt(DISPLAY_H, 0);
-			if (width <= 0 && height <= 0){
-				Display display = getWindowManager().getDefaultDisplay();
-				Point size = new Point();
-				display.getSize(size);
-				width = size.x;
-				height = size.y;
-				prefs.edit().putInt(DISPLAY_W, width).commit();
-				prefs.edit().putInt(DISPLAY_H, height).commit();
-			}
-			
-			Processor.i.width=width;
-			Processor.i.height=height;
+//			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			Display display = getWindowManager().getDefaultDisplay();
+			Point size = new Point();
+			display.getSize(size);
+
+//			prefs.edit().putString(LAST_SEEN, "").commit();
+
+			Processor.i.width=size.x;
+			Processor.i.height=size.y;
 		}
 	}
 
@@ -158,7 +149,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		@Override
 		public Fragment getItem(int position) {
 			TabInfo info = mTabs.get(position);
-			return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+			Fragment f=Fragment.instantiate(mContext, info.clss.getName(), info.args);
+			System.out.println("Fragment "+info.clss.getName() + " id=" + f.getId() + " Fragment tag="+ f.getTag());
+			return f;
 		}
 
 		public void onTabChanged(String tabId) {
