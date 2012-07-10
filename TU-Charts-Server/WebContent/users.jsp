@@ -136,13 +136,13 @@
 		String password=request.getParameter("password");
 		String email=request.getParameter("email");
 		if (!email.isEmpty()){
-			DB_Process.setUser(new UserModel(username,password,email));
+			DB_Process.i.setUser(new UserModel(username,password,email));
 			
 		%><h4><span style="color: green">User <%= username%> added</h4><%
 		}
 		}else if (request.getParameter("delete") != null){
 			String email=request.getParameter("delete");
-			DB_Process.delUser(email);
+			DB_Process.i.delUser(email);
 			%><h4><span style="color: red">User with email <%= email%> Deleted!</h4><%
 		}%>
 												
@@ -199,7 +199,7 @@
 														<div class="art-layout-cell layout-item-2"
 															style="width: 60%;">
 															<h3>All Users</h3>
-															<%  List<UserModel> users= DB_Process.getUsers();%>
+															<%  List<UserModel> users= DB_Process.i.getUsers();%>
 															<br />
 
 															<table id="rounded-corner"

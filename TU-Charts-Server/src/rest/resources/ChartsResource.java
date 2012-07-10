@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -47,14 +52,21 @@ public class ChartsResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<BaseChartModel> getCharts(@DefaultValue("date") @QueryParam("sort") String sort){
+	public ArrayList<BaseChartModel> getCharts(@DefaultValue("date") @QueryParam("sort") String sort, @DefaultValue("") @QueryParam("concrete") String concrete) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
+			if (!concrete.isEmpty()){
+				ArrayList<BaseChartModel> result= new ArrayList<>();
+				String chart_ids[]=concrete.split(";");
+				for (String id : chart_ids) 
+					result.add(DB_Process.i.getBaseChart(Integer.parseInt(id)));
+				return result;
+			}
 			if (sort.equalsIgnoreCase("name"))
-				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getName_comparator()).sortedCopy(DB_Process.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getName_comparator()).sortedCopy(DB_Process.i.getCharts()));
 			else if (sort.equalsIgnoreCase("popular"))
-				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getPopularity_comparator()).sortedCopy(DB_Process.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getPopularity_comparator()).sortedCopy(DB_Process.i.getCharts()));
 			else
-				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.i.getCharts()));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -63,11 +75,11 @@ public class ChartsResource {
 	@GET
 	@Path("new")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<BaseChartModel> getNewCharts(){
+	public ArrayList<BaseChartModel> getNewCharts() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
 
 
-			ArrayList<BaseChartModel> charts=new ArrayList<BaseChartModel>(DB_Process.getCharts());
+			ArrayList<BaseChartModel> charts=new ArrayList<BaseChartModel>(DB_Process.i.getCharts());
 			//			Collections.sort(charts,date_comparator);
 
 

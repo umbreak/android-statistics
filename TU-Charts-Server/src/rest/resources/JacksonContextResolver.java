@@ -1,5 +1,6 @@
 package rest.resources;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
@@ -11,6 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
+
 public class JacksonContextResolver implements ContextResolver<ObjectMapper> {
     private ObjectMapper objectMapper;
 

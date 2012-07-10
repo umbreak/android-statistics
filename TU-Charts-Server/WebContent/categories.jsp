@@ -134,13 +134,13 @@
 		String name=request.getParameter("name");
 		String description=request.getParameter("description");
 		if (!name.isEmpty()){
-			DB_Process.setCategory(new CategoryModel(name,description));
+			DB_Process.i.setCategory(new CategoryModel(name,description));
 			
 		%><h4><span style="color: green">Category <%= name%> added</h4><%
 		}
 		}else if (request.getParameter("delete") != null){
 			int category_id=Integer.parseInt(request.getParameter("delete"));
-			DB_Process.delCategory(category_id);
+			DB_Process.i.delCategory(category_id);
 			%><h4><span style="color: red">Category Deleted!</h4><%
 		}%>
 												
@@ -192,7 +192,7 @@
 														<div class="art-layout-cell layout-item-2"
 															style="width: 55%;">
 															<h3>All Categories</h3>
-															<%  List<CategoryModel> categories= DB_Process.getCategories();%>
+															<%  List<CategoryModel> categories= DB_Process.i.getCategories();%>
 															<br />
 
 															<table id="rounded-corner"

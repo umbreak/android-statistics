@@ -11,18 +11,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 public enum DB_Process {
 	i;
-	private static Session session;
 	private final Comparator<BaseChartModel> date_comparator;
 	private final Comparator<BaseChartModel> name_comparator;
 	private final Comparator<BaseChartModel> popularity_comparator;
+	@Resource public final EntityManagerFactory factory;
 	public Comparator<BaseChartModel> getDate_comparator() {
 		return date_comparator;
 	}
@@ -36,6 +43,8 @@ public enum DB_Process {
 	}
 
 	private DB_Process(){
+		factory=Persistence.createEntityManagerFactory("manager1");
+
 		date_comparator = new Comparator<BaseChartModel>() {
 			@Override
 			public int compare(BaseChartModel o1, BaseChartModel o2) {
@@ -58,188 +67,220 @@ public enum DB_Process {
 	}
 
 	//CHART ------------------------------------------>
-	public static List <BaseChartModel> getCharts(int max) {
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		Criteria crit = session.createCriteria(BaseChartModel.class);
-		Query q= session.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c");
+	public List <BaseChartModel> getCharts(int max) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		//utx.begin();
+		Query q= em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c");
 		q.setMaxResults(max);
-		List<BaseChartModel> charts = q.list();
-		//		Collections.sort(sites);
-		//crit.setMaxResults(50);
-		trans.commit();
+		List<BaseChartModel> charts = q.getResultList();
+		em.close();
 		return charts;
 	}
 
-	public static List <BaseChartModel> getCharts() {
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		BaseChartModel c= new BaseChartModel("name", "description");
-		List<BaseChartModel> charts = session.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c").list();
-		//		Criteria crit = session.createCriteria(BaseChartModel.class);
-//		crit.add(Restrictions.eq("base.class", BaseChartModel.class));
-//		List<BaseChartModel> charts =crit.list();
-		//		Collections.sort(sites);
-		//crit.setMaxResults(50);
-
-		trans.commit();
+	public List <BaseChartModel> getCharts() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		List<BaseChartModel> charts = em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c").getResultList();
+		em.close();
 		return charts;
 	}
-	public static ChartModel getChart(int chart_id){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		ChartModel chart = (ChartModel) session.get(ChartModel.class, chart_id);		
-		trans.commit();
-		return chart; 		
+	public ChartModel getChart(int chart_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		//utx.begin();
+		ChartModel chart = em.find(ChartModel.class, chart_id);	
+		em.close();
+		return chart;
 	}
-	public static void setChart(ChartModel chart){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();	
+	public BaseChartModel getBaseChart(int chart_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		//utx.begin();			
+		BaseChartModel chart = (BaseChartModel)em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.id =:chart_id").setParameter("chart_id", chart_id).getSingleResult();
+		em.close();
+		return chart;
+	}
+
+	public void setChart(ChartModel chart) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		//utx.begin();
+		CategoryModel category=em.find(CategoryModel.class, chart.getCategory().getId());
+		//		CategoryModel category=(CategoryModel)em.createQuery("jabx.model.CategoryModel as category WHERE category.name =:name").setParameter("name", chart.getCategory().getName()).getSingleResult();
+		category.addChart(chart);
+		em.getTransaction().begin();
 		for (SerieModel serie: chart.getyValues()) 
-			session.save(serie);
-		session.save(chart);
-		session.update(chart.getCategory());
+			em.persist(serie);
+
+		em.persist(chart);
+		em.refresh(category);
+		em.getTransaction().commit();
+
 		//FALTA AÑADIR EL USUARIO	
 		//		session.update(chart.getUser());
-		trans.commit();		
+		em.close();
+
 	}
 
-	public static void delChart(int chart_id){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		ChartModel chart = (ChartModel) session.get(ChartModel.class, chart_id);
+	public void delChart(int chart_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+
+		EntityManager em=factory.createEntityManager();
+		em.getTransaction().begin();
+		ChartModel chart = (ChartModel) em.find(ChartModel.class, chart_id);
+		UserModel user= chart.getUser();
+		CategoryModel category = chart.getCategory();
 		//		UserModel user=chart.getUser();
 		//		CategoryModel category = chart.getCategory();
-		for (SerieModel serie: chart.getyValues()) 
-			session.delete(serie);		
-		session.delete(chart);
-		session.update(chart.getUser());
-		session.update(chart.getCategory());
-		trans.commit();		
+		for (SerieModel serie: chart.getyValues())
+			em.remove(serie);		
+		em.remove(chart);
+		try
+		{
+			em.refresh(user);
+		}catch (Exception e){}
+		
+		em.refresh(category);
+		em.getTransaction().commit();
+		em.close();
+
 	}
 
 
 
 	//COMMENT ------------------------------------------>
 
-	public static CommentModel getComment(int chart_id, int comment_id){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		CommentModel comment=(CommentModel)session.createQuery("jabx.model.CommentModel as comment WHERE comment.chart.id =:chart_id and comment.id =:comment_id").setParameter("chart_id", chart_id).setParameter("comment_id", comment_id).uniqueResult();
-		trans.commit();
+	public CommentModel getComment(int chart_id, int comment_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		CommentModel comment=(CommentModel)em.createQuery("jabx.model.CommentModel as comment WHERE comment.chart.id =:chart_id and comment.id =:comment_id").setParameter("chart_id", chart_id).setParameter("comment_id", comment_id).getSingleResult();
+		em.close();
 		return comment;
 	}
 
-	public static void setComment(CommentModel comment){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();	
+	public void setComment(int chart_id, CommentModel comment, String email)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
 
-		session.save(comment);
-		session.update(comment.getChart());
-		session.update(comment.getUser());
-		trans.commit();		
+		ChartModel chart = (ChartModel) em.find(ChartModel.class, chart_id);
+		UserModel user = (UserModel) em.find(UserModel.class, email);
+
+		comment.setChart(chart);
+		comment.setUser(user);
+		em.getTransaction().begin();
+		em.merge(comment);
+
+		em.refresh(chart);
+		em.refresh(user);
+		em.getTransaction().commit();
+		em.close();
+
 	}
-	public static void delComment(int comment_id){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();	
-		CommentModel comment=(CommentModel)session.get(CommentModel.class, comment_id);
-		session.delete(comment);
-		session.update(comment.getChart());
-		session.update(comment.getUser());
-		trans.commit();		
+
+
+	public void delComment(int comment_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		CommentModel comment=(CommentModel)em.find(CommentModel.class, comment_id);
+		ChartModel chart= comment.getChart();
+		UserModel user= comment.getUser();
+		em.getTransaction().begin();
+		em.remove(comment);
+		em.refresh(chart);
+		em.refresh(user);
+		em.getTransaction().commit();
+		em.close();
+
 	}
-
-
 
 	//CATEGORY ------------------------------------------>
+	public List <CategoryModel> getCategories()  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
 
-	public static List <CategoryModel> getCategories() {
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		List<CategoryModel> categories = session.createQuery("FROM jabx.model.CategoryModel as CategoryModel").list();
+		//utx.begin();
+		List<CategoryModel> categories = em.createQuery("FROM jabx.model.CategoryModel as CategoryModel").getResultList();
 		Collections.sort(categories);
-		trans.commit();
+		em.close();
 		return categories;
+
 	}
 
 
-	public static CategoryModel getCategory(int category_id){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		CategoryModel category = (CategoryModel) session.get(CategoryModel.class, category_id);		
-		trans.commit();
+	public CategoryModel getCategory(int category_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		//utx.begin();
+		CategoryModel category = (CategoryModel) em.find(CategoryModel.class, category_id);	
+		em.close();
+		return category; 	
+	}
+
+	public CategoryModel getCategoryCharts(String name)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		CategoryModel category=(CategoryModel)em.createQuery("jabx.model.CategoryModel as category WHERE category.name =:name").setParameter("name", name).getSingleResult();
 		return category; 		
 	}
-	public static List <BaseChartModel> getCategoryCharts(int category_id){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		List<BaseChartModel> charts = session.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.category.id =:category_id ").setParameter("category_id", category_id).list();
-		trans.commit();
+
+	public List <BaseChartModel> getCategoryCharts(int category_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		List<BaseChartModel> charts = em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.category.id =:category_id ").setParameter("category_id", category_id).getResultList();
+		em.close();
 		return charts; 		
 	}
-	
 
-	public static CategoryModel getCategory(String name){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		CategoryModel category=(CategoryModel)session.createQuery("from jabx.model.CategoryModel as category where category.name =:name").setParameter("name", name).uniqueResult();
 
-		trans.commit();
-		return category; 		
+	public CategoryModel getCategory(String name)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		CategoryModel category=(CategoryModel)em.createQuery("from jabx.model.CategoryModel as category where category.name =:name").setParameter("name", name).getSingleResult();
+		em.close();
+		return category; 
 	}
 
-	public static void setCategory(CategoryModel category){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();	
-		session.save(category);
-		trans.commit();		
+	public void setCategory(CategoryModel category)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		em.getTransaction().begin();
+		em.persist(category);
+		em.getTransaction().commit();
+		em.close();
+
 	}
 
-	public static void delCategory(int category_id){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		CategoryModel category = (CategoryModel) session.get(CategoryModel.class, category_id);	
-		session.delete(category);
-		trans.commit();		
+	public void delCategory(int category_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		CategoryModel category = (CategoryModel) em.find(CategoryModel.class, category_id);	
+		em.getTransaction().begin();
+		em.remove(category);
+		em.getTransaction().commit();
+		em.close();
+
 	}
 
 
 	//USER ------------------------------------------>
 
-	public static List <UserModel> getUsers() {
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		List<UserModel> users = session.createQuery("FROM jabx.model.UserModel as UserModel").list();
-		trans.commit();
+	public List <UserModel> getUsers()  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		List<UserModel> users = em.createQuery("FROM jabx.model.UserModel as UserModel").getResultList();
+		em.close();
 		return users;
 	}
-	public static UserModel getUser(String email){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		UserModel user = (UserModel) session.get(UserModel.class, email);		
-		trans.commit();
-		return user; 		
-	}
-	public static boolean setUser(UserModel user){
-		try{
-			session=SessionFactoryHibernate.getSingleton().getSession();
-			final Transaction trans = session.beginTransaction();	
-			session.save(user);
-			trans.commit();
-			return true;
-		}catch(Exception e){
-			return false;
-		}
-	}
-	
-	public static void delUser(String email){
-		session=SessionFactoryHibernate.getSingleton().getSession();
-		final Transaction trans = session.beginTransaction();
-		UserModel user = (UserModel) session.get(UserModel.class, email);	
-		session.delete(user);
-		trans.commit();		
+	public UserModel getUser(String email)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		UserModel user = (UserModel) em.find(UserModel.class, email);		
+		em.close();
+		return user; 	
+
 	}
 
+	public boolean setUser(UserModel user)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		em.getTransaction().begin();
+		em.persist(user);
+		em.getTransaction().commit();
+		em.close();
+		return true;
+	}
+
+	public void delUser(String email)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		UserModel user = (UserModel) em.find(UserModel.class, email);	
+		em.getTransaction().begin();
+		em.remove(user);
+		em.getTransaction().commit();
+		em.close();
+
+	}
 
 
 

@@ -15,6 +15,7 @@
 //import javax.ws.rs.ext.ContextResolver;
 //import javax.ws.rs.ext.Provider;
 //import javax.xml.bind.JAXBContext;
+//
 //import com.sun.jersey.api.json.JSONConfiguration;
 //import com.sun.jersey.api.json.JSONJAXBContext;
 //
@@ -25,12 +26,8 @@
 //	private JAXBContext context;
 //	private final Set<Class> types;
 //	private final Class[] cTypes = {
-//			BaseChartModel.class,
-//			CategoryModel.class,
-//			ChartModel.class,
-//			CommentModel.class,
-//			SerieModel.class,
-//			UserModel.class
+//			BaseChartModel.class, CategoryModel.class, ChartModel.class, CommentModel.class, SerieModel.class, UserModel.class
+//
 //	};
 //
 //	public JAXBContextResolver () throws Exception {

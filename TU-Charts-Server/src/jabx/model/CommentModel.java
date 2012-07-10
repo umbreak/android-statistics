@@ -21,13 +21,14 @@ import com.sun.istack.NotNull;
 @XmlRootElement
 @Entity
 @Table (name ="comments")
-public class CommentModel {
+public class CommentModel implements Comparable<CommentModel>{
 	private int id;
 	private String author;
 	private String text;
 	private Date date;
 	private UserModel user;
 	private ChartModel chart;
+	
 	public CommentModel() {
 		super();
 	}
@@ -76,6 +77,18 @@ public class CommentModel {
 	public void setChart(ChartModel chart) {
 		this.chart = chart;
 	}
+	@Override
+	public int compareTo(CommentModel arg0) {
+		return this.id - arg0.id;
+	}
+	@Override
+	public String toString() {
+		return "CommentModel [id=" + id + ", author=" + author + ", text="
+				+ text + ", date=" + date + ", user=" + user + ", chart="
+				+ chart + "]";
+	}
+	
+	
 	
 	
 }

@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -32,9 +37,9 @@ public class CategoriesResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<CategoryModel> getCategories(){
+	public ArrayList<CategoryModel> getCategories() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
-			return new ArrayList<CategoryModel>(DB_Process.getCategories());
+			return new ArrayList<CategoryModel>(DB_Process.i.getCategories());
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -43,9 +48,9 @@ public class CategoriesResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{id}/charts")
-	public ArrayList<BaseChartModel> getCategoryCharts(@PathParam("id") int id){
+	public ArrayList<BaseChartModel> getCategoryCharts(@PathParam("id") int id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
-			return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getCategoryCharts(id)));
+			return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.i.getCategoryCharts(id)));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -54,9 +59,9 @@ public class CategoriesResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{id}")
-	public CategoryModel getCategory(@PathParam("id") int id){
+	public CategoryModel getCategory(@PathParam("id") int id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
-			return DB_Process.getCategory(id);
+			return DB_Process.i.getCategory(id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}

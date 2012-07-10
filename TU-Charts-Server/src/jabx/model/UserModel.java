@@ -61,7 +61,7 @@ public class UserModel {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	@JsonIgnore public String getPassword() {
 		return password;
 	}
 
@@ -69,7 +69,7 @@ public class UserModel {
 		this.password = password;
 	}
 
-	public String getDescription() {
+	@JsonIgnore public String getDescription() {
 		return description;
 	}
 

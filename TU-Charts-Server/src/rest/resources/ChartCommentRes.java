@@ -3,9 +3,17 @@ package rest.resources;
 import hibernate.db.DB_Process;
 import jabx.model.CommentModel;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -21,6 +29,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
+import com.google.common.collect.Ordering;
+
 
 public class ChartCommentRes {
 	@Context UriInfo uriInfo;
@@ -34,9 +44,12 @@ public class ChartCommentRes {
 
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Set<CommentModel> getComments() {
+	public ArrayList<CommentModel> getComments() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
-			return DB_Process.getChart(id).getComments();
+			ArrayList<CommentModel> result= new ArrayList<CommentModel>(DB_Process.i.getChart(id).getComments());
+			Collections.sort(result);
+			return result;
+//			return new ArrayList<CommentModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getChart(id).getComments()));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -45,9 +58,9 @@ public class ChartCommentRes {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{id}")
-	public CommentModel getComment(@PathParam("id") int comment_id){
+	public CommentModel getComment(@PathParam("id") int comment_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
-			return DB_Process.getComment(id, comment_id);
+			return DB_Process.i.getComment(id, comment_id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -55,12 +68,12 @@ public class ChartCommentRes {
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String putComment(JAXBElement<CommentModel> comment) {
+	public CommentModel putComment(CommentModel c) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
-			CommentModel c=comment.getValue();
+//			CommentModel c=comment.getValue();
 			c.setDate(new Date());
-			DB_Process.setComment(c);
-			return String.valueOf(c.getId());
+			DB_Process.i.setComment(id, c,"Didac@tu-chemnitz.de" );
+			return c;
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -68,9 +81,9 @@ public class ChartCommentRes {
 	
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String delComment(@PathParam("id") int comment_id) {
+	public String delComment(@PathParam("id") int comment_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
-			DB_Process.delComment(comment_id);
+			DB_Process.i.delComment(comment_id);
 			return String.valueOf(comment_id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);

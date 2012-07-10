@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -65,7 +67,7 @@ public enum ServerUtils {
 					double new_min=Doubles.min(double_array);
 					double new_max=Doubles.max(double_array);
 					if (min > new_min) min=new_min;
-					else if (max < new_max) max=new_max;
+					if (max < new_max) max=new_max;
 					lines.add(new SerieModel(titles[i+1], double_array));
 				}
 				//				for (int j = 0; j < yVal.length; j++) 

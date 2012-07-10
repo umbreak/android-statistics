@@ -13,6 +13,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
 public class StringtoArray implements UserType{
@@ -79,6 +80,7 @@ public class StringtoArray implements UserType{
 			String res=Arrays.toString((String[])value);
 			res=res.replace("[", "");
 			res=res.replace("]", "");
+			res=res.replaceAll(", ", ",");
 			ps.setString(index, res);
 		}
 	}

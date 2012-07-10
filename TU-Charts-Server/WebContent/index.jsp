@@ -244,16 +244,16 @@
 																														String category = map.get("category");
 																														ChartModel c = ServerUtils.fromCSV(name, description, fichero);
 
-																														CategoryModel cat = DB_Process.getCategory(category);
+																														CategoryModel cat = DB_Process.i.getCategory(category);
 																														cat.addChart(c);
-																														DB_Process.setChart(c);
+																														DB_Process.i.setChart(c);
 															%><h4>
 																<span style="color: green">New Chart Added!
 															</h4>
 															<%
 																} else if (request.getParameter("delete") != null) {
 																	int chart_id = Integer.parseInt(request.getParameter("delete"));
-																	DB_Process.delChart(chart_id);
+																	DB_Process.i.delChart(chart_id);
 															%><h4>
 																<span style="color: red">Chart Deleted!
 															</h4>
@@ -269,7 +269,7 @@
 													</p>
 													<h3>All Charts</h3>
 													<%
-														List<BaseChartModel> charts = DB_Process.getCharts();
+														List<BaseChartModel> charts = DB_Process.i.getCharts();
 													%>
 													<br />
 
