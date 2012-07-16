@@ -21,6 +21,8 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import utils.HashUtils;
+
 @XmlRootElement
 @Entity
 @Table (name ="users")
@@ -40,11 +42,19 @@ public class UserModel {
 		super();
 	}
 	
+	public UserModel(UserModelPass user) {
+		super();
+		this.username = user.getUsername();
+		this.password = user.getPassword();
+		this.description=user.getDescription();
+		this.email=user.getEmail();
+	}
+	
 	
 	public UserModel(String username, String password, String email) {
 		super();
 		this.username = username;
-		this.password = password;
+		this.password = HashUtils.i.getHash(password);
 		this.email = email;
 	}
 	public UserModel(String username, String password, String email, int cats[], int charts[]) {

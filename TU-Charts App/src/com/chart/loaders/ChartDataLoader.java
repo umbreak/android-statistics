@@ -9,15 +9,21 @@ import com.chart.pojos.ChartModel;
 import com.chart.restclient.Processor;
 
 public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
-	private ChartModel chart=null;
+	public ChartModel chart=null;
 	private int chart_id;
 	private int scale;
+	private int month;
 
 
 	public ChartDataLoader(Context context, int chart_id, int scale) {
 		super(context);
 		this.chart_id=chart_id;
 		this.scale=scale;
+		this.month=0;
+	}
+	public ChartDataLoader(Context context, int chart_id, int scale, int month) {
+		this(context,chart_id,scale);
+		this.month=month;
 	}
 
 	/**
@@ -27,7 +33,7 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	 */
 	@Override public ChartModel loadInBackground() {
 		System.out.println("** ChartDataLoader: Retrieve the DATA from one Chart");
-		return Processor.i.getChart(chart_id, scale);
+		return Processor.i.getChart(chart_id, scale, month);
 	}
 
 

@@ -191,9 +191,9 @@ public abstract class AbstractChart {
 			TimeSeries series = new TimeSeries(yValues.get(i).name);
 			double[] yV = yValues.get(i).yvalues;
 			int seriesLength = xValues.length;
+
 			for (int k = 0; k < seriesLength; k++) {
 				series.add(xValues[k], yV[k]);
-//				System.out.println("Adding serie=" + xValues[k] + " ; "+ yV[k]);
 			}
 			dataset.addSeries(series);
 		}

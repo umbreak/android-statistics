@@ -1,15 +1,13 @@
 package rest.resources;
 
 import hibernate.db.DB_Process;
-import hibernate.db.ServerUtils;
 import jabx.model.ChartModel;
 import jabx.model.SerieModel;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -32,23 +30,27 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
 
 public class ChartRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
 	private int id;
-	public ChartRes(UriInfo uriInfo, Request request, int id) {
+	private String user_email;
+	public ChartRes(UriInfo uriInfo, Request request, int id, String user_email) {
 		this.uriInfo = uriInfo;
 		this.request = request;
 		this.id = id;
+		this.user_email=user_email;
 	}
 
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public ChartModel getChart(@DefaultValue("0") @QueryParam("x") int x, @DefaultValue("0") @QueryParam("y") int y, @DefaultValue("0") @QueryParam("month") int month) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException, ParseException {
+	public ChartModel getChart(@DefaultValue("0") @QueryParam("x") int x, @DefaultValue("0") @QueryParam("y") int y, @DefaultValue("0") @QueryParam("month") int month, @DefaultValue("0") @QueryParam("type") int type) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException, ParseException {
 		try{
 			ChartModel chart=DB_Process.i.getChart(id);
+			//Return the month requested by parameter month
 			if (month != 0){
 				List<Integer> matches=getMatches(month, chart.getxValues());
 				if (matches.size()==0)
@@ -56,36 +58,70 @@ public class ChartRes {
 				modifYval(matches,chart.getyValues());
 				chart.setxValues(modifXval(matches, chart.getxValues()));
 			}
+			
 			if (x == 0 && y == 0)
 				return chart;
+			
 			int numXgroups=(chart.getxValues().length + x -1) / x;
 			//			int numYgroups=(series.get(0).getYvalues().length + y -1) / y;
 
 			if (numXgroups < 2)
 				return chart;
-
+			//Impossible to apply the reduction algorithm if there's more then one Y serie
+			if (chart.getyValues().size() > 1)
+				type=0;
+			
+//			int[] repetitions=new int[((chart.getxValues().length + numXgroups -1) / numXgroups)];
+			List<List<Integer>> matchesMatrix= new ArrayList<>();
 			//Choosing values from the Y axis (average)
 			for (SerieModel serie : chart.getyValues()) {
 				//Splitting the Y values in groups of Yval/android_screen_height
+
 				List<List<Double>> groupYval=Lists.partition(Doubles.asList(serie.getYvalues()), numXgroups);
 				System.out.println("number of sub-lists=" + groupYval.size());
-				System.out.println("Sublist size=" + groupYval.get(0).size());				
+				System.out.println("Sublist size=" + groupYval.get(0).size());	
 				//Choosing the average value of each group
-				serie.setYvalues(meanList(groupYval));
+				if (type == 1){
+					double result[]=new double[0];
+					for (List<Double> list : groupYval) {
+						Set<Double> uniqueDoubles= Sets.newLinkedHashSet(list);
+						System.out.println("Duplicates in the array=" + (list.size() - uniqueDoubles.size()));
+						matchesMatrix.add(getSelectedPositions(uniqueDoubles, list));
+//						repetitions[pos]=uniqueDoubles.size();
+						result=Doubles.concat(result,Doubles.toArray(uniqueDoubles));
+					}
+					serie.setYvalues(result);
+
+				}
+				else
+					serie.setYvalues(meanList(groupYval));
 			}
 
 			//Choosing values from the X axis (average)
-			if (!isNum(chart.getxValues()[0])){
-				Date xDate[]=toDate(chart.getxValues());
-				List<List<Date>> groupXval=Lists.partition(Lists.newArrayList(xDate), numXgroups);
+				List<List<Double>> groupXval=Lists.partition(Doubles.asList(chart.getxValues()), numXgroups);
 				System.out.println("number of sub-dates=" + groupXval.size());
 				System.out.println("SubDates size=" + groupXval.get(0).size());
 				//				for (Date d : groupXval.get(0))
 				//					System.out.println(d);
-				chart.setxValues(toString(meanList(groupXval, Date.class)));
+				if (type==1){
+					double result[]=new double[0];
+					int pos=0;
+					for (List<Double> list: groupXval) {
+						List<Integer> listMatches=matchesMatrix.get(pos);
+						double[] concat=new double[listMatches.size()];
+						for (int i = 0; i < concat.length; i++) 
+							concat[i]=list.get(listMatches.get(i));
+						result=Doubles.concat(result,concat);
+						pos++;
+					}
+					chart.setxValues(result);
+					
+				}
+					else
+						chart.setxValues(meanList(groupXval));
 				//				System.out.println("get average of the first subgroup=" + chart.getxValues()[0]);
 
-			}
+			
 			return chart;
 
 		}catch(NullPointerException e){
@@ -106,67 +142,9 @@ public class ChartRes {
 
 	@Path("comments")
 	public ChartCommentRes getComments(){
-		return new ChartCommentRes(uriInfo, request, id);
+		return new ChartCommentRes(uriInfo, request, id, user_email);
 	}
 
-	//	private double mean(double[] serie){
-	//		double sum=0.0;
-	//		for (Double val : serie)
-	//			sum += val;
-	//		return sum/serie.length;
-	//	}
-	//	private double[] meanSerie(List<List<Double>> serie_group){
-	//		double[] result= new double[serie_group.size()];
-	//		int pos=0;
-	//		for (List<Double> : serie_group) {
-	//			result[pos]=mean(values);
-	//			pos++;
-	//		}
-	//		System.out.println("Mean Serie=" + Arrays.toString(result));
-	//
-	//		return result;
-	//	}
-
-	private boolean isNum(String s) {
-		try {Double.parseDouble(s);}
-		catch (NumberFormatException nfe) {return false;}
-		return true;
-	}
-	private Date[] toDate(String[] values){
-		Date result[]=new Date[values.length];
-		try {
-			for (int i = 0; i < values.length; i++)
-				result[i]=ServerUtils.i.getDataFormat().parse(values[i]);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	private String[] toString(Date[] values){
-		String result[]=new String[values.length];
-		for (int i = 0; i < values.length; i++)
-			result[i]=ServerUtils.i.getDataFormat().format(values[i]);
-		return result;
-	}
-
-	//	private Date mean(Date[] array){
-	//		long sum=0;
-	//		for (Date date : array) {
-	//			sum+=date.getTime();
-	//		}
-	//		return new Date(sum/array.length);
-	//	}
-	//	private Date[] meanDate(List<Date> date_group){
-	//		Date[] result= new Date[date_group.size()];
-	//		int pos=0;
-	//		for (Date[] values : date_group) {
-	//			result[pos]=mean(values);
-	//			pos++;
-	//		}
-	//		System.out.println("Mean Date=" + Arrays.toString(result));
-	//		return result;
-	//	}
 	private <T> T mean(List<T> array, Class<T> clazz){
 		double sum=0;
 
@@ -186,15 +164,6 @@ public class ChartRes {
 		{e.printStackTrace(); return null;} 
 	}
 
-	private <T> T[] meanList(List<List<T>> list, Class<T> clazz){
-		T[] result=(T[])Array.newInstance(clazz,list.size());
-		int pos=0;
-		for (List<T> values : list) {
-			result[pos]=mean(values, clazz);
-			pos++;
-		}
-		return result;
-	}
 	private double[] meanList(List<List<Double>> list){
 		double result[] = new double[list.size()];
 		int pos=0;
@@ -204,14 +173,27 @@ public class ChartRes {
 		}
 		return result;
 	}
-	private List<Integer> getMatches(int m, String[] xValues) throws ParseException{
+	private List<Integer> getMatches(int m, double[] xValues) throws ParseException{
 		List<Integer> result=new ArrayList<Integer>();
-		String month=(m < 10 ? "0" : "") + m;
-		for (int i = 0; i < xValues.length; i++)
-			if (xValues[i].substring(3, 5).equals(month))	
-
+		Calendar cal= Calendar.getInstance();
+		for (int i = 0; i < xValues.length; i++){
+			cal.setTimeInMillis((long)xValues[i]);
+			if (cal.get(Calendar.MONTH) == m-1)
 				result.add(i);	
-
+		}
+		return result;
+	}
+	private int find(List<Double> array, double value) {
+	    for(int i=0; i<array.size(); i++) 
+	         if(array.get(i) == value)
+	        	 return i;
+	    return -1;
+	}
+	private ArrayList<Integer> getSelectedPositions(Set<Double> uniqueDoubles, List<Double> list){
+		ArrayList<Integer> result= new ArrayList<>();
+		for (Double value : uniqueDoubles) {
+			result.add(find(list, value));
+		}
 		return result;
 	}
 	private void modifYval(List<Integer> xValues, Set<SerieModel> y_results_tmp){
@@ -224,8 +206,8 @@ public class ChartRes {
 			serieModel.setYvalues(data);
 		}
 	}
-	private String[] modifXval(List<Integer> xValues, String [] x_results_tmp){
-		String[] x_results=new String[xValues.size()];
+	private double[] modifXval(List<Integer> xValues, double [] x_results_tmp){
+		double[] x_results=new double[xValues.size()];
 
 		//Modif X Values
 		for (int i=0; i< xValues.size(); i++)

@@ -54,8 +54,7 @@ public class CategoriesAdapter extends ArrayAdapter<CategoryModel>{
 		((TextView) view.findViewById(android.R.id.text1)).setText(item.name);
 
 		final ImageView iconView = (ImageView) view.findViewById(R.id.imageView1);
-		final Integer id= Integer.valueOf(item.id);
-		iconView.setImageResource(getFlagResource(context, "bezel"+ Math.abs(id.hashCode())%10));
+		iconView.setImageResource(getFlagResource(context, "bezel"+ item.id%10));
 		if (item.id==0) iconView.setVisibility(View.INVISIBLE);
 		else iconView.setVisibility(View.VISIBLE);
 		return view;

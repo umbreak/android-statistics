@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true" >
+
+    <RelativeLayout
+        android:id="@+id/active_user"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="15dp" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" >
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="6dp"
+                android:paddingBottom="6dp" />
+
+            <TextView
+                android:id="@android:id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:paddingRight="10dp"
+                android:text="Login user "
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+            android:paddingBottom="25dp" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:src="@android:drawable/ic_menu_send" />
+
+            <TextView
+                android:id="@+id/cancel_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login with other account"
+                android:textColor="@drawable/text_click"
+                android:textSize="20dip" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>

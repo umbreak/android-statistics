@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+   <persistence-unit name="manager1">
+      <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>jabx.model.BaseChartModel</class>
+		<class>jabx.model.CategoryModel</class>
+		<class>jabx.model.ChartModel</class>
+		<class>jabx.model.CommentModel</class>
+		<class>jabx.model.SerieModel</class>
+		<class>jabx.model.UserModel</class>
+		
+      	        <properties>
+					<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+					<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform"/>
+					<property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup" />
+					<property name="javax.persistence.validation.mode" value="auto" />
+         			<property name="hibernate.hbm2ddl.auto" value="update"/>
+         			
+         			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
+					<property name="hibernate.c3p0.acquire_increment" value="3" />
+					<property name="hibernate.c3p0.idle_test_period" value="50" />
+					<property name="hibernate.c3p0.timeout" value="5000" />
+					<property name="hibernate.c3p0.max_size" value="15" />
+					<property name="hibernate.c3p0.min_size" value="3" />
+					<property name="hibernate.c3p0.max_statements" value="0" />
+					<property name="hibernate.c3p0.preferredTestQuery" value="select 1;" />
+         			
+         			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+					<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/tu?autoReconnect=true" />
+					<property name="javax.persistence.jdbc.user" value="root" />
+					<property name="javax.persistence.jdbc.password" value="14068748" />
+					<property name="show_sql" value="false" />	
+            </properties>
+      
+    <!--   	<class>jabx.model.BaseChartModel</class>
+		<class>jabx.model.CategoryModel</class>
+		<class>jabx.model.ChartModel</class>
+		<class>jabx.model.CommentModel</class>
+		<class>jabx.model.SerieModel</class>
+		<class>jabx.model.UserModel</class>
+		
+       <properties>
+            <property name="transaction.factory_class" value="org.hibernate.service.jta.platform.spi.JtaPlatform"/>
+            <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform"/>
+           <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup" />
+           <property name="current_session_context_class" value="jta" /> 
+
+           <property name="javax.persistence.validation.mode" value="auto" />
+         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+         <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+		<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/tu?autoReconnect=true" />
+		<property name="javax.persistence.jdbc.user" value="root" />
+		<property name="javax.persistence.jdbc.password" value="14068748" />
+		<property name="show_sql" value="false" />	
+		
+		<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
+		<property name="hibernate.c3p0.acquire_increment" value="3" />
+		<property name="hibernate.c3p0.idle_test_period" value="50" />
+		<property name="hibernate.c3p0.timeout" value="5000" />
+		<property name="hibernate.c3p0.max_size" value="15" />
+		<property name="hibernate.c3p0.min_size" value="3" />
+		<property name="hibernate.c3p0.max_statements" value="0" />
+		<property name="hibernate.c3p0.preferredTestQuery" value="select 1;" />
+		
+		
+		<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
+		<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/tu?autoReconnect=true" />
+		<property name="hibernate.connection.username" value="root" />
+		<property name="hibernate.connection.password" value="14068748" />
+		<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+		<property name="hibernate.connection.autoReconnect" value="true" />
+		<property name="hibernate.connection.autoReconnectForPools" value="true"/>
+		<property name="hibernate.connection.is-connection-validation-required" value="true"/>
+      </properties> -->
+   </persistence-unit>
+</persistence>

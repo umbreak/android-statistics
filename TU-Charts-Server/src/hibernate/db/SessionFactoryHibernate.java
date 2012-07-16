@@ -11,9 +11,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -67,13 +69,13 @@ public class SessionFactoryHibernate {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		final int NUM_VALUES=50;
 		int month=2;
-		String[] xValues=new String[NUM_VALUES];
+		double[] xValues=new double[NUM_VALUES];
 		
 		int day[]=new int[]{1,5,8,14,22};
 		int num_day=0;
 		for (int i=0; i < NUM_VALUES; i++){
 			c.set(2012,month, day[num_day]);
-			xValues[i]=format1.format(c.getTime());
+			xValues[i]=(double)c.getTimeInMillis();
 			if (num_day == 4){
 				num_day=0;
 				month++;
@@ -107,9 +109,9 @@ public class SessionFactoryHibernate {
 			yValues7[i] = getRandom(5, 20);
 			yValues8[i] = getRandom(4, 17);
 		}
-		Set<SerieModel> lines[] = (Set<SerieModel>[])new HashSet[5];
+		Set<SerieModel> lines[] = (Set<SerieModel>[])new LinkedHashSet[5];
 		for (int i = 0; i < lines.length; i++) {
-			lines[i]= new HashSet<SerieModel>();
+			lines[i]= new LinkedHashSet <SerieModel>();
 		}
 		lines[0].add(new SerieModel("Line 0", yValues0));
 		lines[0].add(new SerieModel("Line 1", yValues1));
@@ -128,7 +130,7 @@ public class SessionFactoryHibernate {
 
 		//Creation of the 5 Charts
 		for (id_charts=0; id_charts< 5; id_charts++)
-			charts.add(new ChartModel(name[id_charts], description[id_charts], xValues, lines[id_charts], 22,4));
+			charts.add(new ChartModel(name[id_charts], description[id_charts], xValues, lines[id_charts]));
 
 		//8 CATEGORIES -------------------------------------
 		String categories_name[] = {"Electronics","Physics","Mechanics","Internet","Nanotechnology","Signal Processing","Economics","Multimedia"};
@@ -138,13 +140,13 @@ public class SessionFactoryHibernate {
 			categories.add(new CategoryModel(categories_name[id_categories], categories_description[id_categories]));
 
 		//4 USERS -------------------------------------
-		String users_name[] = {"Didac","Thomas","Paco","TU-Chemnitz"};
+		String users_name[] = {"Didac","Thomas","Paco","TU-Chemnitz", "Test"};
 		
 		int []categoies_denied= new int[]{1,2};
 		int []charts_denied= new int[]{1,6,3};
 
 		
-		for (id_user=0; id_user < 4; id_user++)
+		for (id_user=0; id_user < users_name.length; id_user++)
 			users.add(new UserModel(users_name[id_user], users_name[id_user], users_name[id_user]+ "@tu-chemnitz.de", categoies_denied,charts_denied));
 
 

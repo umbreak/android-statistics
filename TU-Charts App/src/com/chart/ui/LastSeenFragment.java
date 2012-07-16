@@ -59,8 +59,8 @@ public class LastSeenFragment extends SherlockListFragment implements LoaderCall
 		// Prepare the loader.  Either re-connect with an existing one,
 		// or start a new one.
 
-	
-				getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_LAST_SEEN, null, this);
+
+		getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_LAST_SEEN, null, this);
 
 	}
 
@@ -84,10 +84,10 @@ public class LastSeenFragment extends SherlockListFragment implements LoaderCall
 			});
 			item.setActionView(searchView);
 		}
-//
-//		MenuItem item2 = menu.add("Update");
-//		item2.setIcon(R.drawable.ic_menu_refresh);
-//		item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		//
+		//		MenuItem item2 = menu.add("Update");
+		//		item2.setIcon(R.drawable.ic_menu_refresh);
+		//		item2.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -118,11 +118,13 @@ public class LastSeenFragment extends SherlockListFragment implements LoaderCall
 		mAdapter.setData(data);
 
 		// The list should now be shown.
-		if (isResumed()) {
-			setListShown(true);
-		} else {
-			setListShownNoAnimation(true);
-		}
+		try{
+			if (isResumed()) {
+				setListShown(true);
+			} else {
+				setListShownNoAnimation(true);
+			}
+		}catch(Exception e){}
 
 	}
 

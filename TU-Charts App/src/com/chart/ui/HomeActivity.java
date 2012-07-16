@@ -57,12 +57,11 @@ public class HomeActivity extends SherlockFragmentActivity {
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}else{
-//			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			Display display = getWindowManager().getDefaultDisplay();
 			Point size = new Point();
 			display.getSize(size);
-
-//			prefs.edit().putString(LAST_SEEN, "").commit();
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			prefs.edit().putString(LAST_SEEN, "").commit();
 
 			Processor.i.width=size.x;
 			Processor.i.height=size.y;

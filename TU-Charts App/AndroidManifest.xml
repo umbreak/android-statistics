@@ -26,8 +26,9 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Styled" >
         <activity
-            android:name=".ui.HomeActivity"
-            android:label="@string/app_name" >
+            android:name=".ui.LoginActivity"
+            android:label="@string/app_name" 
+            android:theme="@style/Theme.Sherlock.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -50,6 +51,12 @@
                 <!-- CHART_DETAILS_ACTIVITY activity -->
         <activity
             android:name=".ui.ChartDetailsAcitivy"
+            android:label="@string/app_name" >
+        </activity>
+        
+                  <!-- HOME_ACTIVITY activity -->
+        <activity
+            android:name=".ui.HomeActivity"
             android:label="@string/app_name" >
         </activity>
         

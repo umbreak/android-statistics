@@ -36,10 +36,12 @@ public class ChartCommentRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
 	private int id;
-	public ChartCommentRes(UriInfo uriInfo, Request request, int id) {
+	private String user_email;
+	public ChartCommentRes(UriInfo uriInfo, Request request, int id, String user_email) {
 		this.uriInfo = uriInfo;
 		this.request = request;
 		this.id=id;
+		this.user_email=user_email;
 	}
 
 	@GET
@@ -49,7 +51,7 @@ public class ChartCommentRes {
 			ArrayList<CommentModel> result= new ArrayList<CommentModel>(DB_Process.i.getChart(id).getComments());
 			Collections.sort(result);
 			return result;
-//			return new ArrayList<CommentModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getChart(id).getComments()));
+			//			return new ArrayList<CommentModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getChart(id).getComments()));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -70,15 +72,18 @@ public class ChartCommentRes {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public CommentModel putComment(CommentModel c) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
-//			CommentModel c=comment.getValue();
+			//			CommentModel c=comment.getValue();
 			c.setDate(new Date());
-			DB_Process.i.setComment(id, c,"Didac@tu-chemnitz.de" );
+			if (user_email != null)
+				DB_Process.i.setComment(id, c,user_email );
+			else
+				DB_Process.i.setComment(id, c,"Didac@tu-chemnitz.de" );
 			return c;
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 	}
-	
+
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String delComment(@PathParam("id") int comment_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {

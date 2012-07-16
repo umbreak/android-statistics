@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -125,7 +124,6 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 	//InfoFragment class (contains the relevant information of a chart)
 	public static class InfoFragment extends SherlockListFragment{
 		private BaseChartModel chart;
-		private FragmentManager fm;
 
 		public static InfoFragment newInstance(BaseChartModel chart) {
 			InfoFragment f = new InfoFragment();
@@ -140,7 +138,6 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			chart = (BaseChartModel) (getArguments() != null ? getArguments().getParcelable("chart") : null);
-			fm = getActivity().getSupportFragmentManager();
 		}
 
 		@Override

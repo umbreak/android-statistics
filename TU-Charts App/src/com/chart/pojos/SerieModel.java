@@ -9,6 +9,8 @@ import android.os.Parcelable;
 public class SerieModel implements Parcelable{
 	public int id;
 	public String name;
+	public int max,min;
+
 	public String description;
 
 	public double[] yvalues;
@@ -37,7 +39,8 @@ public class SerieModel implements Parcelable{
 //		this();
 		in.readDoubleArray(yvalues);
 		id=in.readInt();
-
+		max=in.readInt();
+		min=in.readInt();	
 		name=in.readString();
 		description=in.readString();
 		
@@ -49,7 +52,8 @@ public class SerieModel implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeDoubleArray(yvalues);
 		dest.writeInt(id);
-
+		dest.writeInt(max);
+		dest.writeInt(min);
 		dest.writeString(name);
 		dest.writeString(description);
 	}

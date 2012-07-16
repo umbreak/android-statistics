@@ -12,5 +12,7 @@
     <color name="chart_pink">#923059</color>
     <color name="chart_red">#b10000</color>
     <color name="chart_darkgrey">#464646</color>
+    <color name="login_blue">#2b92b7</color>
+    
 
 </resources>

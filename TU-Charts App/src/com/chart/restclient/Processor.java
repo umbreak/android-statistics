@@ -1,36 +1,35 @@
 package com.chart.restclient;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import static com.chart.AppUtils.SCALE_1;
 import static com.chart.AppUtils.SCALE_1_2;
 import static com.chart.AppUtils.SCALE_1_4;
-import static com.chart.AppUtils.SCALE_4_1;
 import static com.chart.AppUtils.SCALE_2_1;
+import static com.chart.AppUtils.SCALE_4_1;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.UUID;
+
 import org.springframework.http.ContentCodingType;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.WindowManager;
 
+import com.chart.AppUtils;
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.CategoryModel;
 import com.chart.pojos.ChartModel;
 import com.chart.pojos.CommentModel;
 import com.chart.pojos.SerieModel;
+import com.chart.pojos.UserModel;
 /**
  * Singleton that perform the HTTP connection with the Server and creates the correct JSON structure (using REST).
  * Uses the Spring Framework for Android.
@@ -39,10 +38,12 @@ import com.chart.pojos.SerieModel;
 
 public enum Processor {
 	i;
-//	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
+	//	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
 	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
 	public int width;
 	public int height;
+	public Context context;
+	public UserModel myUser;
 
 	//Date received from the server to make the hash
 
@@ -59,56 +60,45 @@ public enum Processor {
 		requestHeaders.setAccept(Collections.singletonList(new MediaType("application","json")));
 		requestHeaders.setAcceptEncoding(Collections.singletonList(ContentCodingType.GZIP));
 		requestEntity = new HttpEntity<Object>(requestHeaders);
-//		restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+		//		restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
 		restTemplate.getMessageConverters().add(new MappingJacksonHttpMessageConverter());
 
 	}
-	//Reading input stream, saving to file and returning the bitmap. From: http://evgeny-goldin.com/blog/category/spring/
-//	private static final RequestCallback ACCEPT_CALLBACK =
-//			new RequestCallback()
-//	{
-//		public void doWithRequest ( ClientHttpRequest request ) throws IOException
-//		{
-//			request.getHeaders().setAccept(Collections.singletonList(new MediaType("application","json")));
-//			request.getHeaders().setAcceptEncoding(Collections.singletonList(ContentCodingType.GZIP));
-//		}
-//	};
 
-	//	public String postUser(User user){
-	//		try{
-	//			
-	//			requestHeaders.set("Eetac_challenge", UUID.randomUUID().toString());
-	//			requestEntity = new HttpEntity<Object>(requestHeaders);
-	//			ResponseEntity<String> responseEntity = restTemplate.exchange(url + "/date/", HttpMethod.GET, requestEntity, String.class);
-	//			String challenge_date=responseEntity.getBody();
-	//			System.out.println("Date="+challenge_date);
-	//			
-	//			
-	//			String hashed_password=ToolKit.i.getHash(user.password);
-	//			token=ToolKit.i.getHash(hashed_password+challenge_date);
-	//			System.out.println("token="+token);
-	//			user.password=token;
-	//
-	//			HttpEntity<User> commentEntity = new HttpEntity<User>(user, requestHeaders);
-	//			responseEntity = restTemplate.exchange(url + "/user/", HttpMethod.POST, commentEntity, String.class);
-	//			String response=responseEntity.getBody();
-	//
-	//			requestHeaders.remove("Eetac_challenge");
-	//			requestHeaders.set("Eetac_token", token);
-	//			requestEntity = new HttpEntity<Object>(requestHeaders);
-	//			return response;
-	//
-	//		}catch(HttpClientErrorException e){
-	//			if (e.getStatusCode().equals(HttpStatus.NOT_ACCEPTABLE)){
-	//				Log.d(TAG, e.toString());
-	//				return "-1";
-	//			}
-	//			return "-3";
-	//		}catch(Exception e){
-	//			Log.d(TAG, e.toString());
-	//			return "-2";
-	//		}		
-	//	}
+	//LOGIN ----------------------------------------------->
+	public int postUser(UserModel user){
+		try{
+			myUser=user;
+			requestHeaders.set("TU_challenge", UUID.randomUUID().toString());
+			requestEntity = new HttpEntity<Object>(requestHeaders);
+			ResponseEntity<String> responseEntity = restTemplate.exchange(url + "date/", HttpMethod.GET, requestEntity, String.class);
+			String challenge_date=responseEntity.getBody();
+			
+			
+			String hashed_password=AppUtils.i.getHash(user.password);
+			token=AppUtils.i.getHash(hashed_password+challenge_date);
+			System.out.println("token="+token);
+			user.password=token;
+
+			HttpEntity<UserModel> commentEntity = new HttpEntity<UserModel>(user, requestHeaders);
+			restTemplate.postForLocation(url + "users/login", commentEntity);
+
+			requestHeaders.remove("TU_challenge");
+			requestHeaders.set("chemnitz_token", token);
+			requestEntity = new HttpEntity<Object>(requestHeaders);
+			return 1;
+
+		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.NOT_ACCEPTABLE)){
+				Log.d(TAG, e.toString());
+				return -1;
+			}
+			return -3;
+		}catch(Exception e){
+			Log.d(TAG, e.toString());
+			return -2;
+		}		
+	}
 	//CATEGORIES ------------------------------------------>
 
 	public CategoryModel[] getCategories(){
@@ -118,6 +108,10 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getCategories();
+			}
 			Log.d(TAG, e.toString());
 			return null;
 		}	
@@ -129,6 +123,10 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getCategory(category_id);
+			}
 			Log.d(TAG, e.toString());
 			return null;
 		}	
@@ -142,6 +140,10 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getCharts();
+			}
 			Log.d(TAG, e.toString());
 			return null;
 		}	
@@ -153,9 +155,13 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getCharts(sort);
+			}
 			Log.d(TAG, e.toString());
 			return null;
-		}	
+		}
 	}
 	public BaseChartModel[] getConcreteCharts(String concrete){
 		try{
@@ -163,6 +169,10 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getConcreteCharts(concrete);
+			}
 			Log.d(TAG, e.toString());
 			return null;
 		}	
@@ -173,38 +183,53 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getNewCharts();
+			}
 			Log.d(TAG, e.toString());
 			return null;
-		}	
+		}		
 	}
-	
+
 	public BaseChartModel[] getCharts(int category_id){
 		try{
 			ResponseEntity<BaseChartModel[]> responseEntity = restTemplate.exchange(url + "categories/" + category_id + "/charts", HttpMethod.GET, requestEntity, BaseChartModel[].class);
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getCharts(category_id);
+			}
 			Log.d(TAG, e.toString());
 			return null;
-		}	
+		}
 	}
-	public ChartModel getChart(int chart_id, int scale){
+	public ChartModel getChart(int chart_id, int scale, int month){
 		try{
 			int x=width;
+			ResponseEntity<ChartModel> responseEntity;
+
 			if (scale == SCALE_4_1) x=width*4;
 			else if (scale == SCALE_2_1) x=width*2;
 			else if (scale == SCALE_1_2) x=width/2;
 			else if (scale == SCALE_1_4) x=width/4;
-
-			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?x="+x ,HttpMethod.GET, requestEntity, ChartModel.class);
-//			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + "charts/"+chart_id, HttpMethod.GET, requestEntity, ChartModel.class);
-
+			if (scale == 0){
+				responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?month="+month,HttpMethod.GET, requestEntity, ChartModel.class);
+			}else{
+				responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?x="+x + "&month="+month + "&type=1",HttpMethod.GET, requestEntity, ChartModel.class);
+			}
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getChart(chart_id,scale,month);
+			}
 			Log.d(TAG, e.toString());
 			return null;
-		}	
+		}
 	}
 	public BaseChartModel getShortChart(int chart_id){
 		try{
@@ -212,6 +237,10 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getShortChart(chart_id);
+			}
 			Log.d(TAG, e.toString());
 			return null;
 		}	
@@ -222,6 +251,10 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getChartSeries(chart_id);
+			}
 			Log.d(TAG, e.toString());
 			return null;
 		}	
@@ -235,6 +268,10 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return getChartComments(chart_id);
+			}
 			Log.d(TAG, e.toString());
 			return null;
 		}	
@@ -247,9 +284,13 @@ public enum Processor {
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return putComment(chart_id,c);
+			}
 			Log.d(TAG, e.toString());
 			return null;
-		}	
+		}
 	}
 	public boolean deleteComment(int chart_id, int comment_id){
 		try{
@@ -257,12 +298,16 @@ public enum Processor {
 			return true;
 
 		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
+				Log.d(TAG, "Re-logging");
+				if (postUser(myUser) > 0) return deleteComment(chart_id,comment_id);
+			}
 			Log.d(TAG, e.toString());
 			return false;
-		}	
+		}
 	}
 
-//	public static void setUrl(String url) {
-//		Processor.url = "http://" + url + ":8080/TU-Charts-Server/rest/";
-//	}	
+	//	public static void setUrl(String url) {
+	//		Processor.url = "http://" + url + ":8080/TU-Charts-Server/rest/";
+	//	}	
 }

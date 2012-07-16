@@ -3,6 +3,7 @@ package rest.resources;
 import hibernate.db.DB_Process;
 import jabx.model.BaseChartModel;
 import jabx.model.CategoryModel;
+import jabx.model.UserTokenTime;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -26,6 +27,8 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import rest.tables.AuthManager;
+
 import com.google.common.collect.Ordering;
 @Path("/categories")
 public class CategoriesResource {
@@ -33,12 +36,24 @@ public class CategoriesResource {
 	@Context Request request;
 	@Context ServletContext context;
 	@HeaderParam("chemnitz_token") @DefaultValue("") String token;
-	private int user_id;
+	private String user_email;
+	
+	private void checkLogin(){
+		try{
+			UserTokenTime user_token_time=AuthManager.i.getToken_table().get(token);
+			user_email=user_token_time.getEmail();
+			user_token_time.updateLastAction();
+		}catch (Exception e){
+//			throw new WebApplicationException(Response.Status.FORBIDDEN);
+			System.out.println("NOT LOGGED");
+		}
+	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<CategoryModel> getCategories() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
+			checkLogin();
 			return new ArrayList<CategoryModel>(DB_Process.i.getCategories());
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -50,6 +65,7 @@ public class CategoriesResource {
 	@Path("/{id}/charts")
 	public ArrayList<BaseChartModel> getCategoryCharts(@PathParam("id") int id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
+			checkLogin();
 			return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.i.getCategoryCharts(id)));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -61,6 +77,7 @@ public class CategoriesResource {
 	@Path("/{id}")
 	public CategoryModel getCategory(@PathParam("id") int id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
+			checkLogin();
 			return DB_Process.i.getCategory(id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);

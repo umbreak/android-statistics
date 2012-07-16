@@ -17,7 +17,7 @@ import com.google.common.base.Strings;
 import com.google.common.primitives.Doubles;
 //Convert String to Long[]
 
-public class StringLongType implements UserType{
+public class StringDoubleType implements UserType{
 
 	@Override
 	public Object assemble(Serializable cached, Object owner)

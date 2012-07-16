@@ -1,6 +1,7 @@
 package com.chart.pojos;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.os.Parcel;
@@ -8,8 +9,7 @@ import android.os.Parcelable;
 
 public class ChartModel extends BaseChartModel implements Parcelable{
 	public UserModel user;
-	public int max,min;
-	public String[] xValues;
+	public double[] xValues;
 	public List<SerieModel> yValues;
 
 	public ChartModel() {
@@ -25,7 +25,7 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 		yValues = new ArrayList<SerieModel>();
 
 	}
-	public ChartModel(int id, String name, String[] xValues, List<SerieModel> yValues) {
+	public ChartModel(int id, String name, double[] xValues, List<SerieModel> yValues) {
 		super(id,name);
 		this.xValues=xValues;
 		this.yValues=yValues;
@@ -33,9 +33,13 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 	public ChartModel(BaseChartModel parent){
 		super(parent.id, parent.name, parent.description, parent.category);
 		yValues = new ArrayList<SerieModel>();
-		max=0;min=0;
 	}
-	
+	public ChartModel(ChartModel other){
+		super(other.id, other.name, other.description, other.category);
+		this.yValues = new ArrayList<SerieModel>(other.yValues);
+		this.xValues=other.xValues;
+	}
+
 
 	public static final Parcelable.Creator<ChartModel> CREATOR = new
 			Parcelable.Creator<ChartModel>() {
@@ -52,11 +56,9 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 		super(in);
 		yValues = new ArrayList<SerieModel>();
 		user=in.readParcelable(UserModel.class.getClassLoader());
-		in.readStringArray(xValues);
+		in.readDoubleArray(xValues);
 		in.readTypedList(yValues, SerieModel.CREATOR);
 		id = in.readInt();
-		max=in.readInt();
-		min=in.readInt();	
 	}
 
 	public int describeContents() {
@@ -65,11 +67,9 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		super.writeToParcel(dest, flags);
 		dest.writeParcelable(user, flags);
-		dest.writeStringArray(xValues);
+		dest.writeDoubleArray(xValues);
 		dest.writeTypedList(yValues);
 		dest.writeInt(id);
-		dest.writeInt(max);
-		dest.writeInt(min);
 	}
 
 

@@ -242,7 +242,7 @@
 																														String yLegend = map.get("yLegend");
 																														String type = map.get("type");
 																														String category = map.get("category");
-																														ChartModel c = ServerUtils.fromCSV(name, description, fichero);
+																														ChartModel c = ServerUtils.i.fromCSV(name, description, fichero);
 
 																														CategoryModel cat = DB_Process.i.getCategory(category);
 																														cat.addChart(c);

@@ -92,8 +92,11 @@ public enum DB_Process {
 	}
 	public BaseChartModel getBaseChart(int chart_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
-		//utx.begin();			
-		BaseChartModel chart = (BaseChartModel)em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.id =:chart_id").setParameter("chart_id", chart_id).getSingleResult();
+		//utx.begin();
+		BaseChartModel chart;
+		try{
+			chart = (BaseChartModel)em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.type, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.id =:chart_id").setParameter("chart_id", chart_id).getSingleResult();
+		}catch (RuntimeException e){ return null; }
 		em.close();
 		return chart;
 	}
@@ -134,7 +137,7 @@ public enum DB_Process {
 		{
 			em.refresh(user);
 		}catch (Exception e){}
-		
+
 		em.refresh(category);
 		em.getTransaction().commit();
 		em.close();

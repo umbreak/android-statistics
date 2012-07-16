@@ -1,12 +1,12 @@
 package jabx.model;
 
-import hibernate.types.StringtoArray;
+import hibernate.types.StringDoubleType;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
+
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -14,15 +14,14 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import javax.persistence.OrderBy;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Polymorphism;
-import org.hibernate.annotations.PolymorphismType;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -31,13 +30,12 @@ import org.hibernate.annotations.TypeDef;
 //@PrimaryKeyJoinColumn(name="chart_id")
 
 @DiscriminatorValue("chartModel")
-@TypeDef(name="StringArray", typeClass = StringtoArray.class)
+@TypeDef(name="StringDouble", typeClass = StringDoubleType.class)
 
 public class ChartModel extends BaseChartModel{
 	private UserModel user;
-	private int max,min;
-	private String[] xValues;
-	private Set<SerieModel> yValues = new HashSet<>();
+	private double[] xValues;
+	private Set<SerieModel> yValues = new LinkedHashSet<>();
 	private Set<CommentModel> comments = new HashSet<>();
 
 	public ChartModel() {
@@ -48,33 +46,12 @@ public class ChartModel extends BaseChartModel{
 		super(name,  description);
 
 	}
-	public ChartModel(String name, String description, String[] xValues, Set<SerieModel> yValues) {
+	public ChartModel(String name, String description, double[] xValues, Set<SerieModel> yValues) {
 		this(name,description);
 		this.xValues=xValues;
 		this.yValues=yValues;
 	}
-	public ChartModel(String name, String description, String[] xValues, Set<SerieModel> yValues, int max, int min) {
-		this(name,description, xValues,yValues);
-		this.max=max;
-		this.min=min;
-	}
 	
-	public int getMax() {
-		return max;
-	}
-
-	public void setMax(int max) {
-		this.max = max;
-	}
-
-	public int getMin() {
-		return min;
-	}
-
-	public void setMin(int min) {
-		this.min = min;
-	}
-
 	@ManyToOne (cascade = CascadeType.MERGE)
 	@JoinColumn(name="user_email")
 	public UserModel getUser() {
@@ -89,12 +66,12 @@ public class ChartModel extends BaseChartModel{
 	//	@ElementCollection
 	//	@CollectionTable(name="x_values", joinColumns=@JoinColumn(name="chart_id"))
 	//	@Column(name="x_value")
-	@Type(type="StringArray")
-	public String[] getxValues() {
+	@Type(type="StringDouble")
+	public double[] getxValues() {
 		return xValues;
 	}
 
-	public void setxValues(String[] xValues) {
+	public void setxValues(double[] xValues) {
 		this.xValues = xValues;
 	}
 
@@ -106,6 +83,8 @@ public class ChartModel extends BaseChartModel{
 	@OneToMany(fetch=FetchType.EAGER)
 	@JoinColumn(name="chart_id")
 	@LazyCollection(LazyCollectionOption.FALSE)
+	@OrderBy("id")
+//	@Sort(type = SortType.NATURAL)
 	public Set<SerieModel> getyValues() {
 		return yValues;
 	}
