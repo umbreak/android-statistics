@@ -19,7 +19,6 @@ public class JacksonContextResolver implements ContextResolver<ObjectMapper> {
     public JacksonContextResolver() throws Exception {
         this.objectMapper = new ObjectMapper().configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-
     }
     public ObjectMapper getContext(Class<?> objectType) {
         return objectMapper;

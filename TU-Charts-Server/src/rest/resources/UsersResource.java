@@ -5,6 +5,7 @@ import jabx.model.UserModel;
 import jabx.model.UserModelPass;
 import jabx.model.UserTokenTime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -28,7 +29,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import rest.tables.AuthManager;
+import utils.AuthManager;
 import utils.HashUtils;
 
 @Path("/users")
@@ -71,6 +72,7 @@ public class UsersResource {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 	}
+
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

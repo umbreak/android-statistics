@@ -1,4 +1,4 @@
-package hibernate.db;
+package utils;
 
 import jabx.model.ChartModel;
 import jabx.model.SerieModel;
@@ -19,26 +19,28 @@ import com.google.common.primitives.Doubles;
 public enum ServerUtils {
 	i;
 	private SimpleDateFormat dateFormat;
+	public static double NULL_VAL=1E+54;
+
 	private ServerUtils(){
 	}
-	
+
 	public SimpleDateFormat getDateFormat() {
 		return dateFormat;
 	}
-	
+
 
 	public ChartModel fromCSV(String name, String description, File file){
 		try {
 			Scanner scanner = new Scanner(file);
 			try{
 				scanner.nextLine();
-			
-			setDateFormat(scanner.nextLine().split(";")[0]);
-			scanner.close();
+
+				setDateFormat(scanner.nextLine().split(";")[0]);
+				scanner.close();
 			}catch (NullPointerException e){
 				e.printStackTrace();
 			}
-			
+			boolean someNullElems=false;
 			scanner = new Scanner(file);
 			if (scanner.hasNext()){
 				String titles[]=scanner.nextLine().split(";");
@@ -62,33 +64,30 @@ public enum ServerUtils {
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}     
-							for (int j=1; j < values.length; j++){
-								yVal[(j-1)].add(Double.valueOf(values[j]));
-
-							}
+							for (int j=1; j < values.length; j++)
+								try{
+									yVal[(j-1)].add(Double.valueOf(values[j]));
+								}catch(NumberFormatException e){
+									someNullElems=true;
+									yVal[(j-1)].add(null);
+								}
 						}
 					}
 				}
 
 				Set<SerieModel> lines = new LinkedHashSet<SerieModel>();
-//				max=(double)(yVal[0].get(0));
-//				min=max;
-//				for (int i=0; i< yVal.length; i++){
-//					double double_array[]=Doubles.toArray(yVal[i]);
-//					double new_min=Doubles.min(double_array);
-//					double new_max=Doubles.max(double_array);
-//					if (min > new_min) min=new_min;
-//					if (max < new_max) max=new_max;
-//					lines.add(new SerieModel(titles[i+1], double_array));
-//				}
-				
+
 				for (int i=0; i< yVal.length; i++){
-					double double_array[]=Doubles.toArray(yVal[i]);
-					lines.add(new SerieModel(titles[i+1], double_array));
+					if (someNullElems){
+						double double_array[]=toPrimitive(yVal[i]);
+						int[] minmax=getMaxMin(yVal[i]);
+						lines.add(new SerieModel(titles[i+1], double_array,minmax));
+					}else{
+						double double_array[]=Doubles.toArray(yVal[i]);
+						lines.add(new SerieModel(titles[i+1], double_array));
+					}
 				}
-				//				for (int j = 0; j < yVal.length; j++) 
-				//					System.out.println("Y values="+ yVal[j]);
-				//				System.out.println("max=" + max + " min="+min);
+
 
 				scanner.close();
 				file.delete();
@@ -122,24 +121,27 @@ public enum ServerUtils {
 			else		
 				dateFormat=new SimpleDateFormat("dd" + delimiter + "MM" + delimiter + "yyyy");
 	}
-	
-//	private static synchronized double[] toPrimitiveDouble(List<Double> data){
-//		double[] tempArray = new double[data.size()];
-//		int i = 0;
-//		for (Double d : data) {
-//			tempArray[i] = (double) d;
-//			//			System.out.println(tempArray[i]);
-//			//			if (min > tempArray[i]){
-//			//				min=tempArray[i];
-//			//			}
-//			//			else if (max < tempArray[i])
-//			//				max=tempArray[i];
-//			i++;
-//		}
-//		double new_min=Doubles.min(tempArray);
-//		double new_max=Doubles.max(tempArray);
-//		if (min > new_min) min=new_min;
-//		else if (max < new_max) max=new_max;
-//		return tempArray;
-//	}
+	private double[] toPrimitive(List<Double> list){
+		double[] result= new double[list.size()];
+		int pos=0;
+		for (Double value : list) {
+			if (value == null) result[pos]=NULL_VAL;
+			else result[pos]=value;
+			pos++;
+		}
+		return result;
+	}
+	private int[] getMaxMin(List<Double> list){
+		Double max,min;
+		max=min=list.get(0).doubleValue();
+		for (Double value : list) {
+			if (value !=null){
+				if (min> value) min=value;
+				if (max<value) max=value;
+			}
+		}
+		return new int[]{min.intValue(),max.intValue()};
+	}
+
+
 }

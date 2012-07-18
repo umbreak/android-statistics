@@ -4,7 +4,7 @@ import static com.chart.AppUtils.SCALE_1_2;
 import static com.chart.AppUtils.SCALE_1_4;
 import static com.chart.AppUtils.SCALE_2_1;
 import static com.chart.AppUtils.SCALE_4_1;
-
+import static com.chart.AppUtils.NULL_VAL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -73,6 +73,8 @@ public enum Processor {
 			requestEntity = new HttpEntity<Object>(requestHeaders);
 			ResponseEntity<String> responseEntity = restTemplate.exchange(url + "date/", HttpMethod.GET, requestEntity, String.class);
 			String challenge_date=responseEntity.getBody();
+			if (NULL_VAL == null)
+				NULL_VAL = restTemplate.exchange(url + "charts/null", HttpMethod.GET, requestEntity, Double.class).getBody();
 			
 			
 			String hashed_password=AppUtils.i.getHash(user.password);

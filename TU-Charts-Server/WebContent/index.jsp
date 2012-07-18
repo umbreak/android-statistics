@@ -1,4 +1,4 @@
-<%@page import="hibernate.db.ServerUtils"%>
+<%@page import="utils.ServerUtils"%>
 <%@page import="hibernate.db.DB_Process"%>
 <%@page import="jabx.model.BaseChartModel"%>
 <%@page import="jabx.model.ChartModel"%>

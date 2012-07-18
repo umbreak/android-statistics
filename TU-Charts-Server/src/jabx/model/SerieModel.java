@@ -22,12 +22,12 @@ import com.google.common.primitives.Ints;
 @TypeDef(name="StringDouble", typeClass = StringDoubleType.class)
 public class SerieModel implements Comparable<SerieModel>{
 	private int id;
-	 private transient int max;
-	private transient int min;
+	private int max;
+	private int min;
 	private String name;
 	private String description;
 	private double[] yvalues;
-	
+
 	public SerieModel() {
 		super();
 	}
@@ -38,7 +38,16 @@ public class SerieModel implements Comparable<SerieModel>{
 		this.max=Ints.saturatedCast((long)Doubles.max(yvalues));
 		this.min=Ints.saturatedCast((long)Doubles.min(yvalues));
 	}
+
+	public SerieModel(String name, double[] values, int minmax[]){
+		super();
+		this.name=name;
+		this.yvalues=values;
+		this.min=minmax[0];
+		this.max=minmax[1];
+	}
 	
+
 	@Id @GeneratedValue @Column(name = "series_id")
 	public int getId() {
 		return id;
@@ -46,15 +55,15 @@ public class SerieModel implements Comparable<SerieModel>{
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	@Transient public int getMax() {
-		return Ints.saturatedCast((long)Doubles.max(yvalues));
+
+	public int getMax() {
+		return max;
 	}
 	public void setMax(int max) {
 		this.max = max;
 	}
-	@Transient public int getMin() {
-		return Ints.saturatedCast((long)Doubles.min(yvalues));
+	public int getMin() {
+		return min;
 	}
 	public void setMin(int min) {
 		this.min = min;
@@ -71,6 +80,7 @@ public class SerieModel implements Comparable<SerieModel>{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	@Type(type="StringDouble")
 	public double[] getYvalues() {
 		return yvalues;
@@ -81,6 +91,5 @@ public class SerieModel implements Comparable<SerieModel>{
 	@Override
 	public int compareTo(SerieModel arg0) {
 		return this.id - arg0.id;
-	}
-	
+	}	
 }

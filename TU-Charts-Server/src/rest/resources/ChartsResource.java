@@ -4,7 +4,7 @@ import hibernate.db.DB_Process;
 import jabx.model.BaseChartModel;
 import jabx.model.ChartModel;
 import jabx.model.UserTokenTime;
-
+import static utils.ServerUtils.NULL_VAL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,7 +32,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import rest.tables.AuthManager;
+import utils.AuthManager;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
@@ -103,6 +103,12 @@ public class ChartsResource {
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
+	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/null")
+	public Double getDoubles(){
+		return NULL_VAL;
 	}
 
 	@Path("{chart}")

@@ -86,14 +86,14 @@ public class StringDoubleType implements UserType{
 	@Override
 	public Object replace(Object original, Object target, Object serie)
 			throws HibernateException {
-		SerieModel s=(SerieModel)serie;
-		s.setYvalues((double[])target);
+//		SerieModel s=(SerieModel)serie;
+//		s.setYvalues((double[])target);
 		return original;
 	}
 
 	@Override
 	public Class returnedClass() {
-		return Long[].class;
+		return double[].class;
 	}
 
 	@Override

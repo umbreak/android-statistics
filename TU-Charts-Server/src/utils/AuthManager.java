@@ -1,4 +1,4 @@
-package rest.tables;
+package utils;
 
 import jabx.model.UserTokenTime;
 

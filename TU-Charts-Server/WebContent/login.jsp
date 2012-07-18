@@ -1,8 +1,8 @@
 <%@page import="jabx.model.UserTokenTime"%>
-<%@page import="rest.tables.AuthManager"%>
+<%@page import="utils.AuthManager"%>
 <%@page import="utils.HashUtils"%>
 <%@page import="jabx.model.UserModel"%>
-<%@page import="hibernate.db.ServerUtils"%>
+<%@page import="utils.ServerUtils"%>
 <%@page import="hibernate.db.DB_Process"%>
 <%@page import="jabx.model.BaseChartModel"%>
 <%@page import="jabx.model.ChartModel"%>

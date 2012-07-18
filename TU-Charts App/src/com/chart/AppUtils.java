@@ -23,9 +23,12 @@ public enum AppUtils {
 	public static final String USER="username";
 	public static final String PASS="password";
 	public static final String EMAIL="email";
-
+	public static final String LAST_SEEN="last_seen";
 	public static final String SERVER_IP="server_ip";
-	
+	public static final String NULL="null_value";
+	public static Double NULL_VAL=null;
+
+		
 	//Scale factors (4:1, 2:1, 1:1, 1:2, 1:4)
 	public static final int NO_SCALE=0;
 	public static final int SCALE_4_1=1;
@@ -48,7 +51,6 @@ public enum AppUtils {
 
 
 
-	public static final String LAST_SEEN="last_seen";
 
 	private AppUtils(){
 		try {

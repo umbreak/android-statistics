@@ -27,7 +27,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import rest.tables.AuthManager;
+import utils.AuthManager;
 
 import com.google.common.collect.Ordering;
 @Path("/categories")

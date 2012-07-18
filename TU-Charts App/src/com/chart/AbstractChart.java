@@ -15,6 +15,8 @@
  */
 package com.chart;
 
+import static com.chart.AppUtils.NULL_VAL;
+
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +32,6 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Paint.Align;
 
 import com.actionbarsherlock.R;
@@ -65,7 +66,8 @@ public abstract class AbstractChart {
 			double[] yV = yValues.get(i).yvalues;
 			int seriesLength = xValues.length;
 			for (int k = 0; k < seriesLength; k++) {
-				series.add(xValues[k], yV[k]);
+				if(yV[k] != NULL_VAL)
+					series.add(xValues[k], yV[k]);
 			}
 			dataset.addSeries(series);
 		}
@@ -117,12 +119,12 @@ public abstract class AbstractChart {
 		}
 	}
 	protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors) {
-//		PointStyle point = PointStyle.CIRCLE;
+		//		PointStyle point = PointStyle.CIRCLE;
 		int length = colors.length;
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer r = new XYSeriesRenderer();
 			r.setColor(colors[i]);
-//			r.setPointStyle(point);
+			//			r.setPointStyle(point);
 			renderer.addSeriesRenderer(r);
 		}
 	}
@@ -191,9 +193,11 @@ public abstract class AbstractChart {
 			TimeSeries series = new TimeSeries(yValues.get(i).name);
 			double[] yV = yValues.get(i).yvalues;
 			int seriesLength = xValues.length;
-
 			for (int k = 0; k < seriesLength; k++) {
-				series.add(xValues[k], yV[k]);
+				if (yV[k] != NULL_VAL)
+					series.add(xValues[k], yV[k]);
+				else
+					System.out.println("Value=" + yV[k] + " skipped");
 			}
 			dataset.addSeries(series);
 		}

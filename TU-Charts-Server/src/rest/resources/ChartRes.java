@@ -3,7 +3,7 @@ package rest.resources;
 import hibernate.db.DB_Process;
 import jabx.model.ChartModel;
 import jabx.model.SerieModel;
-
+import static utils.ServerUtils.NULL_VAL;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -58,20 +58,21 @@ public class ChartRes {
 				modifYval(matches,chart.getyValues());
 				chart.setxValues(modifXval(matches, chart.getxValues()));
 			}
-			
+
 			if (x == 0 && y == 0)
 				return chart;
-			
+
 			int numXgroups=(chart.getxValues().length + x -1) / x;
+			if (type == 1) numXgroups*=2;
 			//			int numYgroups=(series.get(0).getYvalues().length + y -1) / y;
 
 			if (numXgroups < 2)
 				return chart;
 			//Impossible to apply the reduction algorithm if there's more then one Y serie
-			if (chart.getyValues().size() > 1)
-				type=0;
-			
-//			int[] repetitions=new int[((chart.getxValues().length + numXgroups -1) / numXgroups)];
+			if (type == 1 && chart.getyValues().size() > 1)
+				type=2;
+
+			//			int[] repetitions=new int[((chart.getxValues().length + numXgroups -1) / numXgroups)];
 			List<List<Integer>> matchesMatrix= new ArrayList<>();
 			//Choosing values from the Y axis (average)
 			for (SerieModel serie : chart.getyValues()) {
@@ -87,41 +88,45 @@ public class ChartRes {
 						Set<Double> uniqueDoubles= Sets.newLinkedHashSet(list);
 						System.out.println("Duplicates in the array=" + (list.size() - uniqueDoubles.size()));
 						matchesMatrix.add(getSelectedPositions(uniqueDoubles, list));
-//						repetitions[pos]=uniqueDoubles.size();
 						result=Doubles.concat(result,Doubles.toArray(uniqueDoubles));
 					}
 					serie.setYvalues(result);
-
-				}
-				else
+				}else if (type == 2){
+					ArrayList<Double> result=new ArrayList<>();
+					for (List<Double> list : groupYval) {
+						List<Double> uniqueDoubles= deleteDuplicates(list);
+						result.addAll(uniqueDoubles);
+					}
+					serie.setYvalues(Doubles.toArray(result));
+				}else{
 					serie.setYvalues(meanList(groupYval));
+				}
 			}
 
 			//Choosing values from the X axis (average)
-				List<List<Double>> groupXval=Lists.partition(Doubles.asList(chart.getxValues()), numXgroups);
-				System.out.println("number of sub-dates=" + groupXval.size());
-				System.out.println("SubDates size=" + groupXval.get(0).size());
-				//				for (Date d : groupXval.get(0))
-				//					System.out.println(d);
-				if (type==1){
-					double result[]=new double[0];
-					int pos=0;
-					for (List<Double> list: groupXval) {
-						List<Integer> listMatches=matchesMatrix.get(pos);
-						double[] concat=new double[listMatches.size()];
-						for (int i = 0; i < concat.length; i++) 
-							concat[i]=list.get(listMatches.get(i));
-						result=Doubles.concat(result,concat);
-						pos++;
-					}
-					chart.setxValues(result);
-					
+			List<List<Double>> groupXval=Lists.partition(Doubles.asList(chart.getxValues()), numXgroups);
+			System.out.println("number of sub-dates=" + groupXval.size());
+			System.out.println("SubDates size=" + groupXval.get(0).size());
+			//				for (Date d : groupXval.get(0))
+			//					System.out.println(d);
+			if (type==1){
+				double result[]=new double[0];
+				int pos=0;
+				for (List<Double> list: groupXval) {
+					List<Integer> listMatches=matchesMatrix.get(pos);
+					double[] concat=new double[listMatches.size()];
+					for (int i = 0; i < concat.length; i++) 
+						concat[i]=list.get(listMatches.get(i));
+					result=Doubles.concat(result,concat);
+					pos++;
 				}
-					else
-						chart.setxValues(meanList(groupXval));
-				//				System.out.println("get average of the first subgroup=" + chart.getxValues()[0]);
+				chart.setxValues(result);
+			}
+			else if (type ==0)
+				chart.setxValues(meanList(groupXval));
+			//				System.out.println("get average of the first subgroup=" + chart.getxValues()[0]);
 
-			
+
 			return chart;
 
 		}catch(NullPointerException e){
@@ -184,10 +189,10 @@ public class ChartRes {
 		return result;
 	}
 	private int find(List<Double> array, double value) {
-	    for(int i=0; i<array.size(); i++) 
-	         if(array.get(i) == value)
-	        	 return i;
-	    return -1;
+		for(int i=0; i<array.size(); i++) 
+			if(array.get(i) == value)
+				return i;
+		return -1;
 	}
 	private ArrayList<Integer> getSelectedPositions(Set<Double> uniqueDoubles, List<Double> list){
 		ArrayList<Integer> result= new ArrayList<>();
@@ -214,6 +219,19 @@ public class ChartRes {
 			x_results[i]=x_results_tmp[xValues.get(i)];
 
 		return x_results;
+	}
+	public static List<Double> deleteDuplicates(List<Double> list){
+		List<Double> result = new ArrayList<>();
+		int rep=0;
+		for (Double value : list) {
+			if (!result.contains(value)) result.add(value);
+			else{
+				result.add(NULL_VAL);
+				rep++;
+			}
+		}
+		System.out.println("Num of replications=" + rep);
+		return result;
 	}
 
 }
