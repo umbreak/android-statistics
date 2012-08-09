@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://www.jboss.org/dtd/hibernate/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+	    		<!-- Database connection settings -->
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://localhost:3306/tu?autoReconnect=true</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">*******</property>
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="connection.autoReconnect">true</property>
+		<property name="connection.autoReconnectForPools">true</property>
+		<property name="connection.is-connection-validation-required">true</property>
+		
+		
+
+		<!-- JDBC connection pool (use the built-in) -->
+		<property name="connection.pool_size">1</property>
+		<property name="hbm2ddl.auto">update</property>
+
+		
+		<!-- Enable Hibernate's automatic session context management -->
+<!-- 		<property name="transaction.factory_class">
+            org.hibernate.transaction.JDBCTransactionFactor
+        </property> -->
+        <property name="current_session_context_class">thread</property>
+<!--         <property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property> 
+ -->
+        
+		
+		<!-- Disable the second-level cache  -->
+		<property name="cache.provider_class">
+			org.hibernate.cache.NoCacheProvider</property>
+		<!-- parameters -->
+
+		<!-- Echo all executed SQL to stdout -->
+		<property name="show_sql">false</property>
+		
+		<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+		<property name="hibernate.c3p0.acquire_increment">3</property>
+		<property name="hibernate.c3p0.idle_test_period">50</property>
+		<property name="hibernate.c3p0.timeout">5000</property>
+		<property name="hibernate.c3p0.max_size">15</property>
+		<property name="hibernate.c3p0.min_size">3</property>
+		<property name="hibernate.c3p0.max_statements">0</property>
+		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
+		
+
+		<!-- ############################################ -->
+		<!-- # mapping files with external dependencies # -->
+		<!-- ############################################ -->
+		<mapping class="jabx.model.BaseChartModel" />
+		<mapping class="jabx.model.CategoryModel" />
+		<mapping class="jabx.model.ChartModel" />
+		<mapping class="jabx.model.CommentModel" />
+		<mapping class="jabx.model.SerieModel" />
+		<mapping class="jabx.model.UserModel" />
+<!-- 		<mapping resource="pojos.hbm.xml" />
+ -->
+	</session-factory>
+</hibernate-configuration>
