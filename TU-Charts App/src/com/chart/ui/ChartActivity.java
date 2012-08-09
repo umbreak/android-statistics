@@ -354,6 +354,7 @@ public class ChartActivity extends SherlockFragmentActivity implements LoaderCal
 	@Override
 	public Loader<ChartModel> onCreateLoader(int id, Bundle args) {
 //		new ProgressDialogFragment("Charts", "Loading data chart...").show(getSupportFragmentManager(), "DIALOG_F1");
+		progress.bringToFront();
 		progress.setVisibility(View.VISIBLE);
 		textView.setVisibility(View.GONE);
 
@@ -366,7 +367,6 @@ public class ChartActivity extends SherlockFragmentActivity implements LoaderCal
 	@Override
 	public void onLoadFinished(Loader<ChartModel> loader, ChartModel data) {
 		full_chart=data;
-		progress.setVisibility(View.GONE);
 
 		if (data == null)
 			newChart=null;
@@ -376,6 +376,9 @@ public class ChartActivity extends SherlockFragmentActivity implements LoaderCal
 				removeElem(value);
 		}
 		updateChart();
+		progress.setVisibility(View.GONE);
+
+
 	}
 
 	@Override
