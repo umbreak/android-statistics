@@ -7,4 +7,5 @@ android-statistics
  More information about each part, inside.
  
  TU-Chart App
+ 
  ![](http://img641.imageshack.us/img641/271/qrcodeuz.png)
