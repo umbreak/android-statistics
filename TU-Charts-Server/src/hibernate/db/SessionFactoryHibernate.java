@@ -130,7 +130,7 @@ public class SessionFactoryHibernate {
 
 		//Creation of the 5 Charts
 		for (id_charts=0; id_charts< 5; id_charts++)
-			charts.add(new ChartModel(name[id_charts], description[id_charts], xValues, lines[id_charts]));
+			charts.add(new ChartModel(name[id_charts], description[id_charts], xValues, lines[id_charts], 2012,0));
 
 		//8 CATEGORIES -------------------------------------
 		String categories_name[] = {"Electronics","Physics","Mechanics","Internet","Nanotechnology","Signal Processing","Economics","Multimedia"};

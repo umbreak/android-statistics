@@ -72,7 +72,6 @@ public class LoginActivity extends SherlockFragmentActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			System.out.println("LoginProcessFragment created");
 
 			View view = inflater.inflate(R.layout.login_process, container, false);
 
@@ -136,7 +135,6 @@ public class LoginActivity extends SherlockFragmentActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			System.out.println("LoginFragment created");
 			View view = inflater.inflate(R.layout.login, container, false);
 			prefs = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
 
@@ -197,7 +195,6 @@ public class LoginActivity extends SherlockFragmentActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			System.out.println("RegisterFragment created");
 			View view = inflater.inflate(R.layout.register, container, false);
 			prefs = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
 

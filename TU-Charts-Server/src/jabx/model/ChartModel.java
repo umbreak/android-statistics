@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -20,8 +19,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -41,13 +38,13 @@ public class ChartModel extends BaseChartModel{
 	public ChartModel() {
 		super();
 	}
-
-	public ChartModel(String name, String description) {
-		super(name,  description);
-
-	}
 	public ChartModel(String name, String description, double[] xValues, Set<SerieModel> yValues) {
-		this(name,description);
+		super(name,description);
+		this.xValues=xValues;
+		this.yValues=yValues;
+	}
+	public ChartModel(String name, String description, double[] xValues, Set<SerieModel> yValues, int firstYear, int lastYear) {
+		super(name,description,firstYear,lastYear);
 		this.xValues=xValues;
 		this.yValues=yValues;
 	}

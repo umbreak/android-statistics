@@ -4,8 +4,6 @@ import static com.chart.AppUtils.LAST_SEEN;
 import static com.chart.AppUtils.LOADER_LAST_SEEN;
 import static com.chart.AppUtils.LOADER_LIST_CHARTS;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +37,16 @@ import com.actionbarsherlock.internal.widget.IcsSpinner;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 import com.chart.R;
 import com.chart.browser.adapters.BaseChartAdapter;
 import com.chart.loaders.BaseChartLoader;
-import com.chart.pojos.CategoryModel;
 import com.chart.pojos.BaseChartModel;
+import com.chart.pojos.CategoryModel;
 
 public class ListChartsActivity extends SherlockFragmentActivity{
 	private ArrayList<CategoryModel> categories;
 	private int position;
+	private static final String TAG="ListChartsActivity";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -93,6 +91,7 @@ public class ListChartsActivity extends SherlockFragmentActivity{
 		IcsSpinner spinner = new IcsSpinner(this, null, 
 				R.attr.actionDropDownStyle); 
 		spinner.setAdapter(list); 
+
 		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(IcsAdapterView<?> parent, View view,
@@ -110,6 +109,7 @@ public class ListChartsActivity extends SherlockFragmentActivity{
 
 			@Override
 			public void onNothingSelected(IcsAdapterView<?> parent) {
+
 			}
 		});
 
@@ -274,12 +274,11 @@ public class ListChartsActivity extends SherlockFragmentActivity{
 			result=id+";"+result;
 			if (result.split(";").length >= 5)
 				result=result.substring(0,result.lastIndexOf(";"));
-			System.out.println("result=" + result);
 			prefs.edit().putString(LAST_SEEN, result).commit();
 			try{
 				getSherlockActivity().getSupportLoaderManager().getLoader(LOADER_LAST_SEEN).forceLoad();
 			}catch (NullPointerException e){
-				System.out.println("Loader 5 doesn't exist right now");
+				Log.i(TAG,"Loader LOADER_LAST_SEEN is not available right now");
 			}
 		}
 	}

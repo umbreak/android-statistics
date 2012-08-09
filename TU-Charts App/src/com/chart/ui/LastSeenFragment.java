@@ -1,7 +1,8 @@
 package com.chart.ui;
 
-import java.util.List;
 import static com.chart.AppUtils.LOADER_LAST_SEEN;
+
+import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,11 +19,9 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.chart.R;
 import com.chart.browser.adapters.BaseChartAdapter;
 import com.chart.loaders.BaseChartLoader;
 import com.chart.pojos.BaseChartModel;
-import com.chart.ui.ListChartsActivity.ListChartsFragment;
 
 public class LastSeenFragment extends SherlockListFragment implements LoaderCallbacks<List<BaseChartModel>>{
 

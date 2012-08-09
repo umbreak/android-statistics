@@ -36,6 +36,11 @@ import com.google.common.primitives.Doubles;
 public class ChartRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
+	private static int TYPE_AVERAGE=10;
+	private static int TYPE_WIDTH=11;
+	private static int TYPE_WIDTH_2=12;
+
+
 	private int id;
 	private String user_email;
 	public ChartRes(UriInfo uriInfo, Request request, int id, String user_email) {
@@ -47,12 +52,12 @@ public class ChartRes {
 
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public ChartModel getChart(@DefaultValue("0") @QueryParam("x") int x, @DefaultValue("0") @QueryParam("y") int y, @DefaultValue("0") @QueryParam("month") int month, @DefaultValue("0") @QueryParam("type") int type) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException, ParseException {
+	public ChartModel getChart(@DefaultValue("0") @QueryParam("x") int x, @DefaultValue("0") @QueryParam("y") int y, @DefaultValue("0") @QueryParam("month") int month,@DefaultValue("0") @QueryParam("week") int week , @QueryParam("day") int day, @QueryParam("year") int year, @DefaultValue("0") @QueryParam("type") int type) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException, ParseException {
 		try{
 			ChartModel chart=DB_Process.i.getChart(id);
 			//Return the month requested by parameter month
-			if (month != 0){
-				List<Integer> matches=getMatches(month, chart.getxValues());
+			if (month != 0 || day != 0 || year!=0 || week !=0){
+				List<Integer> matches=getMatches(year, month, week, day, chart.getxValues());
 				if (matches.size()==0)
 					return null;
 				modifYval(matches,chart.getyValues());
@@ -63,14 +68,14 @@ public class ChartRes {
 				return chart;
 
 			int numXgroups=(chart.getxValues().length + x -1) / x;
-			if (type == 1) numXgroups*=2;
+			if (type == TYPE_WIDTH) numXgroups*=2;
 			//			int numYgroups=(series.get(0).getYvalues().length + y -1) / y;
 
 			if (numXgroups < 2)
 				return chart;
 			//Impossible to apply the reduction algorithm if there's more then one Y serie
-			if (type == 1 && chart.getyValues().size() > 1)
-				type=2;
+			if (type == TYPE_WIDTH && chart.getyValues().size() > 1)
+				type=TYPE_WIDTH_2;
 
 			//			int[] repetitions=new int[((chart.getxValues().length + numXgroups -1) / numXgroups)];
 			List<List<Integer>> matchesMatrix= new ArrayList<>();
@@ -82,7 +87,7 @@ public class ChartRes {
 				System.out.println("number of sub-lists=" + groupYval.size());
 				System.out.println("Sublist size=" + groupYval.get(0).size());	
 				//Choosing the average value of each group
-				if (type == 1){
+				if (type == TYPE_WIDTH){
 					double result[]=new double[0];
 					for (List<Double> list : groupYval) {
 						Set<Double> uniqueDoubles= Sets.newLinkedHashSet(list);
@@ -98,9 +103,12 @@ public class ChartRes {
 						result.addAll(uniqueDoubles);
 					}
 					serie.setYvalues(Doubles.toArray(result));
-				}else{
-					serie.setYvalues(meanList(groupYval));
+				}else if (type == TYPE_WIDTH_2){
+					serie.setYvalues(setMaxMinList(groupYval));
 				}
+				else
+					serie.setYvalues(meanList(groupYval));
+
 			}
 
 			//Choosing values from the X axis (average)
@@ -109,7 +117,7 @@ public class ChartRes {
 			System.out.println("SubDates size=" + groupXval.get(0).size());
 			//				for (Date d : groupXval.get(0))
 			//					System.out.println(d);
-			if (type==1){
+			if (type==TYPE_WIDTH){
 				double result[]=new double[0];
 				int pos=0;
 				for (List<Double> list: groupXval) {
@@ -121,8 +129,10 @@ public class ChartRes {
 					pos++;
 				}
 				chart.setxValues(result);
+			}else if (type==TYPE_WIDTH_2){
+				chart.setxValues(meanListForTwo(groupXval));
 			}
-			else if (type ==0)
+			else if (type ==TYPE_AVERAGE)
 				chart.setxValues(meanList(groupXval));
 			//				System.out.println("get average of the first subgroup=" + chart.getxValues()[0]);
 
@@ -178,15 +188,70 @@ public class ChartRes {
 		}
 		return result;
 	}
-	private List<Integer> getMatches(int m, double[] xValues) throws ParseException{
+	private double[] meanListForTwo(List<List<Double>> list){
+		//		double result[] = new double[list.size()*2];
+		//		ArrayList<Double> result=new ArrayList<>();
+		int pos=0;
+		double result[];
+		final int pixelElems=list.get(0).size();
+		if (pixelElems > 3)
+			result = new double[list.size()*4];
+		else
+			result = new double[list.size()*2];
+
+		for (List<Double> values: list) {
+			//			result[pos]=values.get(0);
+			//			pos++;
+			//			result[pos]= values.get(values.size()-1);
+			//			pos++;
+			result[pos] = values.get(0);
+			pos++;
+			if (pixelElems > 3){
+				double mean=mean(values, Double.class);
+				result[pos]=mean-1;
+				pos++;
+				result[pos]=mean+1;
+				pos++;
+			}
+			result[pos] = values.get(values.size()-1);
+			pos++;
+		}
+		return result;
+	}
+
+	private List<Integer> getMatches(int y, int m,int w, int d, double[] xValues) throws ParseException{
 		List<Integer> result=new ArrayList<Integer>();
 		Calendar cal= Calendar.getInstance();
+		if (d != 0){
+			for (int i = 0; i < xValues.length; i++){
+				cal.setTimeInMillis((long)xValues[i]);
+				if (cal.get(Calendar.DAY_OF_MONTH) == d && cal.get(Calendar.MONTH) == (m-1))
+					result.add(i);	
+			}
+			return result;
+		}else if (w != 0){
+			for (int i = 0; i < xValues.length; i++){
+				cal.setTimeInMillis((long)xValues[i]);
+				if (cal.get(Calendar.WEEK_OF_MONTH) == w)
+					result.add(i);	
+			}
+			return result;
+		}else if (m != 0){
+			for (int i = 0; i < xValues.length; i++){
+				cal.setTimeInMillis((long)xValues[i]);
+				if (cal.get(Calendar.MONTH) == m-1)
+					result.add(i);	
+			}
+			return result;
+
+		}else{
 		for (int i = 0; i < xValues.length; i++){
 			cal.setTimeInMillis((long)xValues[i]);
-			if (cal.get(Calendar.MONTH) == m-1)
+			if (cal.get(Calendar.YEAR) == y)
 				result.add(i);	
 		}
 		return result;
+		}
 	}
 	private int find(List<Double> array, double value) {
 		for(int i=0; i<array.size(); i++) 
@@ -232,6 +297,33 @@ public class ChartRes {
 		}
 		System.out.println("Num of replications=" + rep);
 		return result;
+	}
+	public double[] setMaxMinList(List<List<Double>> groupYval){
+		//		int pos=0;
+		final int pixelElems=groupYval.get(0).size();
+
+		//		double[] result= new double[groupYval.size()*2];
+		ArrayList<Double> result = new ArrayList<Double>();
+		for (List<Double> list : groupYval) {
+			double[] array_list=Doubles.toArray(list);
+			ArrayList<Double> newElems= new ArrayList<>();
+			newElems.add(array_list[0]);
+			newElems.add(array_list[array_list.length-1]);			
+			Double max = Doubles.min(array_list);
+			Double min = Doubles.max(array_list);
+			if (pixelElems > 3){
+				if (newElems.contains(max))
+					newElems.add(1,NULL_VAL);
+				else
+					newElems.add(1,max);
+				if (newElems.contains(min))
+					newElems.add(1,NULL_VAL);
+				else
+					newElems.add(1,min);
+			}
+			result.addAll(newElems);
+		}
+		return Doubles.toArray(result);
 	}
 
 }

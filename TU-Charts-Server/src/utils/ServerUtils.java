@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -91,8 +92,14 @@ public enum ServerUtils {
 
 				scanner.close();
 				file.delete();
-
-				ChartModel chart = new ChartModel(name, description, Doubles.toArray(xVal), lines);
+				
+				Calendar cal=Calendar.getInstance();
+				cal.setTimeInMillis(xVal.get(0).longValue());
+				int firstYear=cal.get(Calendar.YEAR);
+				cal.setTimeInMillis(xVal.get(xVal.size()-1).longValue());
+				int lastYear=cal.get(Calendar.YEAR);
+				if (firstYear== lastYear) lastYear=0;
+				ChartModel chart = new ChartModel(name, description, Doubles.toArray(xVal), lines, firstYear,lastYear);
 				chart.setxLegend(titles[0]);
 				return chart;
 

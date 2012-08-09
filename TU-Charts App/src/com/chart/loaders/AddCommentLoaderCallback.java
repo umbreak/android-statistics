@@ -13,12 +13,12 @@ import static com.chart.AppUtils.LOADER_LIST_COMMENTS;
 import com.chart.browser.adapters.CommentAdapter;
 import com.chart.pojos.CommentModel;
 
-public class AddLoaderCallback implements LoaderCallbacks<CommentModel>{
+public class AddCommentLoaderCallback implements LoaderCallbacks<CommentModel>{
 	private Context context;
 	private CommentAdapter mAdapter;
 	private LoaderManager lManager;
 	
-	public AddLoaderCallback(Context context, CommentAdapter mAdapter, LoaderManager lManager) {
+	public AddCommentLoaderCallback(Context context, CommentAdapter mAdapter, LoaderManager lManager) {
 		super();
 		this.lManager=lManager;
 		this.context = context;

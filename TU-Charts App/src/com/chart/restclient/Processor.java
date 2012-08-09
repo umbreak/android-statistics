@@ -1,10 +1,7 @@
 package com.chart.restclient;
 
-import static com.chart.AppUtils.SCALE_1_2;
-import static com.chart.AppUtils.SCALE_1_4;
-import static com.chart.AppUtils.SCALE_2_1;
-import static com.chart.AppUtils.SCALE_4_1;
 import static com.chart.AppUtils.NULL_VAL;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -40,8 +37,6 @@ public enum Processor {
 	i;
 	//	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
 	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
-	public int width;
-	public int height;
 	public Context context;
 	public UserModel myUser;
 
@@ -75,8 +70,8 @@ public enum Processor {
 			String challenge_date=responseEntity.getBody();
 			if (NULL_VAL == null)
 				NULL_VAL = restTemplate.exchange(url + "charts/null", HttpMethod.GET, requestEntity, Double.class).getBody();
-			
-			
+
+
 			String hashed_password=AppUtils.i.getHash(user.password);
 			token=AppUtils.i.getHash(hashed_password+challenge_date);
 			System.out.println("token="+token);
@@ -208,26 +203,15 @@ public enum Processor {
 			return null;
 		}
 	}
-	public ChartModel getChart(int chart_id, int scale, int month){
+	public synchronized ChartModel getChart(String path){
 		try{
-			int x=width;
-			ResponseEntity<ChartModel> responseEntity;
-
-			if (scale == SCALE_4_1) x=width*4;
-			else if (scale == SCALE_2_1) x=width*2;
-			else if (scale == SCALE_1_2) x=width/2;
-			else if (scale == SCALE_1_4) x=width/4;
-			if (scale == 0){
-				responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?month="+month,HttpMethod.GET, requestEntity, ChartModel.class);
-			}else{
-				responseEntity = restTemplate.exchange(url + "charts/"+chart_id + "?x="+x + "&month="+month + "&type=1",HttpMethod.GET, requestEntity, ChartModel.class);
-			}
+			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + path,HttpMethod.GET, requestEntity, ChartModel.class);
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){
 			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
 				Log.d(TAG, "Re-logging");
-				if (postUser(myUser) > 0) return getChart(chart_id,scale,month);
+				if (postUser(myUser) > 0) return getChart(path);
 			}
 			Log.d(TAG, e.toString());
 			return null;

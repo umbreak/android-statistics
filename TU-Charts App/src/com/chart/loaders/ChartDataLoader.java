@@ -1,29 +1,37 @@
 package com.chart.loaders;
 
-import java.util.Calendar;
-
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.util.LruCache;
+import android.util.Log;
 
+import com.chart.memory.DiskCacheManager;
 import com.chart.pojos.ChartModel;
 import com.chart.restclient.Processor;
 
 public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
+	private final static String TAG="ChartDataLoader";
 	public ChartModel chart=null;
 	private int chart_id;
-	private int scale;
-	private int month;
+	private int width;
+	private boolean isReal;
+	private int type;
+	private int year,month,week,day;
+	private LruCache<Integer, ChartModel> mMemoryCache;
+	private DiskCacheManager mDiskCache;
 
-
-	public ChartDataLoader(Context context, int chart_id, int scale) {
+	public ChartDataLoader(Context context, int chart_id, boolean isReal,int width, int type, int year, int month, int week,int day, DiskCacheManager mDiskCache, LruCache<Integer, ChartModel> mMemoryCache) {
 		super(context);
 		this.chart_id=chart_id;
-		this.scale=scale;
-		this.month=0;
-	}
-	public ChartDataLoader(Context context, int chart_id, int scale, int month) {
-		this(context,chart_id,scale);
+		this.isReal=isReal;
+		this.width=width;
+		this.mMemoryCache=mMemoryCache;
+		this.mDiskCache=mDiskCache;
+		this.type=type;
+		this.year=year;
 		this.month=month;
+		this.week=week;
+		this.day=day;
 	}
 
 	/**
@@ -32,8 +40,36 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	 * data to be published by the loader.
 	 */
 	@Override public ChartModel loadInBackground() {
-		System.out.println("** ChartDataLoader: Retrieve the DATA from one Chart");
-		return Processor.i.getChart(chart_id, scale, month);
+		Log.i(TAG, "Start ChartDataLoader");
+		ChartModel chart;
+		String key;
+		if (isReal) width=0;
+			key="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + month + "&week=" + week + "&day=" + day + "&type=" + type;
+		
+		Log.w(TAG, "key=" + key);
+
+		chart=mMemoryCache.get(key.hashCode());
+		if(chart != null){
+			Log.i(TAG, "Data=" + key + " obtained from the Memory Cache");
+			return chart;
+		}
+
+		chart=mDiskCache.getChart(key.hashCode());
+		if (chart != null){
+			Log.i(TAG, "Data=" + key + " obtained from the Disk Cache");
+			mMemoryCache.put(key.hashCode(), chart);
+			return chart;
+		}
+
+		chart= Processor.i.getChart(key);
+		//		if (chart!=null && week == 0 && day== 0){
+		Log.i(TAG, "Inserting element '"+key+ "' in the Memory & Disk Cache");
+		if (chart != null){
+			mMemoryCache.put(key.hashCode(), chart);
+			mDiskCache.putChart(key.hashCode(), chart);
+		}
+		//		}
+		return chart;
 	}
 
 

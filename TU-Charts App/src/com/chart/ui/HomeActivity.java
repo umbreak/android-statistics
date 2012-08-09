@@ -1,10 +1,10 @@
 package com.chart.ui;
 
+import static com.chart.AppUtils.LAST_SEEN;
+
 import java.util.ArrayList;
 
 import android.content.Context;
-import static com.chart.AppUtils.LAST_SEEN;
-
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -21,8 +21,6 @@ import android.widget.TabWidget;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.chart.R;
-import com.chart.R.id;
-import com.chart.R.layout;
 import com.chart.restclient.Processor;
 
 public class HomeActivity extends SherlockFragmentActivity {
@@ -57,14 +55,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}else{
-			Display display = getWindowManager().getDefaultDisplay();
-			Point size = new Point();
-			display.getSize(size);
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			prefs.edit().putString(LAST_SEEN, "").commit();
-
-			Processor.i.width=size.x;
-			Processor.i.height=size.y;
 		}
 	}
 
@@ -149,7 +141,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 		public Fragment getItem(int position) {
 			TabInfo info = mTabs.get(position);
 			Fragment f=Fragment.instantiate(mContext, info.clss.getName(), info.args);
-			System.out.println("Fragment "+info.clss.getName() + " id=" + f.getId() + " Fragment tag="+ f.getTag());
 			return f;
 		}
 

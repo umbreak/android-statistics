@@ -196,8 +196,7 @@ public abstract class AbstractChart {
 			for (int k = 0; k < seriesLength; k++) {
 				if (yV[k] != NULL_VAL)
 					series.add(xValues[k], yV[k]);
-				else
-					System.out.println("Value=" + yV[k] + " skipped");
+				
 			}
 			dataset.addSeries(series);
 		}

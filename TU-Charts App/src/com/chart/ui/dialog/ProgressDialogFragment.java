@@ -1,4 +1,4 @@
-package com.chart.ui;
+package com.chart.ui.dialog;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;

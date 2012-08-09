@@ -19,7 +19,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Polymorphism;
 import org.hibernate.annotations.PolymorphismType;
 
@@ -43,14 +42,15 @@ public class BaseChartModel {
 	private String yLegend;
 	private int votes;
 	private int type;
+	private int firstYear;
+	private int lastYear;
 	private Date date;
 	private CategoryModel category;
-
-
+	
 
 	public BaseChartModel(int id, String name, String description,
-			String xLegend, String yLegend, int votes, int type, Date date,
-			CategoryModel category) {
+			String xLegend, String yLegend, int votes, int type, int firstYear,
+			int lastYear, Date date, CategoryModel category) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -59,9 +59,25 @@ public class BaseChartModel {
 		this.yLegend = yLegend;
 		this.votes = votes;
 		this.type = type;
+		this.firstYear = firstYear;
+		this.lastYear = lastYear;
 		this.date = date;
 		this.category = category;
 	}
+
+
+	public BaseChartModel(String name, String description, int firstYear, int lastYear) {
+		this(name,description);
+		this.firstYear=firstYear;
+		this.lastYear=lastYear;
+	}
+	
+	public BaseChartModel(String name, String description) {
+		this();
+		this.name=name;
+		this.description=description;
+	}
+	
 	public BaseChartModel() {
 		super();
 		votes=0;
@@ -71,11 +87,7 @@ public class BaseChartModel {
 		date= new Date();
 
 	}
-	public BaseChartModel(String name, String description) {
-		this();
-		this.name=name;
-		this.description=description;
-	}
+
 	
 	@Id @GeneratedValue @Column(name = "chart_id")
 	public int getId() {
@@ -112,6 +124,7 @@ public class BaseChartModel {
 	public int getVotes() {
 		return votes;
 	}
+	
 	public void setVotes(int votes) {
 		this.votes = votes;
 	}
@@ -120,6 +133,19 @@ public class BaseChartModel {
 	}
 	public void setType(int type) {
 		this.type = type;
+	}
+	
+	public int getFirstYear() {
+		return firstYear;
+	}
+	public void setFirstYear(int firstYear) {
+		this.firstYear = firstYear;
+	}
+	public int getLastYear() {
+		return lastYear;
+	}
+	public void setLastYear(int lastYear) {
+		this.lastYear = lastYear;
 	}
 	@Temporal(TemporalType.TIMESTAMP) @NotNull @Column(updatable=false)
 	public Date getDate() {

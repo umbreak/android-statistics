@@ -39,7 +39,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.chart.AppUtils;
 import com.chart.R;
 import com.chart.browser.adapters.CommentAdapter;
-import com.chart.loaders.AddLoaderCallback;
+import com.chart.loaders.AddCommentLoaderCallback;
 import com.chart.loaders.CommentsLoader;
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.CommentModel;
@@ -203,7 +203,7 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 		private EditText text;
 		private ImageView send;
 		private ProgressBar progress;
-		private AddLoaderCallback commentLoader;
+		private AddCommentLoaderCallback commentLoader;
 
 		public static CommentsFragment newInstance(int chart_id) {
 			CommentsFragment f = new CommentsFragment();
@@ -232,8 +232,7 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 		}
 
 		private void isLoading(boolean isLoading){
-			System.out.println("isLoading? " + isLoading);
-			System.out.println(progress);
+		
 			if (isLoading){
 				progress.setVisibility(View.VISIBLE);
 				listView.setVisibility(View.GONE);
@@ -244,7 +243,6 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 		}
 		@Override
 		public void onResume() {
-			System.out.println("resume");
 			super.onResume();
 		}
 		@Override
@@ -277,7 +275,7 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 			// Prepare the loader.  Either re-connect with an existing one,
 			// or start a new one.
 			getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_LIST_COMMENTS, null, this);
-			commentLoader = new AddLoaderCallback(getSherlockActivity(), mAdapter, getSherlockActivity().getSupportLoaderManager());
+			commentLoader = new AddCommentLoaderCallback(getSherlockActivity(), mAdapter, getSherlockActivity().getSupportLoaderManager());
 
 		}
 
@@ -319,7 +317,6 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 
 		@Override
 		public Loader<List<CommentModel>> onCreateLoader(int id, Bundle args) {
-			System.out.println("Here2");
 			isLoading(true);
 			return new CommentsLoader(getSherlockActivity(), chart_id);
 
@@ -329,7 +326,6 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 		@Override
 		public void onLoadFinished(Loader<List<CommentModel>> loader, List<CommentModel> data) {
 			// Set the new data in the adapter.
-			System.out.println("Here3");
 			isLoading(false);
 			mAdapter.setData(data);
 
@@ -345,7 +341,6 @@ public class ChartDetailsAcitivy extends SherlockFragmentActivity{
 		@Override
 		public void onLoaderReset(Loader<List<CommentModel>> arg0) {
 			// Clear the data in the adapter.
-			System.out.println("reset");
 			isLoading(false);
 			mAdapter.setData(null);	}
 

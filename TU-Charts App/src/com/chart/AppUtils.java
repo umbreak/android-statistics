@@ -4,9 +4,6 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -27,16 +24,17 @@ public enum AppUtils {
 	public static final String SERVER_IP="server_ip";
 	public static final String NULL="null_value";
 	public static Double NULL_VAL=null;
+	
+	//Type agorithm
+	public static final int TYPE_AVERAGE=0;
+	public static final int TYPE_WIDTH=11;
+	
+	//Calendar (Year, Month, Day)
+	public static final int YEAR=15;
+	public static final int MONTH=16;
+	public static final int WEEK=17;
 
-		
-	//Scale factors (4:1, 2:1, 1:1, 1:2, 1:4)
-	public static final int NO_SCALE=0;
-	public static final int SCALE_4_1=1;
-	public static final int SCALE_2_1=2;
-	public static final int SCALE_1=3;	
-	public static final int SCALE_1_2=4;
-	public static final int SCALE_1_4=5;
-
+	public static final int DAY=18;
 	
 	//LOADERS
 	public static final int LOADER_CATEGORIES=0;
@@ -46,6 +44,20 @@ public enum AppUtils {
 	public static final int LOADER_ADD_COMMENTS=4;
 	public static final int LOADER_LAST_SEEN=5;
 	public static final int LOADER_LOGIN=6;
+	public static final int LOADER_FILL_CACHE=7;
+
+
+	//DIALOGS
+	public static final int DIALOG_YEAR=0;
+	public static final int DIALOG_MONTH=1;
+	public static final int DIALOG_WEEK=2;
+	public static final int DIALOG_DAY=3;
+
+	//Disk cache dir and size
+	public static final String DISK_CACHE_DIR="charts";
+	public static final int DISK_CACHE_SIZE = 1024 * 1024 * 20; // 20MB
+
+
 
 
 
