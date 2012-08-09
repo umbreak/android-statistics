@@ -31,7 +31,7 @@
          			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
 					<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/tu?autoReconnect=true" />
 					<property name="javax.persistence.jdbc.user" value="root" />
-					<property name="javax.persistence.jdbc.password" value="14068748" />
+					<property name="javax.persistence.jdbc.password" value="*******" />
 					<property name="show_sql" value="false" />	
             </properties>
       
