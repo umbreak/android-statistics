@@ -35,8 +35,8 @@ import com.chart.pojos.UserModel;
 
 public enum Processor {
 	i;
-	//	private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
-	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
+		private static final String url="http://134.109.4.10:8080/TU-Charts-Server/rest/";
+//	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
 	public Context context;
 	public UserModel myUser;
 
