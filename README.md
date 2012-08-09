@@ -8,4 +8,4 @@ android-statistics
  
  TU-Chart App
  
- ![](http://img641.imageshack.us/img641/271/qrcodeuz.png)
+ ![](http://img259.imageshack.us/img259/1191/qrcode1.png)
