@@ -26,8 +26,8 @@ public enum AppUtils {
 	public static Double NULL_VAL=null;
 	
 	//Type agorithm
-	public static final int TYPE_AVERAGE=0;
-	public static final int TYPE_WIDTH=11;
+	public static final int TYPE_AVERAGE=1;
+	public static final int TYPE_WIDTH=2;
 	
 	//Calendar (Year, Month, Day)
 	public static final int YEAR=15;

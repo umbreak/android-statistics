@@ -36,9 +36,9 @@ import com.google.common.primitives.Doubles;
 public class ChartRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
-	private static int TYPE_AVERAGE=10;
-	private static int TYPE_WIDTH=11;
-	private static int TYPE_WIDTH_2=12;
+	private static int TYPE_AVERAGE=1;
+	private static int TYPE_WIDTH=2;
+	private static int TYPE_WIDTH_2=3;
 
 
 	private int id;
@@ -77,6 +77,8 @@ public class ChartRes {
 			if (type == TYPE_WIDTH && chart.getyValues().size() > 1)
 				type=TYPE_WIDTH_2;
 
+			System.out.println("TYPE=" + type);
+
 			//			int[] repetitions=new int[((chart.getxValues().length + numXgroups -1) / numXgroups)];
 			List<List<Integer>> matchesMatrix= new ArrayList<>();
 			//Choosing values from the Y axis (average)
@@ -96,7 +98,7 @@ public class ChartRes {
 						result=Doubles.concat(result,Doubles.toArray(uniqueDoubles));
 					}
 					serie.setYvalues(result);
-				}else if (type == 2){
+				}else if (type == 100){
 					ArrayList<Double> result=new ArrayList<>();
 					for (List<Double> list : groupYval) {
 						List<Double> uniqueDoubles= deleteDuplicates(list);

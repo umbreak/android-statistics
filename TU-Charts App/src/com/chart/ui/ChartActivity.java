@@ -266,7 +266,7 @@ public class ChartActivity extends SherlockFragmentActivity implements LoaderCal
 		subMenu3.add(5, TYPE_AVERAGE, 0, "Average");
 		subMenu3.add(5, TYPE_WIDTH, 1, "Width");
 		subMenu3.setGroupCheckable(5, true, true);
-		subMenu3.getItem(type).setChecked(true);
+		subMenu3.getItem(type-1).setChecked(true);
 
 		MenuItem subMenu3Item = subMenu3.getItem();
 		subMenu3Item.setIcon(android.R.drawable.ic_menu_zoom);
