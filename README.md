@@ -6,6 +6,4 @@ android-statistics
  
  More information about each part, inside.
  
- TU-Chart App
- 
- ![](http://img259.imageshack.us/img259/1191/qrcode1.png)
+The App can be downloaded from the [download section](https://github.com/umbreak/android-statistics/downloads) or directly from the [QR code](https://github.com/umbreak/android-statistics/TU-Charts%20App.apk/qr_code)

@@ -8,7 +8,7 @@
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="connection.url">jdbc:mysql://localhost:3306/tu?autoReconnect=true</property>
 		<property name="connection.username">root</property>
-		<property name="connection.password">*******</property>
+		<property name="connection.password">14068748</property>
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 		<property name="connection.autoReconnect">true</property>
 		<property name="connection.autoReconnectForPools">true</property>
