@@ -62,7 +62,7 @@ public class TimePeriodDialog extends DialogFragment {
 			array=getResources().getStringArray(R.array.months);
 			builder.setTitle("Choose the month to display");
 		}else if (num == DIALOG_WEEK){
-			array=new String[]{"All", "1", "2", "3", "4"};
+			array=new String[]{"All", "1st", "2nd", "3rd", "4th", "5th"};
 			builder.setTitle("Choose the week to display");
 		}else{
 			array=new String[]{"All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"

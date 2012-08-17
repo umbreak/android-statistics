@@ -5,5 +5,9 @@
         <attr name="maskDrawable" format="reference" />
         <attr name="borderDrawable" format="reference" />
     </declare-styleable>
+    <declare-styleable name="TintableImage">
+        <attr name="tintColorStateList" format="color" />
+        <attr name="tintUpdateDelay" format="integer" />
+    </declare-styleable>
 
 </resources>

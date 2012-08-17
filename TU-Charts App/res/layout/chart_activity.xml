@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.chart"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <FrameLayout
+        android:id="@+id/frag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/paddingLayout" >
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/paddingLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="14dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" >
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="33dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="#222222" >
+
+        <com.chart.TintableImage
+            android:id="@+id/previous"
+            android:layout_width="33dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/previous"
+            android:clickable="true"
+            android:contentDescription="Previous in time"
+            android:onClick="onClick"
+            app:tintColorStateList="@color/login_blue"
+            app:tintUpdateDelay="100" />
+
+        <com.chart.TintableImage
+            android:id="@+id/next"
+            android:layout_width="33dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/next"
+            android:clickable="true"
+            android:contentDescription="Next in time"
+            android:onClick="onClick"
+            app:tintColorStateList="@color/login_blue"
+            app:tintUpdateDelay="100" />
+    </RelativeLayout>
+
+</RelativeLayout>

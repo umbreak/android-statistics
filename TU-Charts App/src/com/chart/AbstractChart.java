@@ -105,7 +105,7 @@ public abstract class AbstractChart {
 		renderer.setLegendTextSize(15);
 		renderer.setPointSize(1.5f);
 		//margin size values, in this order: top, left, bottom, right
-		renderer.setMargins(new int[] { 8, 30, 5, 0 });
+		renderer.setMargins(new int[] { 8, 30, 0, 0 });
 
 	}
 
@@ -244,18 +244,7 @@ public abstract class AbstractChart {
 	 * @param colors the colors
 	 * @return the category renderer
 	 */
-	protected DefaultRenderer buildCategoryRenderer(int[] colors) {
-		DefaultRenderer renderer = new DefaultRenderer();
-		renderer.setLabelsTextSize(15);
-		renderer.setLegendTextSize(15);
-		renderer.setMargins(new int[] { 20, 30, 15, 0 });
-		for (int color : colors) {
-			SimpleSeriesRenderer r = new SimpleSeriesRenderer();
-			r.setColor(color);
-			renderer.addSeriesRenderer(r);
-		}
-		return renderer;
-	}
+
 
 	/**
 	 * Builds a bar multiple series dataset using the provided values.

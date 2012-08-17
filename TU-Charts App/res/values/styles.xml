@@ -20,15 +20,4 @@
         <item name="android:paddingBottom">6dp</item>
     </style>
 
-    <style name="Theme.Styled" parent="Theme.Sherlock.Light.DarkActionBar">
-        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
-    </style>
-    
-    <style name="ActionButtonStyle" parent="Widget.Sherlock.Light.ActionButton">
-        <item name="android:minWidth">0dip</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">0dip</item>
-        <item name="android:paddingRight">0dip</item>             
-</style>
-
 </resources>

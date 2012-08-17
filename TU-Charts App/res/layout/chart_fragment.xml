@@ -9,9 +9,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="No values avaliable" 
-        android:visibility="gone"/>
-
+        android:text="No values avaliable"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/chart"
@@ -20,13 +19,15 @@
         android:layout_centerHorizontal="true"
         android:orientation="vertical" >
     </LinearLayout>
-        <ProgressBar
+
+    <ProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
+
     
 
 </RelativeLayout>

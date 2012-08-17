@@ -96,6 +96,32 @@ public enum Processor {
 			return -2;
 		}		
 	}
+	//REGISTER ----------------------------------------------->
+	public int putUser(UserModel user){
+		try{
+			myUser=user;
+			user.password=AppUtils.i.getHash(user.password);
+			requestHeaders.remove("TU_challenge");
+			requestHeaders.remove("chemnitz_token");
+			HttpEntity<UserModel> usertEntity = new HttpEntity<UserModel>(user, requestHeaders);
+
+			ResponseEntity<String> responseEntity = restTemplate.exchange(url + "users", HttpMethod.PUT, usertEntity, String.class);
+			
+			requestHeaders.set("chemnitz_token", responseEntity.getBody());
+			requestEntity = new HttpEntity<Object>(requestHeaders);
+			return 1;
+
+		}catch(HttpClientErrorException e){
+			if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+				Log.d(TAG, e.toString());
+				return -1;
+			}
+			return -3;
+		}catch(Exception e){
+			Log.d(TAG, e.toString());
+			return -2;
+		}		
+	}
 	//CATEGORIES ------------------------------------------>
 
 	public CategoryModel[] getCategories(){

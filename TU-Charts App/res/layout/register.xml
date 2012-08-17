@@ -59,14 +59,16 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/user_value"
             android:layout_marginTop="20dp"
-            android:text="Email" />
+            android:text="Email" 
+            />
 
         <EditText
             android:id="@+id/email_value"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@android:id/text1"
-            android:singleLine="true" />
+            android:singleLine="true" 
+            android:inputType="textEmailAddress"/>
 
         <!-- Password Label -->
 

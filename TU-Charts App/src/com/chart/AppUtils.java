@@ -45,6 +45,8 @@ public enum AppUtils {
 	public static final int LOADER_LAST_SEEN=5;
 	public static final int LOADER_LOGIN=6;
 	public static final int LOADER_FILL_CACHE=7;
+	public static final int LOADER_REGISTER=8;
+
 
 
 	//DIALOGS

@@ -78,8 +78,9 @@ public class ChartGenerator extends AbstractChart{
 		renderer = buildRenderer(colors);
 		
 		renderPointAtributes(renderer);
-		renderer.setZoomButtonsVisible(true);
-		renderer.setInScroll(true);
+//		renderer.setZoomButtonsVisible(true);
+		renderer.setInScroll(false);
+		renderer.setPanEnabled(false, true);
 
 		//Checking for the type of data on the X axis. It can be a double or a Date
 		if (!isDate(chartEntry.xValues[0])){
@@ -115,7 +116,6 @@ public class ChartGenerator extends AbstractChart{
 	}
 
 	private void renderPointAtributes(XYMultipleSeriesRenderer renderer){
-		renderer.setAntialiasing(true);
 		int length = renderer.getSeriesRendererCount();
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer seriesRenderer = (XYSeriesRenderer) renderer.getSeriesRendererAt(i);
