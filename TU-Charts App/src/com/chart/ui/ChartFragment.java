@@ -141,7 +141,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		mLayout= (LinearLayout) view.findViewById(R.id.chart);
 		textView=(TextView) view.findViewById(R.id.info);
 		progress=(ProgressBar) view.findViewById(R.id.progress);
-	
+
 		return view;
 	}
 	@Override
@@ -378,8 +378,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	@Override
 	public Loader<ChartModel> onCreateLoader(int id, Bundle args) {
 		//		new ProgressDialogFragment("Charts", "Loading data chart...").show(getSupportFragmentManager(), "DIALOG_F1");
-		fadeAnimation();
-
+		fadeAnimation(progress, mChart);
 		progress.setVisibility(View.VISIBLE);
 		progress.bringToFront();
 		textView.setVisibility(View.GONE);
@@ -390,7 +389,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	@Override
 	public void onLoadFinished(Loader<ChartModel> loader, ChartModel data) {
 		full_chart=data;
-
+		
 		if (data == null)
 			newChart=null;
 		else{
@@ -399,7 +398,8 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				removeElem(value);
 		}
 		updateChart();
-		progress.setVisibility(View.GONE);
+		fadeAnimation(mChart, progress);
+
 	}
 
 	@Override
@@ -498,11 +498,16 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	}
 	private void fadeAnimation(View appear, View dissapear){
 		//Appearing
-		ObjectAnimator alpha = ObjectAnimator.ofFloat(getView(),"alpha", 0f, 1f);
-//		alpha.setRepeatMode(ObjectAnimator.REVERSE);
-//		alpha.setRepeatCount(1);
-		alpha.setDuration(700);
-		alpha.start();
+		if (appear != null){
+			ObjectAnimator alphaShow = ObjectAnimator.ofFloat(appear,"alpha", 0f, 1f);
+			alphaShow.setDuration(200);
+			alphaShow.start();
+		}
+		if (dissapear != null){
+			ObjectAnimator alphaHide = ObjectAnimator.ofFloat(dissapear,"alpha", 1f, 0f);
+			alphaHide.setDuration(400);
+			alphaHide.start();
+		}
 	}
 	//ON NEXT/PREVIOUS BUTTON CLICK--------------------------------------------------------------------------------------->
 	public void moveDate(boolean isNext){
