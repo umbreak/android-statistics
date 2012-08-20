@@ -5,7 +5,6 @@ import jabx.model.UserModel;
 import jabx.model.UserModelPass;
 import jabx.model.UserTokenTime;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -86,12 +85,13 @@ public class UsersResource {
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String puUser(UserModelPass user) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {  
+	public String putUser(UserModelPass user) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {  
 		if (DB_Process.i.getUser(user.getEmail()) == null){
 			DB_Process.i.setUser(new UserModel(user));
 			String token=HashUtils.i.getHash(AuthManager.getUniqueDate()+user.getPassword());
 			AuthManager.i.getToken_table().put(token,  new UserTokenTime(user.getEmail()));
+			System.out.println(user.getEmail());
 			return token;
-		}else throw new WebApplicationException(Response.Status.NOT_ACCEPTABLE);
+		}else throw new WebApplicationException(Response.Status.NOT_FOUND);
 	}
 }

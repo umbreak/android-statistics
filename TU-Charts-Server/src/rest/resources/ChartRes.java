@@ -223,38 +223,69 @@ public class ChartRes {
 
 	private List<Integer> getMatches(int y, int m,int w, int d, double[] xValues) throws ParseException{
 		List<Integer> result=new ArrayList<Integer>();
-		Calendar cal= Calendar.getInstance();
+		Calendar calendar= Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, y);
+
 		if (d != 0){
-			for (int i = 0; i < xValues.length; i++){
-				cal.setTimeInMillis((long)xValues[i]);
-				if (cal.get(Calendar.DAY_OF_MONTH) == d && cal.get(Calendar.MONTH) == (m-1))
+			calendar.set(Calendar.MONTH, m-1);
+			calendar.set(Calendar.DAY_OF_MONTH, d);
+			long firstVal=calendar.getTimeInMillis();
+
+			calendar.set(Calendar.DAY_OF_MONTH, d-1);
+			long lastVal=calendar.getTimeInMillis()-1;
+
+			for (int i = 0; i < xValues.length; i++)
+				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
 					result.add(i);	
-			}
+
 			return result;
+
 		}else if (w != 0){
-			for (int i = 0; i < xValues.length; i++){
-				cal.setTimeInMillis((long)xValues[i]);
-				if (cal.get(Calendar.WEEK_OF_MONTH) == w)
-					result.add(i);	
+			calendar.set(Calendar.MONTH, m-1);
+			if (w != 1)
+				calendar.set(Calendar.WEEK_OF_MONTH, w);
+			long firstVal=calendar.getTimeInMillis();
+
+			calendar.clear();
+			calendar.set(Calendar.YEAR, y);
+			if (w== 5)
+				calendar.set(Calendar.MONTH, m);
+			else{
+				calendar.set(Calendar.MONTH, m-1);
+				calendar.set(Calendar.WEEK_OF_MONTH, w+1);
 			}
+			long lastVal=calendar.getTimeInMillis()-1;
+			for (int i = 0; i < xValues.length; i++)
+				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
+					result.add(i);
+
 			return result;
+			
 		}else if (m != 0){
-			for (int i = 0; i < xValues.length; i++){
-				cal.setTimeInMillis((long)xValues[i]);
-				if (cal.get(Calendar.MONTH) == m-1)
-					result.add(i);	
-			}
+			calendar.set(Calendar.MONTH, m-1);
+			long firstVal=calendar.getTimeInMillis();
+
+			calendar.set(Calendar.MONTH, m);
+			long lastVal=calendar.getTimeInMillis()-1;
+
+			for (int i = 0; i < xValues.length; i++)
+				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
+					result.add(i);
+
 			return result;
 
 		}else{
-		for (int i = 0; i < xValues.length; i++){
-			cal.setTimeInMillis((long)xValues[i]);
-			if (cal.get(Calendar.YEAR) == y)
-				result.add(i);	
-		}
-		return result;
+			long firstVal=calendar.getTimeInMillis();
+			calendar.set(Calendar.YEAR, y+1);
+			long lastVal=calendar.getTimeInMillis()-1;
+			for (int i = 0; i < xValues.length; i++)
+				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
+					result.add(i);
+			return result;
 		}
 	}
+
 	private int find(List<Double> array, double value) {
 		for(int i=0; i<array.size(); i++) 
 			if(array.get(i) == value)

@@ -418,7 +418,9 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	private void updateChart(){
 		try {
 			mLayout.removeAllViews();
-			mChart= chartBuilder.getView(getSherlockActivity(), newChart);
+			int sel = chart.lastYear==0 ? (calendar+1) : calendar;
+			if (!subMenuCalendar.getItem(subMenuCalendar.size()-3).isEnabled()) sel=-1;
+			mChart= chartBuilder.getView(getSherlockActivity(), newChart, sel);
 			mChart.addZoomListener(new ZoomListener() {
 				@Override
 				public void zoomReset() {					
@@ -500,12 +502,12 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		//Appearing
 		if (appear != null){
 			ObjectAnimator alphaShow = ObjectAnimator.ofFloat(appear,"alpha", 0f, 1f);
-			alphaShow.setDuration(200);
+			alphaShow.setDuration(300);
 			alphaShow.start();
 		}
 		if (dissapear != null){
 			ObjectAnimator alphaHide = ObjectAnimator.ofFloat(dissapear,"alpha", 1f, 0f);
-			alphaHide.setDuration(400);
+			alphaHide.setDuration(500);
 			alphaHide.start();
 		}
 	}
@@ -523,7 +525,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			if (cal.get(Calendar.MONTH) != month){
 				stageChange=true;
 				day=cal.get(Calendar.DAY_OF_MONTH);
-				month=cal.get(Calendar.MONTH);
+				month=cal.get(Calendar.MONTH)+1;
 				year=cal.get(Calendar.YEAR);
 			}
 		}else if (week != 0){
@@ -532,7 +534,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			if (cal.get(Calendar.MONTH) != month){
 				stageChange=true;
 				week=cal.get(Calendar.WEEK_OF_MONTH);
-				month=cal.get(Calendar.MONTH);
+				month=cal.get(Calendar.MONTH)+1;
 				year=cal.get(Calendar.YEAR);
 			}
 		}else if (month != 0 ){
@@ -540,7 +542,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			cal.set(Calendar.MONTH, month);
 			if (cal.get(Calendar.YEAR) != year){
 				stageChange=true;
-				month=cal.get(Calendar.MONTH);
+				month=cal.get(Calendar.MONTH)+1;
 				year=cal.get(Calendar.YEAR);
 			}
 		}
