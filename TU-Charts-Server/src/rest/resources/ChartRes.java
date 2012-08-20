@@ -38,7 +38,8 @@ public class ChartRes {
 	@Context Request request;
 	private static int TYPE_AVERAGE=1;
 	private static int TYPE_WIDTH=2;
-	private static int TYPE_WIDTH_2=3;
+	private static int TYPE_ORIGINAL=3;
+	private static int TYPE_WIDTH_2=4;
 
 
 	private int id;
@@ -64,7 +65,7 @@ public class ChartRes {
 				chart.setxValues(modifXval(matches, chart.getxValues()));
 			}
 
-			if (x == 0 && y == 0)
+			if ((x == 0 && y == 0) || type == TYPE_ORIGINAL)
 				return chart;
 
 			int numXgroups=(chart.getxValues().length + x -1) / x;

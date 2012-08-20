@@ -17,22 +17,20 @@ public class GetInBackgroundLoader extends AsyncTaskLoader<Boolean> {
 	private final static int NUM_MONTHS=12;
 	private final static int NUM_WEEKS=4;
 	private int width;
-	private boolean isReal;
 	private int chart_id;
 	private int year,month;
 	private int type;
-	private LruCache<Integer, ChartModel> mMemoryCache;
-	private DiskCacheManager mDiskCache;
+	public LruCache<Integer, ChartModel> mMemoryCache;
+	public DiskCacheManager mDiskCache;
 	private Boolean result;
 
-	public GetInBackgroundLoader(Context context, int id, boolean isReal,int width, int type, int year, int month,DiskCacheManager mDiskCache, LruCache<Integer, ChartModel> mMemoryCache) {
+	public GetInBackgroundLoader(Context context, int id, int width, int type, int year, int month,DiskCacheManager mDiskCache, LruCache<Integer, ChartModel> mMemoryCache) {
 		super(context);
 		this.chart_id=id;
 		this.mMemoryCache=mMemoryCache;
 		this.mDiskCache=mDiskCache;
 		this.year=year;
 		this.result=null;
-		this.isReal=isReal;
 		this.width=width;
 		this.type=type;
 		this.month=month;
@@ -49,7 +47,6 @@ public class GetInBackgroundLoader extends AsyncTaskLoader<Boolean> {
 		//Don't do anything until the year is not selected (cause can be a huge amount of data to load)
 		if (year == 0) return false;
 
-		if (isReal) width=0;
 		String weeksKey[]=null;
 		String monthsKey[]=null;
 

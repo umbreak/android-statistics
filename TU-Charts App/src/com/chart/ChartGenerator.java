@@ -1,9 +1,11 @@
 package com.chart;
 
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -24,47 +26,7 @@ public class ChartGenerator extends AbstractChart{
 
 	public XYMultipleSeriesRenderer renderer;
 
-	//	public GraphicalView getView(Context context, ChartModel chartEntry, int month) throws ParseException {
-	//		this.chartEntry=chartEntry;
-	//
-	//		List<Integer> matches=getMatches(month);
-	//		if (matches.size()==0)
-	//			return null;
-	//		List<SerieModel> y_results=modifYval(matches);
-	//		String[] x_results=modifXval(matches);
-	//
-	//		Resources r=context.getResources();
-	//		int[] all_colors= new int[]{r.getColor(R.color.chart_blue),r.getColor(R.color.chart_red),
-	//				r.getColor(R.color.chart_green),r.getColor(R.color.chart_brown),r.getColor(R.color.chart_pink),r.getColor(R.color.chart_violet)};
-	//
-	//		int[] colors = new int[y_results.size()];
-	//		for (int i = 0; i < colors.length; i++) 
-	//			colors[i]=all_colors[i];
-	//
-	//		XYMultipleSeriesRenderer renderer = buildRenderer(colors);
-	//		renderPointAtributes(renderer);
-	//
-	//		//Checking for the type of data on the X axis. It can be a double or a Date
-	//		if (isNum(chartEntry.xValues[0])){
-	//			double xVal[]=new double[x_results.length];
-	//			for (int i = 0; i < xVal.length; i++)
-	//				xVal[i]=Double.parseDouble(x_results[i]);
-	//			setChartSettings(renderer, chartEntry.name,chartEntry.xLegend, chartEntry.yLegend, xVal[0], xVal[xVal.length-1],
-	//					chartEntry.min, chartEntry.max, r.getColor(R.color.chart_darkgrey), Color.BLACK, context);
-	//			return ChartFactory.getLineChartView(context,buildDataset(xVal, y_results), renderer);
-	//
-	//		}else{
-	//			Date xVal[]=new Date[x_results.length];
-	//			for (int i = 0; i < xVal.length; i++)
-	//				xVal[i]=AppUtils.i.date_format.parse(x_results[i]);
-	//			setChartSettings(renderer, chartEntry.name,chartEntry.xLegend, chartEntry.yLegend, xVal[0].getTime(), xVal[xVal.length-1].getTime(),
-	//					chartEntry.min, chartEntry.max, r.getColor(R.color.chart_darkgrey), Color.BLACK, context);
-	//			return ChartFactory.getTimeChartView(context,buildDateDataset(xVal, y_results), renderer, AppUtils.i.date_format.toPattern());
-	//
-	//		}			
-	//	}
-
-	public GraphicalView getView(Context context, ChartModel chartEntry) throws ParseException {
+	public GraphicalView getView(Context context, ChartModel chartEntry, int sel) throws ParseException {
 		List<SerieModel> results=chartEntry.yValues;
 		if (results.size() == 0) return null;
 		Resources r=context.getResources();
@@ -92,7 +54,14 @@ public class ChartGenerator extends AbstractChart{
 			Date xVal[]=new Date[chartEntry.xValues.length];
 			for (int i = 0; i < xVal.length; i++)
 				xVal[i]=new Date((long)chartEntry.xValues[i]);
-			setChartSettings(renderer, chartEntry.name,chartEntry.xLegend, chartEntry.yLegend, xVal[0].getTime(), xVal[xVal.length-1].getTime(),
+			String title="";
+			Calendar cal=Calendar.getInstance();
+			cal.setTime(xVal[0]);
+			if (sel == 0) title=" (Year: "+ cal.get(Calendar.YEAR) + ")";
+			else if (sel == 1) title=" (Month: " + new DateFormatSymbols().getMonths()[cal.get(Calendar.MONTH)] + ")";
+			else if (sel == 2) title=" (Week: " + cal.get(Calendar.WEEK_OF_MONTH) + ")";
+			else if (sel == 3) title=" (Day: " + cal.get(Calendar.DAY_OF_MONTH) + ")";
+			setChartSettings(renderer, chartEntry.name + title,chartEntry.xLegend, chartEntry.yLegend, xVal[0].getTime(), xVal[xVal.length-1].getTime(),
 					yEdges[0], yEdges[1], r.getColor(R.color.chart_darkgrey), Color.BLACK, context);
 			return ChartFactory.getTimeChartView(context, buildDateDataset(xVal, results), renderer, getDateFormat(xVal));
 		}			

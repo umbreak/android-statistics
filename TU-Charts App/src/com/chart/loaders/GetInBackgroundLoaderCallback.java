@@ -24,7 +24,7 @@ public class GetInBackgroundLoaderCallback implements LoaderCallbacks<Boolean>{
 
 	@Override
 	public Loader<Boolean> onCreateLoader(int arg0, Bundle b) {
-		return new GetInBackgroundLoader(context, b.getInt("chart_id"), b.getBoolean("isReal"),b.getInt("width"), b.getInt("type"), b.getInt("year"), b.getInt("month"), mDiskCache, mMemoryCache);
+		return new GetInBackgroundLoader(context, b.getInt("chart_id"),b.getInt("width"), b.getInt("type"), b.getInt("year"), b.getInt("month"), mDiskCache, mMemoryCache);
 	}
 
 	@Override

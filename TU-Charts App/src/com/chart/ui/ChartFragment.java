@@ -10,6 +10,8 @@ import static com.chart.AppUtils.LOADER_FILL_CACHE;
 import static com.chart.AppUtils.MONTH;
 import static com.chart.AppUtils.TYPE_AVERAGE;
 import static com.chart.AppUtils.TYPE_WIDTH;
+import static com.chart.AppUtils.TYPE_ORIGINAL;
+
 import static com.chart.AppUtils.WEEK;
 import static com.chart.AppUtils.YEAR;
 
@@ -58,6 +60,8 @@ import com.actionbarsherlock.view.SubMenu;
 import com.chart.ChartGenerator;
 import com.chart.R;
 import com.chart.loaders.ChartDataLoader;
+import com.chart.loaders.CommentsLoader;
+import com.chart.loaders.GetInBackgroundLoader;
 import com.chart.loaders.GetInBackgroundLoaderCallback;
 import com.chart.memory.DiskCacheManager;
 import com.chart.pojos.BaseChartModel;
@@ -76,7 +80,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	private GraphicalView mChart;
 	private LinearLayout mLayout;
 	public int calendar,year,month,week,day;
-	public boolean isReal;
 	public int type;
 	private int width;
 	private TextView textView;
@@ -97,13 +100,9 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		chart= (BaseChartModel)(getArguments() != null ? getArguments().getParcelable("chart") : null);
 		fm = getActivity().getSupportFragmentManager();
 		chartBuilder =  new ChartGenerator();
-		mMemoryCache=((ChartActivity)getSherlockActivity()).mMemoryCache;
-		mDiskCache=((ChartActivity)getSherlockActivity()).mDiskCache;
-
 		if (savedInstanceState == null){
 			calendar=year=month=week=day=0;
 			if (chart.lastYear ==0) year=chart.firstYear;
-			isReal=false;
 			type=TYPE_AVERAGE;
 			namesNotSelected= new ArrayList<String>();
 
@@ -113,7 +112,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			month = savedInstanceState.getInt("month");
 			week = savedInstanceState.getInt("week");
 			day = savedInstanceState.getInt("day");
-			isReal=savedInstanceState.getBoolean("isReal");
 			type=savedInstanceState.getInt("type");
 			namesNotSelected=savedInstanceState.getStringArrayList("NotSelected");
 		}
@@ -129,7 +127,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			width=display.getWidth();
 
 		//Creating the mMemoryCache or retrieving from the Fragment (Handling Configuration Changes)
-		initCheckbox(this);
 		mScaleDetector = new ScaleGestureDetector(getSherlockActivity(), new ScaleListener());
 
 	}
@@ -147,28 +144,19 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_CHART, null, this);
-		getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
+		mMemoryCache=((ChartActivity)getSherlockActivity()).mMemoryCache;
+		mDiskCache=((ChartActivity)getSherlockActivity()).mDiskCache;
+		Loader<ChartModel> loaderData = getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_CHART, null, this);
+		ChartDataLoader cDataLoader=(ChartDataLoader) loaderData;
+		cDataLoader.mDiskCache=mDiskCache;
+		cDataLoader.mMemoryCache=mMemoryCache;
+		Loader<Boolean> loaderBackground=getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
+		GetInBackgroundLoader cBackLoader=(GetInBackgroundLoader) loaderBackground;
+		cBackLoader.mDiskCache=mDiskCache;
+		cBackLoader.mMemoryCache=mMemoryCache;
 	}
 
-	//INIT REAL CHECKBOX ON ACTIONBAR--------------------------------------------------------------------------------------->
-	private void initCheckbox(final LoaderManager.LoaderCallbacks<ChartModel> loader){
-		//Inflate the custom view
-		View customNav = LayoutInflater.from(getSherlockActivity().getSupportActionBar().getThemedContext()).inflate(R.layout.custom_actionbar_view, null);
-		//Bind to its state change  
-		CheckBox check= (CheckBox)customNav.findViewById(android.R.id.checkbox);
-		check.setChecked(isReal);
-		check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				isReal=isChecked;
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null,loader );
-			}
-		});
-		//Attach to the action bar
-		getSherlockActivity().getSupportActionBar().setCustomView(customNav);
-		getSherlockActivity().getSupportActionBar().setDisplayShowCustomEnabled(true);
-	}
+
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
@@ -178,7 +166,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		outState.putInt("month", month);
 		outState.putInt("week", week);
 		outState.putInt("day", day);
-		outState.putBoolean("isReal", isReal);
 		outState.putInt("type", type);
 		outState.putStringArrayList("NotSelected", namesNotSelected);
 	}
@@ -212,6 +199,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		SubMenu subMenu3 = menu.addSubMenu(2, 9, 3, "Resol");
 		subMenu3.add(5, TYPE_AVERAGE, 0, "Average");
 		subMenu3.add(5, TYPE_WIDTH, 1, "Width");
+		subMenu3.add(5, TYPE_ORIGINAL, 2, "Width");
 		subMenu3.setGroupCheckable(5, true, true);
 		subMenu3.getItem(type-1).setChecked(true);
 
@@ -234,6 +222,14 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		case TYPE_WIDTH:
 			if (type!=TYPE_WIDTH){
 				type=TYPE_WIDTH;
+				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
+				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
+				item.setChecked(true);
+			}
+			return true;
+		case TYPE_ORIGINAL:
+			if (type!=TYPE_ORIGINAL){
+				type=TYPE_ORIGINAL;
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 				item.setChecked(true);
@@ -383,7 +379,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		progress.bringToFront();
 		textView.setVisibility(View.GONE);
 
-		return new ChartDataLoader(getSherlockActivity(), chart.id, isReal,width, type,year, month, week,day,mDiskCache,mMemoryCache);
+		return new ChartDataLoader(getSherlockActivity(), chart.id,width, type,year, month, week,day,mDiskCache,mMemoryCache);
 	}
 
 	@Override
@@ -418,8 +414,10 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	private void updateChart(){
 		try {
 			mLayout.removeAllViews();
-			int sel = chart.lastYear==0 ? (calendar+1) : calendar;
-			if (!subMenuCalendar.getItem(subMenuCalendar.size()-3).isEnabled()) sel=-1;
+			int sel = calendar;
+			if (chart.lastYear == 0 && month == 0) sel=-1;
+			else if (year == 0) sel=-1;
+		
 			mChart= chartBuilder.getView(getSherlockActivity(), newChart, sel);
 			mChart.addZoomListener(new ZoomListener() {
 				@Override
@@ -492,7 +490,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		Bundle b = new Bundle();
 		b.putInt("chart_id", chart.id);
 		b.putInt("year", year);
-		b.putBoolean("isReal", isReal);
 		b.putInt("width", width);
 		b.putInt("month", month);
 		b.putInt("type", type);
@@ -518,11 +515,13 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		//we select NEXT_DAY=29+1, the Month will change to March. This is a stageChange=true.
 		boolean stageChange=false;
 		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, day);
+		cal.clear();
+		cal.set(Calendar.YEAR, year);
+		System.out.println("Year="+year + " Month="+ month + " Day="+ day);
 		if (day != 0){
 			day=day+val;
-			cal.set(year, month, day);	
-			if (cal.get(Calendar.MONTH) != month){
+			cal.set(year, month-1, day);	
+			if (cal.get(Calendar.MONTH) != month-1){
 				stageChange=true;
 				day=cal.get(Calendar.DAY_OF_MONTH);
 				month=cal.get(Calendar.MONTH)+1;
@@ -530,8 +529,9 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			}
 		}else if (week != 0){
 			week=week+val;
+			cal.set(Calendar.MONTH, month-1);
 			cal.set(Calendar.WEEK_OF_MONTH, week);
-			if (cal.get(Calendar.MONTH) != month){
+			if (cal.get(Calendar.MONTH) != month-1){
 				stageChange=true;
 				week=cal.get(Calendar.WEEK_OF_MONTH);
 				month=cal.get(Calendar.MONTH)+1;
@@ -539,8 +539,11 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			}
 		}else if (month != 0 ){
 			month=month+val;
-			cal.set(Calendar.MONTH, month);
+			cal.set(Calendar.MONTH, month-1);
+			System.out.println(cal);
+
 			if (cal.get(Calendar.YEAR) != year){
+				System.out.println(cal);
 				stageChange=true;
 				month=cal.get(Calendar.MONTH)+1;
 				year=cal.get(Calendar.YEAR);
@@ -550,7 +553,8 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			cal.set(Calendar.YEAR, (year+val));
 			year=year+val;
 		}
-
+		
+		System.out.println("Year="+year + " Month="+ month + " Day="+ day);
 		getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 		if (stageChange) 
 			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));

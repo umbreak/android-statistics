@@ -14,16 +14,14 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	public ChartModel chart=null;
 	private int chart_id;
 	private int width;
-	private boolean isReal;
 	private int type;
 	private int year,month,week,day;
-	private LruCache<Integer, ChartModel> mMemoryCache;
-	private DiskCacheManager mDiskCache;
+	public LruCache<Integer, ChartModel> mMemoryCache;
+	public DiskCacheManager mDiskCache;
 
-	public ChartDataLoader(Context context, int chart_id, boolean isReal,int width, int type, int year, int month, int week,int day, DiskCacheManager mDiskCache, LruCache<Integer, ChartModel> mMemoryCache) {
+	public ChartDataLoader(Context context, int chart_id,int width, int type, int year, int month, int week,int day, DiskCacheManager mDiskCache, LruCache<Integer, ChartModel> mMemoryCache) {
 		super(context);
 		this.chart_id=chart_id;
-		this.isReal=isReal;
 		this.width=width;
 		this.mMemoryCache=mMemoryCache;
 		this.mDiskCache=mDiskCache;
@@ -41,11 +39,9 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	 */
 	@Override public ChartModel loadInBackground() {
 		Log.i(TAG, "Start ChartDataLoader");
-		ChartModel chart;
-		String key;
-		if (isReal) width=0;
-			key="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + month + "&week=" + week + "&day=" + day + "&type=" + type;
-		
+		ChartModel chart=null;
+		String key="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + month + "&week=" + week + "&day=" + day + "&type=" + type;
+
 		Log.w(TAG, "key=" + key);
 
 		chart=mMemoryCache.get(key.hashCode());
@@ -62,13 +58,11 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 		}
 
 		chart= Processor.i.getChart(key);
-		//		if (chart!=null && week == 0 && day== 0){
-		Log.i(TAG, "Inserting element '"+key+ "' in the Memory & Disk Cache");
 		if (chart != null){
+			Log.i(TAG, "Inserting element '"+key+ "' in the Memory & Disk Cache");
 			mMemoryCache.put(key.hashCode(), chart);
 			mDiskCache.putChart(key.hashCode(), chart);
 		}
-		//		}
 		return chart;
 	}
 

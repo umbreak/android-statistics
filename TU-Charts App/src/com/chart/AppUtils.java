@@ -28,6 +28,7 @@ public enum AppUtils {
 	//Type agorithm
 	public static final int TYPE_AVERAGE=1;
 	public static final int TYPE_WIDTH=2;
+	public static final int TYPE_ORIGINAL=3;
 	
 	//Calendar (Year, Month, Day)
 	public static final int YEAR=15;

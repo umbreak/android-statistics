@@ -100,7 +100,7 @@ public abstract class AbstractChart {
 	}
 	protected void setRenderer(XYMultipleSeriesRenderer renderer){
 		renderer.setAxisTitleTextSize(16);
-		renderer.setChartTitleTextSize(20);
+		renderer.setChartTitleTextSize(22);
 		renderer.setLabelsTextSize(15);
 		renderer.setLegendTextSize(15);
 		renderer.setPointSize(1.5f);

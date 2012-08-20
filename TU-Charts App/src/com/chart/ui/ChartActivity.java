@@ -55,8 +55,9 @@ public class ChartActivity extends SherlockFragmentActivity implements OnClickLi
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		chart = getIntent().getParcelableExtra("chart");
-
+		initCaches();
 		setTitle("");
+		System.out.println("Resize Cache");
 
 		activeFragment= (ChartFragment)getSupportFragmentManager().findFragmentByTag("Chart_" + chart.id);
 		if (activeFragment == null){
@@ -68,10 +69,9 @@ public class ChartActivity extends SherlockFragmentActivity implements OnClickLi
 			.setCustomAnimations(R.anim.fragment_slide_left_enter,R.anim.fragment_slide_left_exit,R.anim.fragment_slide_right_enter,R.anim.fragment_slide_right_exit)
 			.commit();
 		}
-		System.out.println("bbbbbbb");
 
 		//Creating the mMemoryCache or retrieving from the Fragment (Handling Configuration Changes)
-		initCaches();
+		
 
 	}
 	@Override
