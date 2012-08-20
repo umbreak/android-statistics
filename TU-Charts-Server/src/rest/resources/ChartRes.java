@@ -233,7 +233,7 @@ public class ChartRes {
 			calendar.set(Calendar.DAY_OF_MONTH, d);
 			long firstVal=calendar.getTimeInMillis();
 
-			calendar.set(Calendar.DAY_OF_MONTH, d-1);
+			calendar.set(Calendar.DAY_OF_MONTH, d+1);
 			long lastVal=calendar.getTimeInMillis()-1;
 
 			for (int i = 0; i < xValues.length; i++)
