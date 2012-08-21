@@ -40,9 +40,9 @@ public class ChartGenerator extends AbstractChart{
 		renderer = buildRenderer(colors);
 
 		renderPointAtributes(renderer);
-		//		renderer.setZoomButtonsVisible(true);
+//		renderer.setZoomButtonsVisible(true);
 		renderer.setZoomEnabled(true);
-		renderer.setInScroll(true);
+		renderer.setInScroll(false);
 		renderer.setShowGrid(true);
 
 		//Checking for the type of data on the X axis. It can be a double or a Date
