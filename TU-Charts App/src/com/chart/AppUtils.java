@@ -34,7 +34,6 @@ public enum AppUtils {
 	public static final int YEAR=15;
 	public static final int MONTH=16;
 	public static final int WEEK=17;
-
 	public static final int DAY=18;
 	
 	//LOADERS

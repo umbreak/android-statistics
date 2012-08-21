@@ -38,13 +38,6 @@ public class DiskCacheManager{
 	public void putChart(Integer key, ChartModel chart){
 		new putInSSD(key.toString(), chart);
 	}
-	public static int getBytes(ChartModel chart){
-		try {
-			return new ObjectMapper().writeValueAsBytes(chart).length;
-		} catch (Exception e) {
-			return 0;
-		}
-	}
 	public ChartModel getChart(Integer key){
 		ChartModel chart=null;
 		Snapshot snapshot=null;
@@ -108,18 +101,19 @@ public class DiskCacheManager{
 		private boolean writeChartToFile( ChartModel chart, DiskLruCache.Editor editor )
 				throws IOException, FileNotFoundException {
 			OutputStream out = null;
+			boolean end=true;
 			try {
 				out = new BufferedOutputStream( editor.newOutputStream( 0 ));
 				mapper.writeValue(out, chart);
 			}catch(Exception e){ 
 				Log.e(TAG, "Exception writing chart on Disk Cache: " + e.toString());
-				return false;
+				end=false;
 			}
 			finally {
 				if ( out != null ) 
 					out.close();
 			}
-			return true;
+			return end;
 
 		}			
 	}

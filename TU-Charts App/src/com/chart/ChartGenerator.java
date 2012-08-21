@@ -26,7 +26,7 @@ public class ChartGenerator extends AbstractChart{
 
 	public XYMultipleSeriesRenderer renderer;
 
-	public GraphicalView getView(Context context, ChartModel chartEntry, int sel) throws ParseException {
+	public GraphicalView getView(Context context, ChartModel chartEntry, int sel, long xMax, long xMin, double yMax, double yMin) throws ParseException {
 		List<SerieModel> results=chartEntry.yValues;
 		if (results.size() == 0) return null;
 		Resources r=context.getResources();
@@ -38,11 +38,12 @@ public class ChartGenerator extends AbstractChart{
 		int[] yEdges=getMaxMin(results);
 		//		XYMultipleSeriesRenderer renderer = buildRenderer(colors, PointStyle.CIRCLE);
 		renderer = buildRenderer(colors);
-		
+
 		renderPointAtributes(renderer);
-//		renderer.setZoomButtonsVisible(true);
-		renderer.setInScroll(false);
-		renderer.setPanEnabled(false, true);
+		//		renderer.setZoomButtonsVisible(true);
+		renderer.setZoomEnabled(true);
+		renderer.setInScroll(true);
+		renderer.setShowGrid(true);
 
 		//Checking for the type of data on the X axis. It can be a double or a Date
 		if (!isDate(chartEntry.xValues[0])){
@@ -61,13 +62,18 @@ public class ChartGenerator extends AbstractChart{
 			else if (sel == 1) title=" (Month: " + new DateFormatSymbols().getMonths()[cal.get(Calendar.MONTH)] + ")";
 			else if (sel == 2) title=" (Week: " + cal.get(Calendar.WEEK_OF_MONTH) + ")";
 			else if (sel == 3) title=" (Day: " + cal.get(Calendar.DAY_OF_MONTH) + ")";
-			setChartSettings(renderer, chartEntry.name + title,chartEntry.xLegend, chartEntry.yLegend, xVal[0].getTime(), xVal[xVal.length-1].getTime(),
-					yEdges[0], yEdges[1], r.getColor(R.color.chart_darkgrey), Color.BLACK, context);
-			return ChartFactory.getTimeChartView(context, buildDateDataset(xVal, results), renderer, getDateFormat(xVal));
+			System.out.println(xMax + " " + xMin);
+			if (xMax != Long.MAX_VALUE && xMin != Long.MAX_VALUE)
+				setChartSettings(renderer, chartEntry.name + title,chartEntry.xLegend, chartEntry.yLegend, xMin, xMax,
+						yMin, yMax, r.getColor(R.color.chart_darkgrey), Color.BLACK, context);
+			else
+				setChartSettings(renderer, chartEntry.name + title,chartEntry.xLegend, chartEntry.yLegend, xVal[0].getTime(), xVal[xVal.length-1].getTime(),
+						yEdges[0], yEdges[1], r.getColor(R.color.chart_darkgrey), Color.BLACK, context);
+			return ChartFactory.getTimeChartView(context, buildDateDataset(xVal, results), renderer, getDateFormat(xVal, sel));
 		}			
 	}
-	
-	private String getDateFormat(Date xVal[]){
+
+	private String getDateFormat(Date xVal[], int sel){
 		String resul="dd.MM.yy";
 		if (xVal.length <= 2) return resul;
 		long diff = Math.abs(xVal[1].getTime()  - xVal[0].getTime());
@@ -75,12 +81,14 @@ public class ChartGenerator extends AbstractChart{
 			resul="MM.yy";
 		else if (diff > 54000000L) //Bigger than 15 hours
 			resul="dd.MM.yy";
-		else if (diff > 3000000) //Bigger than 50 min
-			resul="dd.MM.yy HH";
-		else if (diff > 50000) //Bigger than 50 sec
-			resul="dd.MM.yy HH:mm";
-		else if (diff > 900) //Bigger than 900ms
-			resul="dd.MM.yy HH:mm:ss";	
+		else if (sel == 3){
+			if (diff > 3000000) //Bigger than 50 min
+				resul="dd.MM.yy HH";
+			else if (diff > 50000) //Bigger than 50 sec
+				resul="dd.MM.yy HH:mm";
+			else if (diff > 900) //Bigger than 900ms
+				resul="dd.MM.yy HH:mm:ss";	
+		}
 		return resul;
 	}
 
@@ -113,41 +121,5 @@ public class ChartGenerator extends AbstractChart{
 		return resul;
 
 	}
-	//	private List<Integer> getMatches(int m) throws ParseException{
-	//		String[] xValues=chartEntry.xValues;
-	//		List<Integer> result=new ArrayList<Integer>();
-	//		SimpleDateFormat month_format=new SimpleDateFormat("MM");
-	//		String month=(m < 10 ? "0" : "") + m;
-	//		for (int i = 0; i < xValues.length; i++){
-	//			//			if (month_format.format(AppUtils.i.date_format.parse(xValues[i])).equals(month))
-	//			if (xValues[i].substring(3, 5).equals(month))	
-	//				result.add(i);	
-	//		}
-	//		return result;
-	//	}
-	//	private List<SerieModel> modifYval(List<Integer> xValues){
-	//		List<SerieModel> y_results_tmp=chartEntry.yValues;
-	//		List<SerieModel> y_results=new ArrayList<SerieModel>();
-	//
-	//		//Modif Y Values
-	//		for (SerieModel serieModel : y_results_tmp) {
-	//			double[] data=new double[xValues.size()];
-	//			for (int i=0; i<xValues.size();i++)
-	//				data[i]=serieModel.yvalues[xValues.get(i)];
-	//			y_results.add(new SerieModel(serieModel.id, serieModel.name, data));
-	//		}
-	//		for (SerieModel lineModel : y_results) 
-	//			System.out.println("Yvalues after=" + lineModel);
-	//		return y_results;
-	//	}
-	//	private String[] modifXval(List<Integer> xValues){
-	//		String[] x_results=new String[xValues.size()];
-	//
-	//		//Modif X Values
-	//		for (int i=0; i< xValues.size(); i++)
-	//			x_results[i]=chartEntry.xValues[xValues.get(i)];
-	//
-	//		System.out.println("X values="+ Arrays.toString(x_results));
-	//		return x_results;
-	//	}
+
 }

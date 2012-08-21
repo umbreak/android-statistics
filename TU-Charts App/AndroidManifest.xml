@@ -24,7 +24,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
+        android:theme="@style/Theme.Styled" >
         <activity
             android:name=".ui.LoginActivity"
             android:label="@string/app_name" 

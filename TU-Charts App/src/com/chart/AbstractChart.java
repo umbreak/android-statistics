@@ -101,11 +101,11 @@ public abstract class AbstractChart {
 	protected void setRenderer(XYMultipleSeriesRenderer renderer){
 		renderer.setAxisTitleTextSize(16);
 		renderer.setChartTitleTextSize(22);
-		renderer.setLabelsTextSize(15);
+		renderer.setLabelsTextSize(13);
 		renderer.setLegendTextSize(15);
 		renderer.setPointSize(1.5f);
 		//margin size values, in this order: top, left, bottom, right
-		renderer.setMargins(new int[] { 8, 30, 0, 0 });
+		renderer.setMargins(new int[] { 8, 30, 38, 0 });
 
 	}
 
@@ -168,8 +168,12 @@ public abstract class AbstractChart {
 		renderer.setLabelsColor(labelsColor);
 		renderer.setXLabelsColor(labelsColor);
 		renderer.setYLabelsColor(0,labelsColor);
+		renderer.setXLabels(25);
+		renderer.setYLabels(25);
 
 		renderer.setYLabelsAlign(Align.RIGHT);
+		renderer.setXLabelsAngle(-90);
+		renderer.setXLabelsAlign(Align.CENTER);
 		renderer.setApplyBackgroundColor(true);
 		int holo_bg= context.getResources().getColor(R.color.light_background);
 		renderer.setBackgroundColor(holo_bg);
@@ -268,25 +272,6 @@ public abstract class AbstractChart {
 		return dataset;
 	}
 
-	/**
-	 * Builds a bar multiple series renderer to use the provided colors.
-	 * 
-	 * @param colors the series renderers colors
-	 * @return the bar multiple series renderer
-	 */
-	protected XYMultipleSeriesRenderer buildBarRenderer(int[] colors) {
-		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		renderer.setAxisTitleTextSize(16);
-		renderer.setChartTitleTextSize(20);
-		renderer.setLabelsTextSize(15);
-		renderer.setLegendTextSize(15);
-		int length = colors.length;
-		for (int i = 0; i < length; i++) {
-			SimpleSeriesRenderer r = new SimpleSeriesRenderer();
-			r.setColor(colors[i]);
-			renderer.addSeriesRenderer(r);
-		}
-		return renderer;
-	}
+
 
 }

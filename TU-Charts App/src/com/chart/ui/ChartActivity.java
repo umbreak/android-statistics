@@ -6,6 +6,13 @@ import static com.chart.AppUtils.TYPE_AVERAGE;
 import static com.chart.AppUtils.TYPE_WIDTH;
 import static com.chart.AppUtils.WEEK;
 import static com.chart.AppUtils.YEAR;
+
+import java.io.IOException;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -56,8 +63,7 @@ public class ChartActivity extends SherlockFragmentActivity implements OnClickLi
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		chart = getIntent().getParcelableExtra("chart");
 		initCaches();
-		setTitle("");
-		System.out.println("Resize Cache");
+		setTitle(chart.name);
 
 		activeFragment= (ChartFragment)getSupportFragmentManager().findFragmentByTag("Chart_" + chart.id);
 		if (activeFragment == null){
@@ -106,7 +112,19 @@ public class ChartActivity extends SherlockFragmentActivity implements OnClickLi
 				@Override
 				protected int sizeOf(Integer key, ChartModel value) {
 					Log.i(TAG,"Size of LruCache");
-					return DiskCacheManager.getBytes(value);
+					try {
+						return new ObjectMapper().writeValueAsBytes(chart).length;
+					} catch (JsonGenerationException e) {
+						e.printStackTrace();
+						return 0;
+					} catch (JsonMappingException e) {
+						e.printStackTrace();
+						return 0;
+					} catch (IOException e) {
+						e.printStackTrace();
+						return 0;
+					}
+//					return mDiskCache.getBytes(value);
 				}
 			};
 			mRetainFragment.mMemoryCache = mMemoryCache;

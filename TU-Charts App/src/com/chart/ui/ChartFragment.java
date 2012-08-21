@@ -18,6 +18,7 @@ import static com.chart.AppUtils.YEAR;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.achartengine.GraphicalView;
 import org.achartengine.tools.ZoomEvent;
@@ -87,6 +88,9 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	private ProgressBar progress;
 	private SubMenu subMenuCalendar;
 
+	private long xMax=Long.MAX_VALUE, xMin=Long.MAX_VALUE;
+	private double yMax=Long.MAX_VALUE,yMin=Long.MAX_VALUE;
+
 
 	private ArrayList<String> namesNotSelected;
 	private ScaleGestureDetector mScaleDetector;
@@ -102,7 +106,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		chartBuilder =  new ChartGenerator();
 		if (savedInstanceState == null){
 			calendar=year=month=week=day=0;
-			if (chart.lastYear ==0) year=chart.firstYear;
+			if (chart.lastYear ==0){ year=chart.firstYear; calendar=1;}
 			type=TYPE_AVERAGE;
 			namesNotSelected= new ArrayList<String>();
 
@@ -113,6 +117,10 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			week = savedInstanceState.getInt("week");
 			day = savedInstanceState.getInt("day");
 			type=savedInstanceState.getInt("type");
+			yMin=savedInstanceState.getDouble("yMin");
+			yMax=savedInstanceState.getDouble("yMax");
+			xMax = savedInstanceState.getLong("xMax");
+			xMin = savedInstanceState.getLong("xMin");
 			namesNotSelected=savedInstanceState.getStringArrayList("NotSelected");
 		}
 
@@ -155,9 +163,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		cBackLoader.mDiskCache=mDiskCache;
 		cBackLoader.mMemoryCache=mMemoryCache;
 	}
-
-
-
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -167,39 +172,47 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		outState.putInt("week", week);
 		outState.putInt("day", day);
 		outState.putInt("type", type);
+		outState.putDouble("yMax", yMax);
+		outState.putDouble("yMin", yMin);
+		outState.putLong("xMax", xMax);
+		outState.putLong("xMin", xMin);
 		outState.putStringArrayList("NotSelected", namesNotSelected);
 	}
 
 	//CREATE MENU--------------------------------------------------------------------------------------->
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-		subMenuCalendar = menu.addSubMenu(2,9,2,"Calendar");
-		if (chart.lastYear!=0)
-			subMenuCalendar.add(4, YEAR, 0, "Year");
+		subMenuCalendar = menu.addSubMenu(2,9,3,"Calendar");
+		subMenuCalendar.add(4, YEAR, 0, "Year");
 		subMenuCalendar.add(4, MONTH, 1, "Month");
 		subMenuCalendar.add(4, WEEK, 2, "Week");
 		subMenuCalendar.add(4, DAY, 3, "Day");
 		subMenuCalendar.setGroupCheckable(4, true, true);
-		subMenuCalendar.getItem(calendar).setChecked(true);
-		if (month == 0){
-			if (chart.lastYear != 0)
-				subMenuCalendar.getItem(subMenuCalendar.size()-3).setEnabled(false);
-			subMenuCalendar.getItem(subMenuCalendar.size()-2).setEnabled(false);
-			subMenuCalendar.getItem(subMenuCalendar.size()-1).setEnabled(false);
+		subMenuCalendar.setGroupEnabled(4, false);
 
+		if (chart.lastYear==0)
+			subMenuCalendar.getItem(DIALOG_MONTH).setEnabled(true);
+		else 
+			subMenuCalendar.getItem(DIALOG_YEAR).setEnabled(true);
+		if (year != 0){
+			subMenuCalendar.getItem(DIALOG_MONTH).setEnabled(true);
+			if (month != 0){
+				subMenuCalendar.getItem(DIALOG_WEEK).setEnabled(true);
+				subMenuCalendar.getItem(DIALOG_DAY).setEnabled(true);
+			}
 		}
 
+		subMenuCalendar.getItem(calendar).setChecked(true);
 
 		MenuItem subMenu2Item = subMenuCalendar.getItem();
 		subMenu2Item.setIcon(android.R.drawable.ic_menu_recent_history);
 		subMenu2Item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
 
-		SubMenu subMenu3 = menu.addSubMenu(2, 9, 3, "Resol");
+		SubMenu subMenu3 = menu.addSubMenu(2, 9, 2, "Resol");
 		subMenu3.add(5, TYPE_AVERAGE, 0, "Average");
 		subMenu3.add(5, TYPE_WIDTH, 1, "Width");
-		subMenu3.add(5, TYPE_ORIGINAL, 2, "Width");
+		subMenu3.add(5, TYPE_ORIGINAL, 2, "Original");
 		subMenu3.setGroupCheckable(5, true, true);
 		subMenu3.getItem(type-1).setChecked(true);
 
@@ -217,6 +230,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 				item.setChecked(true);
+				deleteZoomMargins();
 			}
 			return true;
 		case TYPE_WIDTH:
@@ -225,6 +239,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 				item.setChecked(true);
+				deleteZoomMargins();
 			}
 			return true;
 		case TYPE_ORIGINAL:
@@ -233,6 +248,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
 				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 				item.setChecked(true);
+				deleteZoomMargins();
 			}
 			return true;
 
@@ -284,21 +300,20 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	//AFTER DIALOG SELECTION--------------------------------------------------------------------------------------->
 	public void doDialogClick(int num, int value){
 		calendar=num;
-		if (chart.lastYear == 0)
-			subMenuCalendar.getItem(calendar-1).setChecked(true);
-		else
-			subMenuCalendar.getItem(calendar).setChecked(true);
+		deleteZoomMargins();
+		subMenuCalendar.getItem(calendar).setChecked(true);
+		
 		switch (num) {
 		case DIALOG_YEAR:
-			if (value ==0){
+			if (value ==0 ){
 				year=0;
-				subMenuCalendar.getItem(1).setEnabled(false);
+				subMenuCalendar.getItem(DIALOG_MONTH).setEnabled(false);
 			}else{
 				year=chart.firstYear+value-1;
-				subMenuCalendar.getItem(1).setEnabled(true);
+				subMenuCalendar.getItem(DIALOG_MONTH).setEnabled(true);
 			}
-			subMenuCalendar.getItem(2).setEnabled(false);
-			subMenuCalendar.getItem(3).setEnabled(false);
+			subMenuCalendar.getItem(DIALOG_WEEK).setEnabled(false);
+			subMenuCalendar.getItem(DIALOG_DAY).setEnabled(false);
 
 			month=week=day=0;
 			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
@@ -309,24 +324,22 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			month=value;
 			week=day=0;
 			if (month == 0){
-				subMenuCalendar.getItem(subMenuCalendar.size()-1).setEnabled(false);
-				subMenuCalendar.getItem(subMenuCalendar.size()-2).setEnabled(false);
-				subMenuCalendar.getItem(0).setChecked(true);
+				subMenuCalendar.getItem(DIALOG_MONTH).setChecked(true);
+				subMenuCalendar.getItem(DIALOG_WEEK).setEnabled(false);
+				subMenuCalendar.getItem(DIALOG_DAY).setEnabled(false);
 
 			}else{
-				subMenuCalendar.getItem(subMenuCalendar.size()-1).setEnabled(true);
-				subMenuCalendar.getItem(subMenuCalendar.size()-2).setEnabled(true);
+				subMenuCalendar.getItem(DIALOG_WEEK).setEnabled(true);
+				subMenuCalendar.getItem(DIALOG_DAY).setEnabled(true);
 			}
 			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
 
 			break;
 		case DIALOG_WEEK:
-			if (week== 0)
-				subMenuCalendar.getItem(subMenuCalendar.size()-3).setEnabled(true);
-			else{
-				subMenuCalendar.getItem(subMenuCalendar.size()-1).setEnabled(true);
-				subMenuCalendar.getItem(subMenuCalendar.size()-2).setEnabled(true);
+			if (week!= 0){
+				subMenuCalendar.getItem(DIALOG_WEEK).setEnabled(true);
+				subMenuCalendar.getItem(DIALOG_DAY).setEnabled(true);
 			}
 			week=value;
 			day=0;
@@ -334,15 +347,9 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			break;
 		case DIALOG_DAY:
 			day=value;
-			if (day== 0){
-				if (week==0)
-					subMenuCalendar.getItem(subMenuCalendar.size()-3).setEnabled(true);
-				else
-					subMenuCalendar.getItem(subMenuCalendar.size()-2).setEnabled(true);
-			}
-			else{
-				subMenuCalendar.getItem(subMenuCalendar.size()-1).setEnabled(true);
-				subMenuCalendar.getItem(subMenuCalendar.size()-2).setEnabled(true);
+			if (day!= 0){	
+				subMenuCalendar.getItem(DIALOG_WEEK).setEnabled(true);
+				subMenuCalendar.getItem(DIALOG_DAY).setEnabled(true);
 			}
 			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 			break;
@@ -368,9 +375,13 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		DialogFragment newDialog= TimePeriodDialog.newInstance(DIALOG_DAY, day);
 		newDialog.show(fm, "dialog");
 	}
+	
+	//EMPTY PREVIOUS ZOOM --------------------------------------------------------------------------------->
+	private void deleteZoomMargins(){
+		xMax=Long.MAX_VALUE; xMin=Long.MAX_VALUE; yMax=Long.MAX_VALUE; yMin=Long.MAX_VALUE;
+	}
 
 	//CHART LOADER	--------------------------------------------------------------------------------------->
-
 	@Override
 	public Loader<ChartModel> onCreateLoader(int id, Bundle args) {
 		//		new ProgressDialogFragment("Charts", "Loading data chart...").show(getSupportFragmentManager(), "DIALOG_F1");
@@ -385,7 +396,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	@Override
 	public void onLoadFinished(Loader<ChartModel> loader, ChartModel data) {
 		full_chart=data;
-		
+
 		if (data == null)
 			newChart=null;
 		else{
@@ -417,18 +428,17 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			int sel = calendar;
 			if (chart.lastYear == 0 && month == 0) sel=-1;
 			else if (year == 0) sel=-1;
-		
-			mChart= chartBuilder.getView(getSherlockActivity(), newChart, sel);
-			mChart.addZoomListener(new ZoomListener() {
-				@Override
-				public void zoomReset() {					
-				}
-				@Override
-				public void zoomApplied(ZoomEvent event) {
-					Log.i(TAG,"Is zoom in?" + event.isZoomIn());
-					Log.i(TAG,"Xmax=" + chartBuilder.renderer.getXAxisMax() + " Xmin=" + chartBuilder.renderer.getXAxisMin() + " Ymax=" + chartBuilder.renderer.getYAxisMax() + " Ymin=" + chartBuilder.renderer.getYAxisMin());
-				}
-			}, true, false);
+			mChart =chartBuilder.getView(getSherlockActivity(), newChart, sel, xMax, xMin, yMax, yMin);
+//			mChart.addZoomListener(new ZoomListener() {
+//				@Override
+//				public void zoomReset() {					
+//				}
+//				@Override
+//				public void zoomApplied(ZoomEvent event) {
+//					Log.i(TAG,"Is zoom in?" + event.isZoomIn());
+//					Log.i(TAG,"Xmax=" + chartBuilder.renderer.getXAxisMax() + " Xmin=" + chartBuilder.renderer.getXAxisMin() + " Ymax=" + chartBuilder.renderer.getYAxisMax() + " Ymin=" + chartBuilder.renderer.getYAxisMin());
+//				}
+//			}, true, false);
 			setChartListener(mChart);
 			mLayout.addView(mChart);
 		} catch (ParseException e) {}
@@ -517,7 +527,8 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
 		cal.set(Calendar.YEAR, year);
-		System.out.println("Year="+year + " Month="+ month + " Day="+ day);
+		deleteZoomMargins();
+
 		if (day != 0){
 			day=day+val;
 			cal.set(year, month-1, day);	
@@ -553,12 +564,48 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 			cal.set(Calendar.YEAR, (year+val));
 			year=year+val;
 		}
-		
+
 		System.out.println("Year="+year + " Month="+ month + " Day="+ day);
 		getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 		if (stageChange) 
 			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
 
+	}
+	private void savePositionAndMoveCalendar(){
+		xMax=(long)chartBuilder.renderer.getXAxisMax();
+		xMin=(long)chartBuilder.renderer.getXAxisMin();
+		yMax=chartBuilder.renderer.getYAxisMax();
+		yMin=chartBuilder.renderer.getYAxisMin();
+		Calendar finalDate=Calendar.getInstance();
+		Calendar initalDate=Calendar.getInstance();
+		finalDate.setTimeInMillis(xMax);
+		initalDate.setTimeInMillis(xMin);
+		//Variable to check if calendar value change
+		int oldCalendar=calendar;
+		if (month==0 && calendar == 1) oldCalendar=-1;
+		if (year==0) oldCalendar=-1;
+		if (initalDate.get(Calendar.YEAR) == finalDate.get(Calendar.YEAR)){
+			year=initalDate.get(Calendar.YEAR);
+			month=0; week=0; day=0;
+			if (chart.lastYear == 0) calendar =1; else calendar=0;
+			if (initalDate.get(Calendar.MONTH) == finalDate.get(Calendar.MONTH)){
+				calendar=1;
+				month=initalDate.get(Calendar.MONTH)+1;
+				week=0; day=0;
+				if (initalDate.get(Calendar.WEEK_OF_MONTH) == finalDate.get(Calendar.WEEK_OF_MONTH)){
+					calendar=2;
+					day=0;
+					week=initalDate.get(Calendar.WEEK_OF_MONTH);
+					if (initalDate.get(Calendar.DAY_OF_MONTH) == finalDate.get(Calendar.DAY_OF_MONTH)){
+						calendar=3;
+						day=initalDate.get(Calendar.DAY_OF_MONTH);
+					}
+				}
+			}
+			System.out.println("Calendar=" + calendar + " Year=" + year + " Month=" + month + " Week=" + week + " Day=" + day);
+			if (calendar != oldCalendar)
+				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
+		}	
 	}
 
 	//SCROLL MOVEMENT--------------------------------------------------------------------------------------->
@@ -572,6 +619,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 					move=true;
 				if (event.getAction() == MotionEvent.ACTION_UP && move){
 					Log.i(TAG,"Movement END");
+					savePositionAndMoveCalendar();
 					move=false;
 				}
 				mScaleDetector.onTouchEvent(event);
@@ -582,14 +630,14 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 
 	//TWO FINGER LISTENER--------------------------------------------------------------------------------------->
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-		@Override
-		public boolean onScaleBegin(ScaleGestureDetector detector) {
-			Log.i(TAG,"Scale BEGIN");
-			return super.onScaleBegin(detector);
+		public ScaleListener() {
+			super();
 		}
+
 		@Override
 		public void onScaleEnd(ScaleGestureDetector detector) {
 			Log.i(TAG,"Scale END");
+			savePositionAndMoveCalendar();
 			super.onScaleEnd(detector);
 		}
 	}
