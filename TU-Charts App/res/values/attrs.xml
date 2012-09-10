@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="BezelImageView">
-        <attr name="maskDrawable" format="reference" />
-        <attr name="borderDrawable" format="reference" />
-    </declare-styleable>
     <declare-styleable name="TintableImage">
         <attr name="tintColorStateList" format="color" />
         <attr name="tintUpdateDelay" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="SeekDialogPreference">
+        <attr name="minValue" format="integer" />
+        <attr name="maxValue" format="integer" />
     </declare-styleable>
 
 </resources>

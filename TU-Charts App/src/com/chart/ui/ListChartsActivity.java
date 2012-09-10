@@ -28,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.internal.widget.IcsAdapterView;
 import com.actionbarsherlock.internal.widget.IcsAdapterView.OnItemSelectedListener;
@@ -43,7 +42,7 @@ import com.chart.loaders.BaseChartLoader;
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.CategoryModel;
 
-public class ListChartsActivity extends SherlockFragmentActivity{
+public class ListChartsActivity extends BaseSherlockActivity{
 	private ArrayList<CategoryModel> categories;
 	private int position;
 	private static final String TAG="ListChartsActivity";

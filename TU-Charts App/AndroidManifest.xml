@@ -60,6 +60,12 @@
             android:label="@string/app_name" >
         </activity>
         
+                          <!-- PREFERENCE_ACTIVITY activity -->
+        <activity
+            android:name=".ui.PreferenceActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
     </application>
 
 </manifest>

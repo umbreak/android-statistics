@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2008 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<!-- This is a primitive example showing the different types of preferences available. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.chart" >
+
+    <PreferenceCategory android:title="Server" >
+        <EditTextPreference
+            android:defaultValue="134.109.4.10"
+            android:dialogTitle="Enter the address of the Server"
+            android:key="server_ip"
+            android:summary="Address of the Server who process the request (don&apos;t change that if not sure)"
+            android:title="Server address" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Cache" >
+        <com.chart.widgets.SeekDialogPreference
+            android:defaultValue="10"
+            android:dialogTitle="% of SSD memory allowed to use for Caching Charts"
+            android:key="percentage_SSD"
+            android:persistent="true"
+            android:title="SSD used" 
+            android:summary="Maximum % of SSD memory used: "
+            app:minValue="5"
+            app:maxValue="75"/>
+
+        <com.chart.widgets.ButtonDialogPreference
+            android:dialogMessage="Do you want to delete the content of the cache?"
+            android:summary="Delete the content of the cache"
+            android:key="delete_cache"
+            android:title="Delete Cache" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

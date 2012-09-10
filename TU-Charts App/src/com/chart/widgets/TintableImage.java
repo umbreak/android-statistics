@@ -1,4 +1,7 @@
-package com.chart;
+package com.chart.widgets;
+
+import com.chart.R;
+import com.chart.R.styleable;
 
 import android.content.Context;
 import android.content.res.TypedArray;

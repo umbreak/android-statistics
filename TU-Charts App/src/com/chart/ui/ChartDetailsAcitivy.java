@@ -31,7 +31,6 @@ import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -44,7 +43,7 @@ import com.chart.loaders.CommentsLoader;
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.CommentModel;
 
-public class ChartDetailsAcitivy extends SherlockFragmentActivity{
+public class ChartDetailsAcitivy extends BaseSherlockActivity{
 	private BaseChartModel chart;
 	//Option == 0 -> InfoFragment | Option == 1 -> CommentsFragment
 	private int option;

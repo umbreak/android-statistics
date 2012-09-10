@@ -1,14 +1,12 @@
 package com.chart.ui;
 
+import static com.chart.AppUtils.EMAIL;
 import static com.chart.AppUtils.LOADER_LOGIN;
 import static com.chart.AppUtils.LOADER_REGISTER;
-
 import static com.chart.AppUtils.PASS;
+import static com.chart.AppUtils.PERCENTAGE_SSD;
+import static com.chart.AppUtils.SERVER_IP;
 import static com.chart.AppUtils.USER;
-import static com.chart.AppUtils.EMAIL;
-
-
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,29 +23,33 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.chart.R;
 import com.chart.loaders.LoginLoader;
 import com.chart.loaders.RegisterLoader;
+import com.chart.restclient.Processor;
 
-public class LoginActivity extends SherlockFragmentActivity {
+public class LoginActivity extends BaseSherlockActivity {
 	private String option;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login_base_layout);
+		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
 		if (savedInstanceState != null)
 			option = savedInstanceState.getString("opt");
+		
 		else{
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			String email=prefs.getString(EMAIL, "");
 			String pass=prefs.getString(PASS, "");
-			if (!(email.isEmpty() && pass.isEmpty()))
+			Processor.i.setUrl(prefs.getString(SERVER_IP, ""));
+			if (!(email.isEmpty() || pass.isEmpty()))
 				option = "LoginProcessFragment";
 			else
 				option = "LoginFragment";
 		}
+
 		Fragment f= getSupportFragmentManager().findFragmentByTag(option);
 		if (f == null){
 			FragmentTransaction ft =getSupportFragmentManager().beginTransaction();

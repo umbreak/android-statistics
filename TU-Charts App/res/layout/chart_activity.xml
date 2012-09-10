@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/paddingLayout" >
+
     </FrameLayout>
 
     <RelativeLayout
@@ -26,7 +27,7 @@
         android:layout_centerHorizontal="true"
         android:background="#222222" >
 
-        <com.chart.TintableImage
+        <com.chart.widgets.TintableImage
             android:id="@+id/previous"
             android:layout_width="33dp"
             android:layout_height="wrap_content"
@@ -38,7 +39,7 @@
             app:tintColorStateList="@color/login_blue"
             app:tintUpdateDelay="100" />
 
-        <com.chart.TintableImage
+        <com.chart.widgets.TintableImage
             android:id="@+id/next"
             android:layout_width="33dp"
             android:layout_height="wrap_content"

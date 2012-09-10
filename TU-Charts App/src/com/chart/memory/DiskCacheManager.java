@@ -1,7 +1,7 @@
 package com.chart.memory;
 
 import static com.chart.AppUtils.DISK_CACHE_DIR;
-import static com.chart.AppUtils.DISK_CACHE_SIZE;
+import static com.chart.AppUtils.PERCENTAGE_SSD;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -13,6 +13,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.os.Environment;
+import android.os.StatFs;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.chart.pojos.ChartModel;
@@ -26,15 +28,25 @@ public class DiskCacheManager{
 	private final static String TAG="DIskCacheManager";
 	public DiskCacheManager(Context context) {
 		super();
+		StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+		double totalSize=(double)stat.getBlockCount() * (double)stat.getBlockSize();
 		File cacheDir = getCacheDir(context, DISK_CACHE_DIR);
+		int percentage = PreferenceManager.getDefaultSharedPreferences(context).getInt(PERCENTAGE_SSD, 10);
+		Double size=(double)percentage*totalSize/100;
 		try {
-			mDiskCache= DiskLruCache.open(cacheDir, 10, 1, DISK_CACHE_SIZE);
+			mDiskCache= DiskLruCache.open(cacheDir, 10, 1, size.longValue());
 		} catch (IOException e) { Log.e(TAG, "Exception opening the cache dir");
 		}
 		mapper = new ObjectMapper();
 
 	}
-
+	public void delete(){
+		try {
+			mDiskCache.delete();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	public void putChart(Integer key, ChartModel chart){
 		new putInSSD(key.toString(), chart);
 	}

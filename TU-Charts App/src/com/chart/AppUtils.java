@@ -16,7 +16,7 @@ public enum AppUtils {
 	
 	//SharedPreferences
 	public static final String ID="userid";
-	public static final String UPDATE_ALWAYS="checkbox";
+	public static final String PERCENTAGE_SSD="percentage_SSD";
 	public static final String USER="username";
 	public static final String PASS="password";
 	public static final String EMAIL="email";

@@ -1,12 +1,5 @@
 package com.chart.ui;
 
-import static com.chart.AppUtils.DAY;
-import static com.chart.AppUtils.MONTH;
-import static com.chart.AppUtils.TYPE_AVERAGE;
-import static com.chart.AppUtils.TYPE_WIDTH;
-import static com.chart.AppUtils.WEEK;
-import static com.chart.AppUtils.YEAR;
-
 import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -16,34 +9,24 @@ import org.codehaus.jackson.map.ObjectMapper;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.hardware.Camera.PreviewCallback;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.util.LruCache;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.SparseArray;
-import android.view.ContextMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.SubMenu;
 import com.chart.R;
 import com.chart.memory.DiskCacheManager;
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.ChartModel;
 
 @SuppressLint("NewApi")
-public class ChartActivity extends SherlockFragmentActivity implements OnClickListener{
+public class ChartActivity extends BaseSherlockActivity implements OnClickListener{
 	private static final String TAG="ChartActivity";
 	private BaseChartModel chart;
 	private ChartFragment activeFragment;
