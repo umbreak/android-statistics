@@ -41,7 +41,6 @@ public class BaseChartModel {
 	private String xLegend;
 	private String yLegend;
 	private int votes;
-	private int type;
 	private int firstYear;
 	private int lastYear;
 	private Date date;
@@ -58,7 +57,6 @@ public class BaseChartModel {
 		this.xLegend = xLegend;
 		this.yLegend = yLegend;
 		this.votes = votes;
-		this.type = type;
 		this.firstYear = firstYear;
 		this.lastYear = lastYear;
 		this.date = date;
@@ -81,7 +79,6 @@ public class BaseChartModel {
 	public BaseChartModel() {
 		super();
 		votes=0;
-		type=0;
 		xLegend="Leyenda X";
 		yLegend="Leyenda Y";
 		date= new Date();
@@ -127,12 +124,6 @@ public class BaseChartModel {
 	
 	public void setVotes(int votes) {
 		this.votes = votes;
-	}
-	public int getType() {
-		return type;
-	}
-	public void setType(int type) {
-		this.type = type;
 	}
 	
 	public int getFirstYear() {
@@ -200,7 +191,7 @@ public class BaseChartModel {
 	public String toString() {
 		return "BaseChartModel [id=" + id + ", name=" + name + ", description="
 				+ description + ", xLegend=" + xLegend + ", yLegend=" + yLegend
-				+ ", votes=" + votes + ", type=" + type + ", date=" + date
+				+ ", votes=" + votes + ", date=" + date
 				+ ", category=" + category + "]";
 	}
 	

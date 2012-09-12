@@ -23,7 +23,6 @@ import com.sun.istack.NotNull;
 @Table (name ="comments")
 public class CommentModel implements Comparable<CommentModel>{
 	private int id;
-	private String author;
 	private String text;
 	private Date date;
 	private UserModel user;
@@ -39,12 +38,7 @@ public class CommentModel implements Comparable<CommentModel>{
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getAuthor() {
-		return author;
-	}
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+
 	public String getText() {
 		return text;
 	}
@@ -83,7 +77,7 @@ public class CommentModel implements Comparable<CommentModel>{
 	}
 	@Override
 	public String toString() {
-		return "CommentModel [id=" + id + ", author=" + author + ", text="
+		return "CommentModel [id=" + id + ", text="
 				+ text + ", date=" + date + ", user=" + user + ", chart="
 				+ chart + "]";
 	}
