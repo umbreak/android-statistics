@@ -48,7 +48,7 @@ public class BaseChartModel {
 	
 
 	public BaseChartModel(int id, String name, String description,
-			String xLegend, String yLegend, int votes, int type, int firstYear,
+			String xLegend, String yLegend, int votes, int firstYear,
 			int lastYear, Date date, CategoryModel category) {
 		super();
 		this.id = id;
