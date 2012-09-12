@@ -72,7 +72,6 @@ public class ChartCommentRes {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public CommentModel putComment(CommentModel c) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
-			//			CommentModel c=comment.getValue();
 			c.setDate(new Date());
 			if (user_email != null)
 				DB_Process.i.setComment(id, c,user_email );
@@ -86,6 +85,7 @@ public class ChartCommentRes {
 
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/{id}")
 	public String delComment(@PathParam("id") int comment_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
 			DB_Process.i.delComment(comment_id);
