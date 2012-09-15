@@ -27,6 +27,7 @@
         android:theme="@style/Theme.Styled" >
         <activity
             android:name=".ui.LoginActivity"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:label="@string/app_name" 
             android:theme="@style/Theme.Sherlock.Light.NoActionBar">
             <intent-filter>
@@ -51,6 +52,7 @@
                 <!-- CHART_DETAILS_ACTIVITY activity -->
         <activity
             android:name=".ui.ChartDetailsAcitivy"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:label="@string/app_name" >
         </activity>
         

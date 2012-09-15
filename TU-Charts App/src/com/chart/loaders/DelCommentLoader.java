@@ -1,25 +1,21 @@
 package com.chart.loaders;
 
-import static com.chart.AppUtils.EMAIL;
-import static com.chart.AppUtils.PASS;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.chart.pojos.UserModel;
 import com.chart.restclient.Processor;
 
-public class LoginLoader extends AsyncTaskLoader<Integer> {
+public class DelCommentLoader extends AsyncTaskLoader<Boolean> {
 
-	private int result;
-	private Context context;
+	private int chart_id;
+	private int comment_id;
+	private Boolean result=null;
 
 
-	public LoginLoader(Context context) {
+	public DelCommentLoader(Context context, int id, int comment_id) {
 		super(context);
-		this.context=context;
-		result=0;
+		this.chart_id=id;
+		this.comment_id=comment_id;
 	}
 
 	/**
@@ -27,17 +23,9 @@ public class LoginLoader extends AsyncTaskLoader<Integer> {
 	 * called in a background thread and should generate a new set of
 	 * data to be published by the loader.
 	 */
-	@Override public Integer loadInBackground() {
-		System.out.println("** LoginLoader: Login the user");
-
-		UserModel user=new UserModel();
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-		user.email=settings.getString(EMAIL, "");
-		user.password=settings.getString(PASS, "");
-		return Processor.i.postUser(user);
-		//		String message="";
-		//		if (result == -1) message="Password incorrect";
-		//		else if (result == -3) message="User doesn't exist";
+	@Override public Boolean loadInBackground() {
+		System.out.println("** DelCommentLoader: REMOVE a Comment");
+		return Processor.i.deleteComment(chart_id, comment_id);
 	}
 
 	/**
@@ -45,10 +33,15 @@ public class LoginLoader extends AsyncTaskLoader<Integer> {
 	 * super class will take care of delivering it; the implementation
 	 * here just adds a little more logic.
 	 */
-	@Override public void deliverResult(Integer data) {
+	/**
+	 * Called when there is new data to deliver to the client.  The
+	 * super class will take care of delivering it; the implementation
+	 * here just adds a little more logic.
+	 */
+	@Override public void deliverResult(Boolean data) {
 		if (isReset()) 
 			onReleaseResources(data);
-		Integer oldValue = data;
+		Boolean oldValue = data;
 		result=data;
 		if (isStarted()) 
 			// If the Loader is currently started, we can immediately
@@ -64,7 +57,7 @@ public class LoginLoader extends AsyncTaskLoader<Integer> {
 	 */
 	@Override protected void onStartLoading() {
 		System.out.println("start loading");
-		if(result!= 0)
+		if(result!= null)
 			deliverResult(result);
 		else
 			forceLoad();
@@ -81,7 +74,7 @@ public class LoginLoader extends AsyncTaskLoader<Integer> {
 	/**
 	 * Handles a request to cancel a load.
 	 */
-	@Override public void onCanceled(Integer apps) {
+	@Override public void onCanceled(Boolean apps) {
 		super.onCanceled(apps);
 
 		// At this point we can release the resources associated with 'apps'
@@ -98,9 +91,9 @@ public class LoginLoader extends AsyncTaskLoader<Integer> {
 		// Ensure the loader is stopped
 		onStopLoading();
 
-		if (result != 0){
+		if (result != null){
 			onReleaseResources(result);
-			result=0;
+			result=null;
 		}
 	}
 
@@ -108,6 +101,6 @@ public class LoginLoader extends AsyncTaskLoader<Integer> {
 	 * Helper function to take care of releasing resources associated
 	 * with an actively loaded data set.
 	 */
-	protected void onReleaseResources(Integer apps) {
+	protected void onReleaseResources(Boolean apps) {
 	}
 }

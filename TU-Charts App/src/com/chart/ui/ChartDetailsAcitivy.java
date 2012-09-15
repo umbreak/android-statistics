@@ -4,7 +4,7 @@ package com.chart.ui;
 
 import static com.chart.AppUtils.LOADER_ADD_COMMENTS;
 import static com.chart.AppUtils.LOADER_LIST_COMMENTS;
-
+import static com.chart.AppUtils.LOADER_REMOVE_COMMENT;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.KeyEvent;
@@ -38,7 +39,10 @@ import com.actionbarsherlock.view.MenuItem;
 import com.chart.AppUtils;
 import com.chart.R;
 import com.chart.browser.adapters.CommentAdapter;
-import com.chart.loaders.AddCommentLoaderCallback;
+import com.chart.callbacks.AddCommentLoaderCallback;
+import com.chart.callbacks.DelCommentLoaderCallback;
+import com.chart.callbacks.OnCustomClickListener;
+import com.chart.callbacks.ProgressCallback;
 import com.chart.loaders.CommentsLoader;
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.CommentModel;
@@ -193,16 +197,18 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 
 
 
-
 	//CommentsFragment class (contains the list of comments of a chart)
-	public static class CommentsFragment extends SherlockFragment implements LoaderCallbacks<List<CommentModel>>{
+	public static class CommentsFragment extends SherlockFragment implements LoaderCallbacks<List<CommentModel>>, OnCustomClickListener{
 		private int chart_id;
 		private CommentAdapter mAdapter;
 		private ListView listView;
 		private EditText text;
 		private ImageView send;
 		private ProgressBar progress;
-		private AddCommentLoaderCallback commentLoader;
+		private AddCommentLoaderCallback addCommentCallback;
+		private DelCommentLoaderCallback delCommentCallback;
+		private ProgressCallback progressCall;
+
 
 		public static CommentsFragment newInstance(int chart_id) {
 			CommentsFragment f = new CommentsFragment();
@@ -230,20 +236,42 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 			return view;
 		}
 
-		private void isLoading(boolean isLoading){
-		
-			if (isLoading){
-				progress.setVisibility(View.VISIBLE);
-				listView.setVisibility(View.GONE);
-			}else{
-				progress.setVisibility(View.GONE);
-				listView.setVisibility(View.VISIBLE);
-			}
-		}
 		@Override
-		public void onResume() {
-			super.onResume();
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			progressCall = new ProgressCallback() {
+				
+				@Override public void isloading(boolean val) {
+					if (val){
+						AppUtils.i.fadeAnimation(progress, listView);
+					}
+					else
+						AppUtils.i.fadeAnimation(listView, progress);
+				}
+
+				@Override public void addComment(CommentModel data) {
+					Loader<List<CommentModel>> loader=getSherlockActivity().getSupportLoaderManager().getLoader(LOADER_LIST_COMMENTS);
+					CommentsLoader cloader=(CommentsLoader) loader;
+					cloader.addComment(data);
+					mAdapter.add(data);
+					isloading(false);
+					
+				}
+
+				@Override public void delComment(CommentModel data) {
+					Loader<List<CommentModel>> loader=getSherlockActivity().getSupportLoaderManager().getLoader(LOADER_LIST_COMMENTS);
+					CommentsLoader cloader=(CommentsLoader) loader;
+					cloader.delComment(data);
+					mAdapter.remove(data);	
+					isloading(false);
+
+				}
+			};
+
+			super.onViewCreated(view, savedInstanceState);
+
 		}
+
+
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
@@ -268,14 +296,15 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 			textManagment();
 			listView.setTextFilterEnabled(true);
 
-			mAdapter = new CommentAdapter(getActivity());
+			mAdapter = new CommentAdapter(getActivity(), this);
 			listView.setAdapter(mAdapter);
 
 			// Prepare the loader.  Either re-connect with an existing one,
 			// or start a new one.
-			getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_LIST_COMMENTS, null, this);
-			commentLoader = new AddCommentLoaderCallback(getSherlockActivity(), mAdapter, getSherlockActivity().getSupportLoaderManager());
 
+			getSherlockActivity().getSupportLoaderManager().initLoader(LOADER_LIST_COMMENTS, null, this);
+			addCommentCallback = new AddCommentLoaderCallback(getSherlockActivity(), progressCall);
+			delCommentCallback= new DelCommentLoaderCallback(getSherlockActivity(),progressCall );
 		}
 
 		private void textManagment(){
@@ -301,11 +330,11 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 				Bundle b = new Bundle();
 				b.putInt("chart_id", chart_id);
 				b.putParcelable("comment", c);
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_ADD_COMMENTS,b,commentLoader);
+				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_ADD_COMMENTS,b,addCommentCallback);
 				text.setText("");
-
 			}
 		}
+
 		@Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 			// Place an action bar item for searching.
 			menu.clear();
@@ -316,32 +345,35 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 
 		@Override
 		public Loader<List<CommentModel>> onCreateLoader(int id, Bundle args) {
-			isLoading(true);
+			//			isLoading(true);
+			AppUtils.i.fadeAnimation(progress, listView);
 			return new CommentsLoader(getSherlockActivity(), chart_id);
-
 		}
 
 
 		@Override
 		public void onLoadFinished(Loader<List<CommentModel>> loader, List<CommentModel> data) {
 			// Set the new data in the adapter.
-			isLoading(false);
+			AppUtils.i.fadeAnimation(listView, progress);
+
+			//			isLoading(false);
 			mAdapter.setData(data);
-
-
-			// The list should now be shown.
-			//			if (isResumed()) {
-			////				setListShown(true);
-			//			} else {
-			//				setListShownNoAnimation(true);
-			//			}
 		}
 
 		@Override
 		public void onLoaderReset(Loader<List<CommentModel>> arg0) {
 			// Clear the data in the adapter.
-			isLoading(false);
+			AppUtils.i.fadeAnimation(listView, progress);
 			mAdapter.setData(null);	}
+
+		//Callback for when the delete button from the adapter is clicked
+		@Override
+		public void OnCustomClick(View aView, CommentModel comment) {
+			Bundle b = new Bundle();
+			b.putInt("chart_id", chart_id);
+			b.putParcelable("comment", comment);
+			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_REMOVE_COMMENT,b,delCommentCallback);
+		}
 
 	}
 }

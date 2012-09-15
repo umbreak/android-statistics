@@ -12,7 +12,6 @@ public class BaseChartModel implements Parcelable, Comparable<BaseChartModel>{
 	public String xLegend;
 	public String yLegend;
 	public int votes;
-	public int type;
 	public int firstYear;
 	public int lastYear;
 	public Date date;
@@ -48,7 +47,6 @@ public class BaseChartModel implements Parcelable, Comparable<BaseChartModel>{
 		category=in.readParcelable(CategoryModel.class.getClassLoader());
 		id = in.readInt();
 		votes=in.readInt();
-		type = in.readInt();
 		firstYear=in.readInt();
 		lastYear=in.readInt();
 		name= in.readString();	
@@ -63,7 +61,6 @@ public class BaseChartModel implements Parcelable, Comparable<BaseChartModel>{
 		dest.writeParcelable(category, flags);
 		dest.writeInt(id);
 		dest.writeInt(votes);
-		dest.writeInt(type);
 		dest.writeInt(firstYear);
 		dest.writeInt(lastYear);
 		dest.writeString(name);

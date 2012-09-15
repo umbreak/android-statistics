@@ -1,4 +1,4 @@
-package com.chart.loaders;
+package com.chart.callbacks;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LruCache;
 
+import com.chart.loaders.GetInBackgroundLoader;
 import com.chart.memory.DiskCacheManager;
 import com.chart.pojos.ChartModel;
 

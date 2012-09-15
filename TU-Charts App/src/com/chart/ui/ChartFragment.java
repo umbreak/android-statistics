@@ -9,7 +9,8 @@ import static com.chart.AppUtils.LOADER_CHART;
 import static com.chart.AppUtils.LOADER_FILL_CACHE;
 import static com.chart.AppUtils.MONTH;
 import static com.chart.AppUtils.TYPE_AVERAGE;
-import static com.chart.AppUtils.TYPE_WIDTH;
+import static com.chart.AppUtils.TYPE_DISPERSION;
+import static com.chart.AppUtils.TYPE_DUPLICATES;
 import static com.chart.AppUtils.TYPE_ORIGINAL;
 
 import static com.chart.AppUtils.WEEK;
@@ -58,12 +59,13 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.SubMenu;
+import com.chart.AppUtils;
 import com.chart.ChartGenerator;
 import com.chart.R;
+import com.chart.callbacks.GetInBackgroundLoaderCallback;
 import com.chart.loaders.ChartDataLoader;
 import com.chart.loaders.CommentsLoader;
 import com.chart.loaders.GetInBackgroundLoader;
-import com.chart.loaders.GetInBackgroundLoaderCallback;
 import com.chart.memory.DiskCacheManager;
 import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.ChartModel;
@@ -212,8 +214,9 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 
 		SubMenu subMenu3 = menu.addSubMenu(2, 9, 2, "Resol");
 		subMenu3.add(5, TYPE_AVERAGE, 0, "Average");
-		subMenu3.add(5, TYPE_WIDTH, 1, "Width");
-		subMenu3.add(5, TYPE_ORIGINAL, 2, "Original");
+		subMenu3.add(5, TYPE_DUPLICATES, 1, "De-duplication");
+		subMenu3.add(5, TYPE_DISPERSION, 2, "Thickness");
+		subMenu3.add(5, TYPE_ORIGINAL, 3, "Original");
 		subMenu3.setGroupCheckable(5, true, true);
 		subMenu3.getItem(type-1).setChecked(true);
 
@@ -228,28 +231,25 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		case TYPE_AVERAGE:
 			if (type!=TYPE_AVERAGE){
 				type=TYPE_AVERAGE;
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
-				item.setChecked(true);
-				deleteZoomMargins();
+				algorithmSelectionAction(item);
 			}
 			return true;
-		case TYPE_WIDTH:
-			if (type!=TYPE_WIDTH){
-				type=TYPE_WIDTH;
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
-				item.setChecked(true);
-				deleteZoomMargins();
+		case TYPE_DUPLICATES:
+			if (type!=TYPE_DUPLICATES){
+				type=TYPE_DUPLICATES;
+				algorithmSelectionAction(item);
+			}
+			return true;
+		case TYPE_DISPERSION:
+			if (type!=TYPE_DISPERSION){
+				type=TYPE_DISPERSION;
+				algorithmSelectionAction(item);
 			}
 			return true;
 		case TYPE_ORIGINAL:
 			if (type!=TYPE_ORIGINAL){
 				type=TYPE_ORIGINAL;
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
-				getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
-				item.setChecked(true);
-				deleteZoomMargins();
+				algorithmSelectionAction(item);
 			}
 			return true;
 
@@ -296,6 +296,12 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	private void algorithmSelectionAction(MenuItem item){
+		getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
+		getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
+		item.setChecked(true);
+		deleteZoomMargins();
 	}
 
 	//AFTER DIALOG SELECTION--------------------------------------------------------------------------------------->
@@ -386,9 +392,9 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	@Override
 	public Loader<ChartModel> onCreateLoader(int id, Bundle args) {
 		//		new ProgressDialogFragment("Charts", "Loading data chart...").show(getSupportFragmentManager(), "DIALOG_F1");
-		fadeAnimation(progress, mChart);
-		progress.setVisibility(View.VISIBLE);
-		progress.bringToFront();
+		AppUtils.i.fadeAnimation(progress, mChart);
+//		progress.setVisibility(View.VISIBLE);
+//		progress.bringToFront();
 		textView.setVisibility(View.GONE);
 
 		return new ChartDataLoader(getSherlockActivity(), chart.id,width, type,year, month, week,day,mDiskCache,mMemoryCache);
@@ -406,7 +412,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				removeElem(value);
 		}
 		updateChart();
-		fadeAnimation(mChart, progress);
+		AppUtils.i.fadeAnimation(mChart, progress);
 
 	}
 
@@ -495,19 +501,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		b.putInt("month", month);
 		b.putInt("type", type);
 		return b;
-	}
-	private void fadeAnimation(View appear, View dissapear){
-		//Appearing
-		if (appear != null){
-			ObjectAnimator alphaShow = ObjectAnimator.ofFloat(appear,"alpha", 0f, 1f);
-			alphaShow.setDuration(300);
-			alphaShow.start();
-		}
-		if (dissapear != null){
-			ObjectAnimator alphaHide = ObjectAnimator.ofFloat(dissapear,"alpha", 1f, 0f);
-			alphaHide.setDuration(500);
-			alphaHide.start();
-		}
 	}
 	//ON NEXT/PREVIOUS BUTTON CLICK--------------------------------------------------------------------------------------->
 	public void moveDate(boolean isNext){

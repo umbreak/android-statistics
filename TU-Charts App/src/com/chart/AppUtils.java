@@ -5,8 +5,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 
+import com.actionbarsherlock.internal.nineoldandroids.animation.ObjectAnimator;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.view.View;
 
 public enum AppUtils {
 	i;
@@ -27,8 +30,10 @@ public enum AppUtils {
 	
 	//Type agorithm
 	public static final int TYPE_AVERAGE=1;
-	public static final int TYPE_WIDTH=2;
-	public static final int TYPE_ORIGINAL=3;
+	public static final int TYPE_DUPLICATES=2;
+	public static final int TYPE_DISPERSION=3;
+	public static final int TYPE_ORIGINAL=4;
+
 	
 	//Calendar (Year, Month, Day)
 	public static final int YEAR=15;
@@ -46,6 +51,7 @@ public enum AppUtils {
 	public static final int LOADER_LOGIN=6;
 	public static final int LOADER_FILL_CACHE=7;
 	public static final int LOADER_REGISTER=8;
+	public static final int LOADER_REMOVE_COMMENT=9;
 
 
 
@@ -90,6 +96,22 @@ public enum AppUtils {
 	}
 	static String bin2hex(byte[] data) {
 		return String.format("%0" + (data.length*2) + "X", new BigInteger(1, data));
+	}
+	
+	public void fadeAnimation(View appear, View dissapear){
+		//Appearing
+		if (appear != null){
+			ObjectAnimator alphaShow = ObjectAnimator.ofFloat(appear,"alpha", 0f, 1f);
+			alphaShow.setDuration(300);
+			alphaShow.start();
+			appear.setVisibility(View.VISIBLE);
+			appear.bringToFront();
+		}
+		if (dissapear != null){
+			ObjectAnimator alphaHide = ObjectAnimator.ofFloat(dissapear,"alpha", 1f, 0f);
+			alphaHide.setDuration(500);
+			alphaHide.start();
+		}
 	}
 
 

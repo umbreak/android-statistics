@@ -26,6 +26,9 @@ public class CommentsLoader extends AsyncTaskLoader<List<CommentModel>> {
 	public void addComment(CommentModel c){
 		mCharts.add(c);
 	}
+	public void delComment(CommentModel c){
+		mCharts.remove(c);
+	}
 
 	/**
 	 * This is where the bulk of our work is done.  This function is

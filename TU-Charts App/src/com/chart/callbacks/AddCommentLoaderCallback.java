@@ -1,4 +1,4 @@
-package com.chart.loaders;
+package com.chart.callbacks;
 
 import java.util.List;
 
@@ -11,37 +11,30 @@ import static com.chart.AppUtils.LOADER_LIST_COMMENTS;
 
 
 import com.chart.browser.adapters.CommentAdapter;
+import com.chart.loaders.AddCommentLoader;
+import com.chart.loaders.CommentsLoader;
 import com.chart.pojos.CommentModel;
 
 public class AddCommentLoaderCallback implements LoaderCallbacks<CommentModel>{
 	private Context context;
-	private CommentAdapter mAdapter;
-	private LoaderManager lManager;
+	private ProgressCallback progress;
 	
-	public AddCommentLoaderCallback(Context context, CommentAdapter mAdapter, LoaderManager lManager) {
+	public AddCommentLoaderCallback(Context context, ProgressCallback progress) {
 		super();
-		this.lManager=lManager;
-		this.context = context;
-		this.mAdapter = mAdapter;
-		
+		this.progress=progress;
+		this.context = context;		
 	}
 
 	@Override
 	public Loader<CommentModel> onCreateLoader(int arg0, Bundle b) {
+		progress.isloading(true);
 		return new AddCommentLoader(context, b.getInt("chart_id"), (CommentModel)b.getParcelable("comment"));
 	}
 
 	@Override
 	public void onLoadFinished(Loader<CommentModel> arg0, CommentModel data) {
 		System.out.println(data);
-		try{
-			Loader<List<CommentModel>> loader=lManager.getLoader(LOADER_LIST_COMMENTS);
-		CommentsLoader cloader=(CommentsLoader) loader;
-		cloader.addComment(data);
-		}catch (NullPointerException e){
-			System.out.println("Loader 3 doesn't exist right now");
-		}
-		mAdapter.add(data);
+		progress.addComment(data);
 	}
 
 	@Override
