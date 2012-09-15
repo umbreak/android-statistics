@@ -170,18 +170,6 @@
 																			</select></td>
 																		</tr>
 																		<tr>
-																			<td>Type:</td>
-
-																			<td><select name="type">
-																					<option>Column</option>
-																					<option selected="selected">Line</option>
-																					<option>Pie</option>
-																					<option>Bar</option>
-																					<option>Area</option>
-																					<option>Scatter</option>
-																			</select></td>
-																		</tr>
-																		<tr>
 																			<td>Values:</td>
 
 																			<td><input type="file" name="data"></td>
@@ -314,7 +302,6 @@
 														<td><%=chart.getName()%></td>
 														<td><%=chart.getDescription()%></td>
 														<td><%=chart.getCategory().getName()%></td>
-														<td><%=chart.getType()%></td>
 														<td><a
 															href="<%=request.getServletPath().replace("/", "") + "?edit="+ chart.getId()%>" /><img
 															src="images/edit.png" alt="Edit Chart" /></a> <a
