@@ -87,7 +87,7 @@ public class UsersResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String putUser(UserModelPass user) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {  
 		if (DB_Process.i.getUser(user.getEmail()) == null){
-			DB_Process.i.setUser(new UserModel(user));
+				DB_Process.i.setUser(new UserModel(user));
 			String token=HashUtils.i.getHash(AuthManager.getUniqueDate()+user.getPassword());
 			AuthManager.i.getToken_table().put(token,  new UserTokenTime(user.getEmail()));
 			System.out.println(user.getEmail());

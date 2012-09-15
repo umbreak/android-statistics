@@ -6,8 +6,6 @@ import jabx.model.CommentModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -27,9 +25,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-
-import com.google.common.collect.Ordering;
 
 
 public class ChartCommentRes {
@@ -74,10 +69,8 @@ public class ChartCommentRes {
 		try{
 			c.setDate(new Date());
 			if (user_email != null)
-				DB_Process.i.setComment(id, c,user_email );
-			else
-				DB_Process.i.setComment(id, c,"Didac@tu-chemnitz.de" );
-			return c;
+				return DB_Process.i.setComment(id, c,user_email );
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -86,10 +79,10 @@ public class ChartCommentRes {
 	@DELETE
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/{id}")
-	public String delComment(@PathParam("id") int comment_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+	public Response delComment(@PathParam("id") int comment_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
 			DB_Process.i.delComment(comment_id);
-			return String.valueOf(comment_id);
+			return Response.ok().build();
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}

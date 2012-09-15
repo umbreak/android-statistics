@@ -15,14 +15,12 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 
 public enum DB_Process {
 	i;
@@ -155,7 +153,7 @@ public enum DB_Process {
 		return comment;
 	}
 
-	public void setComment(int chart_id, CommentModel comment, String email)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+	public CommentModel setComment(int chart_id, CommentModel comment, String email)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
 
 		ChartModel chart = (ChartModel) em.find(ChartModel.class, chart_id);
@@ -164,12 +162,14 @@ public enum DB_Process {
 		comment.setChart(chart);
 		comment.setUser(user);
 		em.getTransaction().begin();
-		em.merge(comment);
+		comment=em.merge(comment);
 
 		em.refresh(chart);
 		em.refresh(user);
 		em.getTransaction().commit();
 		em.close();
+		System.out.println("ID=" + comment.getId());
+		return comment;
 
 	}
 

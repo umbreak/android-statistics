@@ -36,10 +36,12 @@ import com.google.common.primitives.Doubles;
 public class ChartRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
-	private static int TYPE_AVERAGE=1;
-	private static int TYPE_WIDTH=2;
-	private static int TYPE_ORIGINAL=3;
-	private static int TYPE_WIDTH_2=4;
+	private static final int TYPE_AVERAGE=1;
+	private static final int TYPE_DUPLICATES=2;
+	private static final int TYPE_DISPERSION=3;
+	private static final int TYPE_ORIGINAL=4;
+	private static final int TYPE_DUPLICATES_2=5;
+
 
 
 	private int id;
@@ -67,18 +69,20 @@ public class ChartRes {
 
 			if ((x == 0 && y == 0) || type == TYPE_ORIGINAL)
 				return chart;
+			//Num of elements inside each of the groups The division is rounded up
+//			int sizeGroup=(chart.getxValues().length + x -1) / x;
+			
+			int sizeGroup = (int)Math.ceil((float)chart.getxValues().length/x);
+			if (type == TYPE_DUPLICATES) sizeGroup*=2;
 
-			int numXgroups=(chart.getxValues().length + x -1) / x;
-			if (type == TYPE_WIDTH) numXgroups*=2;
-			//			int numYgroups=(series.get(0).getYvalues().length + y -1) / y;
-
-			if (numXgroups < 2)
+			if (sizeGroup < 2)
 				return chart;
 			//Impossible to apply the reduction algorithm if there's more then one Y serie
-			if (type == TYPE_WIDTH && chart.getyValues().size() > 1)
-				type=TYPE_WIDTH_2;
-
-			System.out.println("TYPE=" + type);
+			if (type == TYPE_DUPLICATES && chart.getyValues().size() == 1)
+				type=TYPE_DUPLICATES_2;
+			
+			if (type == TYPE_DISPERSION && sizeGroup < 5)
+				return chart;
 
 			//			int[] repetitions=new int[((chart.getxValues().length + numXgroups -1) / numXgroups)];
 			List<List<Integer>> matchesMatrix= new ArrayList<>();
@@ -86,11 +90,11 @@ public class ChartRes {
 			for (SerieModel serie : chart.getyValues()) {
 				//Splitting the Y values in groups of Yval/android_screen_height
 
-				List<List<Double>> groupYval=Lists.partition(Doubles.asList(serie.getYvalues()), numXgroups);
+				List<List<Double>> groupYval=Lists.partition(Doubles.asList(serie.getYvalues()), sizeGroup);
 				System.out.println("number of sub-lists=" + groupYval.size());
 				System.out.println("Sublist size=" + groupYval.get(0).size());	
 				//Choosing the average value of each group
-				if (type == TYPE_WIDTH){
+				if (type == TYPE_DUPLICATES_2){
 					double result[]=new double[0];
 					for (List<Double> list : groupYval) {
 						Set<Double> uniqueDoubles= Sets.newLinkedHashSet(list);
@@ -99,14 +103,15 @@ public class ChartRes {
 						result=Doubles.concat(result,Doubles.toArray(uniqueDoubles));
 					}
 					serie.setYvalues(result);
-				}else if (type == 100){
+				}
+				else if (type == TYPE_DUPLICATES){
 					ArrayList<Double> result=new ArrayList<>();
 					for (List<Double> list : groupYval) {
 						List<Double> uniqueDoubles= deleteDuplicates(list);
 						result.addAll(uniqueDoubles);
 					}
 					serie.setYvalues(Doubles.toArray(result));
-				}else if (type == TYPE_WIDTH_2){
+				}else if (type == TYPE_DISPERSION){
 					serie.setYvalues(setMaxMinList(groupYval));
 				}
 				else
@@ -115,12 +120,12 @@ public class ChartRes {
 			}
 
 			//Choosing values from the X axis (average)
-			List<List<Double>> groupXval=Lists.partition(Doubles.asList(chart.getxValues()), numXgroups);
+			List<List<Double>> groupXval=Lists.partition(Doubles.asList(chart.getxValues()), sizeGroup);
 			System.out.println("number of sub-dates=" + groupXval.size());
 			System.out.println("SubDates size=" + groupXval.get(0).size());
 			//				for (Date d : groupXval.get(0))
 			//					System.out.println(d);
-			if (type==TYPE_WIDTH){
+			if (type==TYPE_DUPLICATES_2){
 				double result[]=new double[0];
 				int pos=0;
 				for (List<Double> list: groupXval) {
@@ -132,7 +137,7 @@ public class ChartRes {
 					pos++;
 				}
 				chart.setxValues(result);
-			}else if (type==TYPE_WIDTH_2){
+			}else if (type==TYPE_DISPERSION){
 				chart.setxValues(meanListForTwo(groupXval));
 			}
 			else if (type ==TYPE_AVERAGE)
@@ -262,7 +267,7 @@ public class ChartRes {
 					result.add(i);
 
 			return result;
-			
+
 		}else if (m != 0){
 			calendar.set(Calendar.MONTH, m-1);
 			long firstVal=calendar.getTimeInMillis();
@@ -335,9 +340,7 @@ public class ChartRes {
 	public double[] setMaxMinList(List<List<Double>> groupYval){
 		//		int pos=0;
 		final int pixelElems=groupYval.get(0).size();
-
-		//		double[] result= new double[groupYval.size()*2];
-		ArrayList<Double> result = new ArrayList<Double>();
+					ArrayList<Double> result = new ArrayList<Double>();
 		for (List<Double> list : groupYval) {
 			double[] array_list=Doubles.toArray(list);
 			ArrayList<Double> newElems= new ArrayList<>();
