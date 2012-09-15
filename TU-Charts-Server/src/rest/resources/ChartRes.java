@@ -91,8 +91,8 @@ public class ChartRes {
 				//Splitting the Y values in groups of Yval/android_screen_height
 
 				List<List<Double>> groupYval=Lists.partition(Doubles.asList(serie.getYvalues()), sizeGroup);
-				System.out.println("number of sub-lists=" + groupYval.size());
-				System.out.println("Sublist size=" + groupYval.get(0).size());	
+//				System.out.println("number of sub-lists=" + groupYval.size());
+//				System.out.println("Sublist size=" + groupYval.get(0).size());	
 				//Choosing the average value of each group
 				if (type == TYPE_DUPLICATES_2){
 					double result[]=new double[0];
@@ -121,8 +121,8 @@ public class ChartRes {
 
 			//Choosing values from the X axis (average)
 			List<List<Double>> groupXval=Lists.partition(Doubles.asList(chart.getxValues()), sizeGroup);
-			System.out.println("number of sub-dates=" + groupXval.size());
-			System.out.println("SubDates size=" + groupXval.get(0).size());
+//			System.out.println("number of sub-dates=" + groupXval.size());
+//			System.out.println("SubDates size=" + groupXval.get(0).size());
 			//				for (Date d : groupXval.get(0))
 			//					System.out.println(d);
 			if (type==TYPE_DUPLICATES_2){
@@ -334,7 +334,6 @@ public class ChartRes {
 				rep++;
 			}
 		}
-		System.out.println("Num of replications=" + rep);
 		return result;
 	}
 	public double[] setMaxMinList(List<List<Double>> groupYval){

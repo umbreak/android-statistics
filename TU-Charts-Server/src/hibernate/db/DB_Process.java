@@ -168,7 +168,6 @@ public enum DB_Process {
 		em.refresh(user);
 		em.getTransaction().commit();
 		em.close();
-		System.out.println("ID=" + comment.getId());
 		return comment;
 
 	}
