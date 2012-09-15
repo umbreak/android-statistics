@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.chart"
     style="@style/DetailedListItem"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
@@ -33,15 +34,26 @@
         android:layout_toLeftOf="@+id/delete"
         android:text="Simple description about a chart in the application" />
 
+    <com.chart.widgets.TintableImage
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/date"
+        android:layout_centerHorizontal="true"
+        android:background="@android:drawable/ic_menu_close_clear_cancel"
+        app:tintColorStateList="@color/login_blue"
+        app:tintUpdateDelay="100" />
 
-        <ImageView
-            android:id="@+id/delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/date"
-            android:layout_centerHorizontal="true"
-            android:src="@android:drawable/ic_menu_close_clear_cancel" />
+<!--     <ImageView
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/date"
+        android:layout_centerHorizontal="true"
+        android:src="@android:drawable/ic_menu_close_clear_cancel" /> -->
 
 </RelativeLayout>

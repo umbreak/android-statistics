@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,7 +44,7 @@ public class CommentAdapter extends ArrayAdapter<CommentModel>{
 		public TextView name;
 		public TextView description;
 		public TextView date;
-		public ImageView delete;
+		public ImageButton delete;
 	}
 	@Override public View getView(int position, View convertView, ViewGroup parent) {
 		CommentView holder;
@@ -54,7 +55,7 @@ public class CommentAdapter extends ArrayAdapter<CommentModel>{
 			holder.name=((TextView) convertView.findViewById(R.id.name));
 			holder.description=((TextView) convertView.findViewById(R.id.description));
 			holder.date=((TextView) convertView.findViewById(R.id.date));
-			holder.delete=((ImageView) convertView.findViewById(R.id.delete));
+			holder.delete=((ImageButton) convertView.findViewById(R.id.delete));
 			convertView.setTag(holder);
 			convertView.setClickable(true);
 			convertView.setFocusable(true);

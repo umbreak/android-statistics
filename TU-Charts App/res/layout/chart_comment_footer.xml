@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.chart"
     android:id="@+id/RelativeLayout01"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:gravity="center" android:paddingBottom="2dp">
+    android:gravity="center"
+    android:paddingBottom="2dp" >
 
     <!--
          <Button
@@ -11,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:text="Send"/>
+        android:text="Send"/>
     -->
 
     <View
@@ -19,14 +21,15 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray" />
 
-    <ImageView
+    <com.chart.widgets.TintableImage
         android:id="@+id/add_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        
-        android:src="@android:drawable/ic_menu_send" />
+        android:background="@android:drawable/ic_menu_send"
+        app:tintColorStateList="@color/login_blue"
+        app:tintUpdateDelay="100" />
 
     <EditText
         android:id="@+id/text_comments"

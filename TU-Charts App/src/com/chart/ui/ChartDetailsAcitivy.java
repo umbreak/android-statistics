@@ -26,6 +26,7 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -203,7 +204,7 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 		private CommentAdapter mAdapter;
 		private ListView listView;
 		private EditText text;
-		private ImageView send;
+		private ImageButton send;
 		private ProgressBar progress;
 		private AddCommentLoaderCallback addCommentCallback;
 		private DelCommentLoaderCallback delCommentCallback;
@@ -231,7 +232,7 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 			View view = inflater.inflate(R.layout.chart_comment_group, container, false);
 			listView= (ListView) view.findViewById(android.R.id.list);
 			text=(EditText)view.findViewById(R.id.text_comments);
-			send=(ImageView)view.findViewById(R.id.add_comment);
+			send=(ImageButton)view.findViewById(R.id.add_comment);
 			progress=(ProgressBar)view.findViewById(R.id.progress);	
 			return view;
 		}
