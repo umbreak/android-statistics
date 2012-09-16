@@ -2,6 +2,11 @@ package rest.resources;
 
 import hibernate.db.DB_Process;
 import jabx.model.ChartModel;
+import static utils.ServerUtils.TYPE_AVERAGE;
+import static utils.ServerUtils.TYPE_DISPERSION;
+import static utils.ServerUtils.TYPE_DUPLICATES;
+import static utils.ServerUtils.TYPE_DUPLICATES_2;
+import static utils.ServerUtils.TYPE_ORIGINAL;
 import jabx.model.SerieModel;
 import static utils.ServerUtils.NULL_VAL;
 import java.lang.reflect.InvocationTargetException;
@@ -36,11 +41,6 @@ import com.google.common.primitives.Doubles;
 public class ChartRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
-	private static final int TYPE_AVERAGE=1;
-	private static final int TYPE_DUPLICATES=2;
-	private static final int TYPE_DISPERSION=3;
-	private static final int TYPE_ORIGINAL=4;
-	private static final int TYPE_DUPLICATES_2=5;
 
 
 

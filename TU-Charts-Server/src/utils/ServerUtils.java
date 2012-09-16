@@ -21,7 +21,13 @@ public enum ServerUtils {
 	i;
 	private SimpleDateFormat dateFormat;
 	public static double NULL_VAL=1E+54;
-
+	public static final int TYPE_AVERAGE=1;
+	public static final int TYPE_DUPLICATES=2;
+	public static final int TYPE_DISPERSION=3;
+	public static final int TYPE_ORIGINAL=4;
+	public static final int TYPE_DUPLICATES_2=5;
+	//Days to show in NEW Tab of charts. The new charts to display will be from this numer of days before.
+	public static final int MINIMUM_NEW_DATE=-5;
 	private ServerUtils(){
 	}
 

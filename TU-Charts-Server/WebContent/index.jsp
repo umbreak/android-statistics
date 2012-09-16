@@ -276,7 +276,6 @@
 														<th scope="col" class="rounded-company">Name</th>
 														<th scope="col" class="rounded-q2">Description</th>
 														<th scope="col" class="rounded-q3">Category</th>
-														<th scope="col" class="rounded-q3">Type</th>
 														<th scope="col" class="rounded-q4">Manager</th>
 													</tr>
 
@@ -286,7 +285,7 @@
 
 													<tr>
 
-														<td colspan="4" class="rounded-foot-left"><em>Charts data obtained from the Database. The manager is able toModify or Delete charts. More info about the database structure <a href="out/">HERE</a></em></td>
+														<td colspan="3	" class="rounded-foot-left"><em>Charts data obtained from the Database. The manager is able toModify or Delete charts. More info about the database structure <a href="out/">HERE</a></em></td>
 
 														<td class="rounded-foot-right">&nbsp;</td>
 
