@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class ChartModel extends BaseChartModel implements Parcelable{
 	public UserModel user;
-	public double[] xValues;
+	public long[] xValues;
 	public List<SerieModel> yValues;
 
 	public ChartModel() {
@@ -25,7 +25,7 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 		yValues = new ArrayList<SerieModel>();
 
 	}
-	public ChartModel(int id, String name, double[] xValues, List<SerieModel> yValues) {
+	public ChartModel(int id, String name, long[] xValues, List<SerieModel> yValues) {
 		super(id,name);
 		this.xValues=xValues;
 		this.yValues=yValues;
@@ -55,8 +55,9 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 	private ChartModel(Parcel in) {
 		super(in);
 		yValues = new ArrayList<SerieModel>();
+		
 		user=in.readParcelable(UserModel.class.getClassLoader());
-		in.readDoubleArray(xValues);
+		in.readLongArray(xValues);
 		in.readTypedList(yValues, SerieModel.CREATOR);
 		id = in.readInt();
 	}
@@ -66,8 +67,9 @@ public class ChartModel extends BaseChartModel implements Parcelable{
 	}
 	public void writeToParcel(Parcel dest, int flags) {
 		super.writeToParcel(dest, flags);
+		
 		dest.writeParcelable(user, flags);
-		dest.writeDoubleArray(xValues);
+		dest.writeLongArray(xValues);
 		dest.writeTypedList(yValues);
 		dest.writeInt(id);
 	}

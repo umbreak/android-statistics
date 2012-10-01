@@ -14,12 +14,12 @@ public class BaseChartModel implements Parcelable, Comparable<BaseChartModel>{
 	public int votes;
 	public int firstYear;
 	public int lastYear;
+	public long expires;
 	public Date date;
 	public CategoryModel category;
 	
 	public BaseChartModel() {
 		super();
-		this.date=new Date();
 	}
 	public BaseChartModel(int id, String name) {
 		this();
@@ -49,6 +49,7 @@ public class BaseChartModel implements Parcelable, Comparable<BaseChartModel>{
 		votes=in.readInt();
 		firstYear=in.readInt();
 		lastYear=in.readInt();
+		expires=in.readLong();
 		name= in.readString();	
 		description=in.readString();
 		date=new Date(in.readLong());
@@ -63,6 +64,7 @@ public class BaseChartModel implements Parcelable, Comparable<BaseChartModel>{
 		dest.writeInt(votes);
 		dest.writeInt(firstYear);
 		dest.writeInt(lastYear);
+		dest.writeLong(expires);
 		dest.writeString(name);
 		dest.writeString(description);
 		dest.writeLong(date.getTime());

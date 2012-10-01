@@ -47,7 +47,7 @@ public class ChartGenerator extends AbstractChart{
 
 		//Checking for the type of data on the X axis. It can be a double or a Date
 		if (!isDate(chartEntry.xValues[0])){
-			double xVal[]=chartEntry.xValues;
+			long xVal[]=chartEntry.xValues;
 			setChartSettings(renderer, chartEntry.name,chartEntry.xLegend, chartEntry.yLegend, xVal[0], xVal[xVal.length-1],
 					yEdges[0], yEdges[1], r.getColor(R.color.chart_darkgrey), Color.BLACK, context);
 			return ChartFactory.getLineChartView(context,buildDataset(xVal, results), renderer);
@@ -103,8 +103,8 @@ public class ChartGenerator extends AbstractChart{
 		}
 	}
 
-	private boolean isDate(double d) {
-		try {new Date((long) d);}
+	private boolean isDate(long d) {
+		try {new Date(d);}
 		catch (Exception e) {return false;}
 		return true;
 	}

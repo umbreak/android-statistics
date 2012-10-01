@@ -51,14 +51,14 @@ public abstract class AbstractChart {
 	 * @param yValues the values for the Y axis
 	 * @return the XY multiple dataset
 	 */
-	protected XYMultipleSeriesDataset buildDataset(double[] xValues,
+	protected XYMultipleSeriesDataset buildDataset(long[] xValues,
 			List<SerieModel> yValues) {
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 		addXYSeries(dataset,xValues, yValues, 0);
 		return dataset;
 	}
 
-	public void addXYSeries(XYMultipleSeriesDataset dataset, double[] xValues,
+	public void addXYSeries(XYMultipleSeriesDataset dataset, long[] xValues,
 			List<SerieModel> yValues, int scale) {
 		int length = yValues.size();
 		for (int i = 0; i < length; i++) {
@@ -206,72 +206,4 @@ public abstract class AbstractChart {
 		}
 		return dataset;
 	}
-
-	/**
-	 * Builds a category series using the provided values.
-	 * 
-	 * @param titles the series titles
-	 * @param values the values
-	 * @return the category series
-	 */
-	protected CategorySeries buildCategoryDataset(String title, double[] values) {
-		CategorySeries series = new CategorySeries(title);
-		int k = 0;
-		for (double value : values) {
-			series.add("Project " + ++k, value);
-		}
-
-		return series;
-	}
-
-	/**
-	 * Builds a multiple category series using the provided values.
-	 * 
-	 * @param titles the series titles
-	 * @param values the values
-	 * @return the category series
-	 */
-	protected MultipleCategorySeries buildMultipleCategoryDataset(String title,
-			List<String[]> titles, List<double[]> values) {
-		MultipleCategorySeries series = new MultipleCategorySeries(title);
-		int k = 0;
-		for (double[] value : values) {
-			series.add(2007 + k + "", titles.get(k), value);
-			k++;
-		}
-		return series;
-	}
-
-	/**
-	 * Builds a category renderer to use the provided colors.
-	 * 
-	 * @param colors the colors
-	 * @return the category renderer
-	 */
-
-
-	/**
-	 * Builds a bar multiple series dataset using the provided values.
-	 * 
-	 * @param titles the series titles
-	 * @param values the values
-	 * @return the XY multiple bar dataset
-	 */
-	protected XYMultipleSeriesDataset buildBarDataset(String[] titles, List<double[]> values) {
-		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-		int length = titles.length;
-		for (int i = 0; i < length; i++) {
-			CategorySeries series = new CategorySeries(titles[i]);
-			double[] v = values.get(i);
-			int seriesLength = v.length;
-			for (int k = 0; k < seriesLength; k++) {
-				series.add(v[k]);
-			}
-			dataset.addSeries(series.toXYSeries());
-		}
-		return dataset;
-	}
-
-
-
 }

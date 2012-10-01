@@ -1,16 +1,8 @@
 package com.chart.loaders;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.chart.pojos.Categories;
-import com.chart.pojos.BaseChartModel;
-import com.chart.pojos.CategoryModel;
 import com.chart.pojos.CommentModel;
 import com.chart.restclient.Processor;
 

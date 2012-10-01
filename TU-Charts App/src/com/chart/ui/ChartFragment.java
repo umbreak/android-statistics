@@ -104,6 +104,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		chart= (BaseChartModel)(getArguments() != null ? getArguments().getParcelable("chart") : null);
+		System.out.println("Chart=============" + chart);
 		fm = getActivity().getSupportFragmentManager();
 		chartBuilder =  new ChartGenerator();
 		if (savedInstanceState == null){
@@ -257,11 +258,13 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		case 8:
 			Intent intent = new Intent();
 			intent.setClass(getSherlockActivity(), ChartDetailsAcitivy.class);
-			intent.putExtra("chart", chart);
 			if (item.getTitle().equals("Info"))
 				intent.putExtra("Option", 0);
 			else
 				intent.putExtra("Option", 1);
+			intent.putExtra("chart", chart);
+
+			System.out.println("Int=" + intent.getExtras().getInt("Option"));
 			startActivity(intent);	
 			return true;
 

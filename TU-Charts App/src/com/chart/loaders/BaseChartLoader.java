@@ -4,16 +4,13 @@ import static com.chart.AppUtils.LAST_SEEN;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.chart.pojos.Categories;
 import com.chart.pojos.BaseChartModel;
-import com.chart.pojos.CategoryModel;
 import com.chart.restclient.Processor;
 
 public class BaseChartLoader extends AsyncTaskLoader<List<BaseChartModel>> {

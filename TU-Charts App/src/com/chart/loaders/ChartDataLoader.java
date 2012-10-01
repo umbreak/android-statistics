@@ -43,26 +43,33 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 		String key="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + month + "&week=" + week + "&day=" + day + "&type=" + type;
 
 		Log.w(TAG, "key=" + key);
-
-		chart=mMemoryCache.get(key.hashCode());
+		int hashKey=key.hashCode();
+		chart=mMemoryCache.get(hashKey);
 		if(chart != null){
-			Log.i(TAG, "Data=" + key + " obtained from the Memory Cache");
-			return chart;
+			if (chart.expires < System.currentTimeMillis()){
+				mDiskCache.remove(hashKey);
+			}else{
+				Log.i(TAG, "Data=" + key + " fetched from the Memory Cache");
+				return chart;
+			}
 		}
 
-		chart=mDiskCache.getChart(key.hashCode());
-		if (chart != null){
-			Log.i(TAG, "Data=" + key + " obtained from the Disk Cache");
-			mMemoryCache.put(key.hashCode(), chart);
-			return chart;
+			if (chart != null){
+				if (chart.expires < System.currentTimeMillis()){
+					mDiskCache.remove(hashKey);
+				}else{
+					Log.i(TAG, "Data=" + key + " fetched from the Disk Cache");
+					return chart;
+				}
 		}
+
 
 		chart= Processor.i.getChart(key);
-		if (chart != null){
-			Log.i(TAG, "Inserting element '"+key+ "' in the Memory & Disk Cache");
-			mMemoryCache.put(key.hashCode(), chart);
-			mDiskCache.putChart(key.hashCode(), chart);
-		}
+		if (chart != null)
+			mMemoryCache.put(hashKey, chart);
+
+		Log.i(TAG, "Data=" + key + " fetched from INTERNET");
+		mDiskCache.putChart(hashKey, chart);
 		return chart;
 	}
 

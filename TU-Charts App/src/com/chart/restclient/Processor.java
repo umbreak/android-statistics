@@ -4,6 +4,7 @@ import static com.chart.AppUtils.NULL_VAL;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.http.ContentCodingType;
@@ -35,11 +36,11 @@ import com.chart.pojos.UserModel;
 
 public enum Processor {
 	i;
-		private String url;
-//	private static final String url="http://77.228.234.36:8080/TU-Charts-Server/rest/";
+	private String url;
+	//	private static final String url="http://77.228.234.36:8080/TU-Charts-Server/rest/";
 
-		
-//	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
+
+	//	private static final String url="http://192.168.137.1:8080/TU-Charts-Server/rest/";
 	public Context context;
 	public UserModel myUser;
 
@@ -109,7 +110,7 @@ public enum Processor {
 			HttpEntity<UserModel> usertEntity = new HttpEntity<UserModel>(user, requestHeaders);
 
 			ResponseEntity<String> responseEntity = restTemplate.exchange(url + "users", HttpMethod.PUT, usertEntity, String.class);
-			
+
 			requestHeaders.set("chemnitz_token", responseEntity.getBody());
 			requestEntity = new HttpEntity<Object>(requestHeaders);
 			return 1;
@@ -235,7 +236,9 @@ public enum Processor {
 	public synchronized ChartModel getChart(String path){
 		try{
 			ResponseEntity<ChartModel> responseEntity = restTemplate.exchange(url + path,HttpMethod.GET, requestEntity, ChartModel.class);
-			return responseEntity.getBody();
+			ChartModel chart=responseEntity.getBody();
+			chart.expires=responseEntity.getHeaders().getExpires();
+			return chart;
 
 		}catch(HttpClientErrorException e){
 			if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)){
@@ -243,6 +246,8 @@ public enum Processor {
 				if (postUser(myUser) > 0) return getChart(path);
 			}
 			Log.d(TAG, e.toString());
+			return null;
+		}catch (NullPointerException e){
 			return null;
 		}
 	}
@@ -322,7 +327,7 @@ public enum Processor {
 		}
 	}
 
-		public void setUrl(String uri) {
-			url = "http://" + uri + ":8080/TU-Charts-Server/rest/";
-		}	
+	public void setUrl(String uri) {
+		url = "http://" + uri + ":8080/TU-Charts-Server/rest/";
+	}	
 }

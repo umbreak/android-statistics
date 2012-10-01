@@ -47,8 +47,25 @@ public class DiskCacheManager{
 			e.printStackTrace();
 		}
 	}
+	public boolean remove(int element){
+		try {
+			return mDiskCache.remove(String.valueOf(element));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	public void putChart(Integer key, ChartModel chart){
 		new putInSSD(key.toString(), chart);
+	}
+	public boolean exist(Integer key){
+		Snapshot element;
+		try {
+			element = mDiskCache.get(key.toString());
+			return (element != null);
+		} catch (IOException e) {
+			return false;
+		}
 	}
 	public ChartModel getChart(Integer key){
 		ChartModel chart=null;

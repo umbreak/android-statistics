@@ -17,9 +17,6 @@ public class PreferenceActivity extends SherlockPreferenceActivity{
 	}
 	@Override
 	public void onBackPressed() {	
-		System.out.println("Tiki: "+ PreferenceManager.getDefaultSharedPreferences(this).getString(SERVER_IP, ""));
-		System.out.println("Tiki: "+ PreferenceManager.getDefaultSharedPreferences(this).getInt(PERCENTAGE_SSD, 22222));
-
 		Processor.i.setUrl(PreferenceManager.getDefaultSharedPreferences(this).getString(SERVER_IP, "0"));
 		super.onBackPressed();
 	}

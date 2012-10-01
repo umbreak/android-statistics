@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.chart.R;
@@ -44,7 +45,8 @@ public class ChartActivity extends BaseSherlockActivity implements OnClickListen
 		setContentView(R.layout.chart_activity);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		chart = getIntent().getParcelableExtra("chart");
+		chart = (BaseChartModel)getIntent().getExtras().getParcelable("chart");
+		System.out.println("2 chart id =" + chart.id + " name=" + chart.name + " date="+ chart.date.getTime() +  " expires=" + chart.expires);
 		initCaches();
 		setTitle(chart.name);
 
@@ -89,7 +91,7 @@ public class ChartActivity extends BaseSherlockActivity implements OnClickListen
 			final int memClass = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
 
 			// Use 1/7th of the available memory for this memory cache. (32/7MB=4,5MB)
-			final int cacheSize = 1024 * 1024 * memClass / 7;
+			final int cacheSize = 1024 * 1024 * memClass / 8;
 			mMemoryCache = new LruCache<Integer, ChartModel>(cacheSize){
 
 				@Override
