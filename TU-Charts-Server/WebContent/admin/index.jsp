@@ -310,7 +310,7 @@
 														<td><%=chart.getCategory().getName()%></td>
 <%-- 														<td><a href="<%=request.getServletPath().replace("/", "") + "?edit="+ chart.getId()%>" /><img src="images/edit.png" alt="Edit Chart" /></a> --%>
  											<td><a href="update.jsp?edit=<%=chart.getId()%>" /><img src="images/edit.png" alt="Edit Chart" /></a>				
- 												<a href="<%=request.getServletPath().replace("/", "") + "?delete=" + chart.getId()%>" /><img src="images/delete.png" alt="Delete Chart" /></a></td>
+ 												<a href="<%=request.getServletPath() + "?delete=" + chart.getId()%>" /><img src="images/delete.png" alt="Delete Chart" /></a></td>
 													</tr>
 
 													<%

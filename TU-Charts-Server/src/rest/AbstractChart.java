@@ -104,9 +104,9 @@ public class AbstractChart {
 
 		}else if (w != 0){
 			calendar.set(Calendar.MONTH, m-1);
-
+			
 			if (calendar.get(Calendar.WEEK_OF_MONTH) == 0){
-				w--;
+				w=w-1;
 				if (w != 0){
 					calendar.set(Calendar.WEEK_OF_MONTH, w);
 					calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
@@ -116,6 +116,7 @@ public class AbstractChart {
 					calendar.set(Calendar.WEEK_OF_MONTH, w);
 					calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
 				}
+			System.out.println("WEEK="+w);
 			long firstVal=calendar.getTimeInMillis();
 
 			calendar.clear();

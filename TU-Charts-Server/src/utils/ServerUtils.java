@@ -53,8 +53,10 @@ public enum ServerUtils {
 			scanner = new Scanner(file);
 			if (scanner.hasNext()){
 				String titles[]=scanner.nextLine().split(";");
-
-
+				
+				for (int i = 0; i < titles.length; i++) {
+					System.out.println(titles[i]);
+				}
 				ArrayList<Double>[] yVal = (ArrayList<Double>[])new ArrayList[titles.length-1];
 				List<Long> xVal = new ArrayList<>();
 
