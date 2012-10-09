@@ -3,10 +3,21 @@
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
+	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Security page
+            </web-resource-name>
+            <url-pattern>/admin/*</url-pattern> 
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint> 
+    
   <display-name>TU-Charts-Server</display-name>
   <servlet>
     <servlet-name>Users REST Service</servlet-name>
-    <servlet-class>rest.resources.MyContainer</servlet-class>
+    <servlet-class>rest.MyContainer</servlet-class>
     <init-param>
   <param-name>com.sun.jersey.config.property.packages</param-name>
   <param-value>rest.resources;org.codehaus.jackson.jaxrs</param-value>

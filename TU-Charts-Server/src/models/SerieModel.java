@@ -1,4 +1,4 @@
-package jabx.model;
+package models;
 
 import hibernate.types.StringDoubleType;
 
@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.google.common.base.Strings;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
 
@@ -87,6 +88,13 @@ public class SerieModel implements Comparable<SerieModel>{
 	}
 	public void setYvalues(double[] yvalues) {
 		this.yvalues = yvalues;
+	}
+	public void updateSeries(SerieModel s){
+		if (max < s.max) max=s.max;
+		if (min > s.min) min=s.min;
+		if (!Strings.isNullOrEmpty(s.name)) name=s.name;
+		if (!Strings.isNullOrEmpty(s.description)) description=s.description;
+		yvalues=Doubles.concat(yvalues,s.getYvalues());
 	}
 	@Override
 	public int compareTo(SerieModel arg0) {

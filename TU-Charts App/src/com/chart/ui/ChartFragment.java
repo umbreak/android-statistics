@@ -104,7 +104,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		chart= (BaseChartModel)(getArguments() != null ? getArguments().getParcelable("chart") : null);
-		System.out.println("Chart=============" + chart);
 		fm = getActivity().getSupportFragmentManager();
 		chartBuilder =  new ChartGenerator();
 		if (savedInstanceState == null){
@@ -264,7 +263,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				intent.putExtra("Option", 1);
 			intent.putExtra("chart", chart);
 
-			System.out.println("Int=" + intent.getExtras().getInt("Option"));
 			startActivity(intent);	
 			return true;
 
@@ -304,7 +302,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_FILL_CACHE, getBackgroundLoaderBundle(), new GetInBackgroundLoaderCallback(getSherlockActivity(), mMemoryCache, mDiskCache));
 		getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 		item.setChecked(true);
-		deleteZoomMargins();
+//		deleteZoomMargins();
 	}
 
 	//AFTER DIALOG SELECTION--------------------------------------------------------------------------------------->
@@ -352,6 +350,11 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				subMenuCalendar.getItem(DIALOG_DAY).setEnabled(true);
 			}
 			week=value;
+//			Calendar cal=Calendar.getInstance();
+//			cal.set(Calendar.YEAR, year);
+//			cal.set(Calendar.MONTH, month-1);
+//			if (cal.get(Calendar.WEEK_OF_MONTH) == 1) week++;
+
 			day=0;
 			getSherlockActivity().getSupportLoaderManager().restartLoader(LOADER_CHART, null, this);
 			break;
@@ -513,6 +516,7 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		boolean stageChange=false;
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
+
 		cal.set(Calendar.YEAR, year);
 		deleteZoomMargins();
 
@@ -526,15 +530,26 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				year=cal.get(Calendar.YEAR);
 			}
 		}else if (week != 0){
-			week=week+val;
 			cal.set(Calendar.MONTH, month-1);
-			cal.set(Calendar.WEEK_OF_MONTH, week);
+
+			cal.set(Calendar.WEEK_OF_MONTH, week);			
+			if (isNext)
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+			else
+				cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek()+6);
+
+			cal.add(Calendar.WEEK_OF_MONTH, val);
 			if (cal.get(Calendar.MONTH) != month-1){
 				stageChange=true;
-				week=cal.get(Calendar.WEEK_OF_MONTH);
-				month=cal.get(Calendar.MONTH)+1;
+				if (isNext)
+					cal.set(Calendar.DAY_OF_MONTH, 1);
+				else
+					cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 				year=cal.get(Calendar.YEAR);
+				month=cal.get(Calendar.MONTH)+1;
 			}
+			week=cal.get(Calendar.WEEK_OF_MONTH);
+
 		}else if (month != 0 ){
 			month=month+val;
 			cal.set(Calendar.MONTH, month-1);
@@ -561,12 +576,13 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 		yMax=chartBuilder.renderer.getYAxisMax();
 		yMin=chartBuilder.renderer.getYAxisMin();
 		Calendar finalDate=Calendar.getInstance();
+
 		Calendar initalDate=Calendar.getInstance();
+
 		finalDate.setTimeInMillis(xMax);
 		initalDate.setTimeInMillis(xMin);
 		//Variable to check if calendar value change
 		int myear=year, mmonth=month, mweek=week, mday=day;
-		System.out.println("Before: Year=" + myear + " Month=" + mmonth + " Week=" + mweek + " Day="+mday);
 		if (initalDate.get(Calendar.YEAR) == finalDate.get(Calendar.YEAR)){
 			myear=initalDate.get(Calendar.YEAR);
 			mmonth=0; mweek=0; mday=0;
@@ -593,7 +609,6 @@ public class ChartFragment extends SherlockFragment implements LoaderCallbacks<C
 				myear=chart.firstYear;
 			}else calendar=0;
 		}
-		System.out.println("AFTER: Year=" + myear + " Month=" + mmonth + " Week=" + mweek + " Day="+mday);
 
 		if ((myear != year) || (mmonth != month) || (mday != day) || (mweek != week)){
 			year=myear; month=mmonth; week=mweek; day=mday;

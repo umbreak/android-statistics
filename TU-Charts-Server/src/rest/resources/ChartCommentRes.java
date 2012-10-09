@@ -1,7 +1,6 @@
 package rest.resources;
 
 import hibernate.db.DB_Process;
-import jabx.model.CommentModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,16 +25,19 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import models.ChartModel;
+import models.CommentModel;
+
 
 public class ChartCommentRes {
 	@Context UriInfo uriInfo;
 	@Context Request request;
-	private int id;
 	private String user_email;
-	public ChartCommentRes(UriInfo uriInfo, Request request, int id, String user_email) {
+	private ChartModel chart;
+	public ChartCommentRes(UriInfo uriInfo, Request request, ChartModel chart, String user_email) {
 		this.uriInfo = uriInfo;
 		this.request = request;
-		this.id=id;
+		this.chart=chart;
 		this.user_email=user_email;
 	}
 
@@ -43,7 +45,7 @@ public class ChartCommentRes {
 	@Produces({MediaType.APPLICATION_JSON})
 	public ArrayList<CommentModel> getComments() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		try{
-			ArrayList<CommentModel> result= new ArrayList<CommentModel>(DB_Process.i.getChart(id).getComments());
+			ArrayList<CommentModel> result= new ArrayList<CommentModel>(chart.getComments());
 			Collections.sort(result);
 			return result;
 			//			return new ArrayList<CommentModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.getChart(id).getComments()));
@@ -57,7 +59,7 @@ public class ChartCommentRes {
 	@Path("/{id}")
 	public CommentModel getComment(@PathParam("id") int comment_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
-			return DB_Process.i.getComment(id, comment_id);
+			return DB_Process.i.getComment(chart.getId(), comment_id);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -69,7 +71,7 @@ public class ChartCommentRes {
 		try{
 			c.setDate(new Date());
 			if (user_email != null)
-				return DB_Process.i.setComment(id, c,user_email );
+				return DB_Process.i.setComment(chart.getId(), c,user_email );
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);

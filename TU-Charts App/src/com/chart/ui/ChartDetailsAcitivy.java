@@ -66,14 +66,12 @@ public class ChartDetailsAcitivy extends BaseSherlockActivity{
 
 		setTitle(chart.name);
 
-		if (savedInstanceState == null){
+		if (savedInstanceState == null)
 			option = getIntent().getExtras().getInt("Option");
-			System.out.println("Extras=" + getIntent().getExtras());
-		}
+		
 		else
 			option = savedInstanceState.getInt("opt");
 		
-		System.out.println("Option=" + option);
 
 		FragmentTransaction ft =getSupportFragmentManager().beginTransaction();
 		if (option == 0){	

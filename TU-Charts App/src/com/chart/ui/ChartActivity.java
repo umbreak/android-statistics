@@ -46,7 +46,6 @@ public class ChartActivity extends BaseSherlockActivity implements OnClickListen
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		chart = (BaseChartModel)getIntent().getExtras().getParcelable("chart");
-		System.out.println("2 chart id =" + chart.id + " name=" + chart.name + " date="+ chart.date.getTime() +  " expires=" + chart.expires);
 		initCaches();
 		setTitle(chart.name);
 
@@ -96,7 +95,6 @@ public class ChartActivity extends BaseSherlockActivity implements OnClickListen
 
 				@Override
 				protected int sizeOf(Integer key, ChartModel value) {
-					Log.i(TAG,"Size of LruCache");
 					try {
 						return new ObjectMapper().writeValueAsBytes(chart).length;
 					} catch (JsonGenerationException e) {

@@ -1,8 +1,7 @@
-<%@page import="com.google.common.primitives.Ints"%>
-<%@page import="jabx.model.UserModel"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
 <%@page import="hibernate.db.DB_Process"%>
+<%@page import="models.CategoryModel"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
@@ -15,7 +14,7 @@
     Base template (without user's data) checked by http://validator.w3.org : "This page is valid XHTML 1.0 Transitional"
     -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Users</title>
+<title>Categories</title>
 
 
 
@@ -82,6 +81,9 @@
 
 </head>
 <body>
+<%	String email=(String)session.getAttribute("email");
+	if (email == null)
+		response.sendRedirect("login.jsp");%>
 	<div id="art-page-background-glare-wrapper">
 		<div id="art-page-background-glare"></div>
 	</div>
@@ -109,9 +111,9 @@
 						<div class="art-nav-center">
 							<ul class="art-hmenu">
 								<li><a href="./index.jsp">Charts</a></li>
-								<li><a href="./categories.jsp" >Categories</a>
+								<li><a href="./categories.jsp" class="active">Categories</a>
 								</li>
-								<li><a href="./users.jsp" class="active">Users</a></li>
+								<li><a href="./users.jsp">Users</a></li>
 							</ul>
 						</div>
 					</div>
@@ -132,57 +134,51 @@
 
 		<%
 		if (request.getMethod().equalsIgnoreCase("POST")){
-		String username=request.getParameter("username");
-		String password=request.getParameter("password");
-		String email=request.getParameter("email");
-		if (!email.isEmpty()){
-			DB_Process.i.setUser(new UserModel(username,password,email));
+		String name=request.getParameter("name");
+		String description=request.getParameter("description");
+		if (!name.isEmpty()){
+			DB_Process.i.setCategory(new CategoryModel(name,description));
 			
-		%><h4><span style="color: green">User <%= username%> added</h4><%
+		%><h4><span style="color: green">Category <%= name%> added</h4><%
 		}
 		}else if (request.getParameter("delete") != null){
-			String email=request.getParameter("delete");
-			DB_Process.i.delUser(email);
-			%><h4><span style="color: red">User with email <%= email%> Deleted!</h4><%
+			int category_id=Integer.parseInt(request.getParameter("delete"));
+			DB_Process.i.delCategory(category_id);
+			%><h4><span style="color: red">Category Deleted!</h4><%
 		}%>
 												
 
 												<div class="art-content-layout layout-item-0">
 													<div class="art-content-layout-row">
 														<div class="art-layout-cell layout-item-2"
-															style="width: 40%;">
+															style="width: 45%;">
 															<table class="table-3" style="width: 100%;">
 																<tbody>
 																	<tr>
 																		<td>
-																			<h3>New User</h3>
+																			<h3>New Category</h3>
 
 																			<p>
 																				<br />
 																			</p>
 
-																			<form method="post" action="users.jsp">
+																			<form method="post" action="categories.jsp">
 																				<table border="0" cellspacing="0" cellpadding="0"
 																					style="width: 100%;">
 																					<tbody>
 																						<tr>
-																							<td>Username:</td>
+																							<td>Name:</td>
 
-																							<td><input name="username" type="text"
+																							<td><input name="name" type="text"
 																								class="input" /></td>
 																						</tr>
-																						<tr>
-																							<td>Password:</td>
 
-																							<td><input name="password" type="password"
-																								class="input" /></td>
+																						<tr>
+																							<td>Description:</td>
+
+																							<td><textarea name="description"
+																									class="input">	</textarea></td>
 																						</tr>
-																						<tr>
-																							<td>Email:</td>
-
-																							<td><input name="email" type="text"
-																								class="input" /></td>
-																						</tr>																																												
 																						<tr>
 																							<td colspan="2"><br /></td>
 																						</tr>
@@ -197,26 +193,37 @@
 															</table>
 														</div>
 														<div class="art-layout-cell layout-item-2"
-															style="width: 60%;">
-															<h3>All Users</h3>
-															<%  List<UserModel> users= DB_Process.i.getUsers();%>
+															style="width: 55%;">
+															<h3>All Categories</h3>
+															<%  List<CategoryModel> categories= DB_Process.i.getCategories();%>
 															<br />
 
 															<table id="rounded-corner"
 																summary="2007 Major IT Companies' Profit" border="0"
 																cellspacing="0" cellpadding="0" style="width: 100%;">
+
 																<thead>
+
 																	<tr>
-																		<th scope="col" class="rounded-company">Username</th>
-																		<th scope="col" class="rounded-q2">Email</th>
-																		<th scope="col" class="rounded-q2">Cat. Denied</th>
-																		<th scope="col" class="rounded-q2">Charts Denied</th>	
+
+																		<th scope="col" class="rounded-company">Name</th>
+
+																		<th scope="col" class="rounded-q2">Description</th>
+
+																		<th scope="col" class="rounded-q2">Num. Charts</th>
 																		<th scope="col" class="rounded-q4">Manager</th>
+
+
 																	</tr>
+
 																</thead>
+
 																<tfoot>
+
 																	<tr>
-																		<td colspan="4" class="rounded-foot-left"><em>Users data obtained from the Database. The manager is able to Modify or Delete users. More info about the database structure <a href="out/">HERE</a></em></td>
+
+																		<td colspan="3" class="rounded-foot-left"><em>Categories data obtained from the Database. The manager is able to Modify or Delete categories. More info about the database structure <a href="out/">HERE</a></em></td>
+
 																		<td class="rounded-foot-right">&nbsp;</td>
 
 																	</tr>
@@ -224,25 +231,14 @@
 																</tfoot>
 
 																<tbody>
-																	<%for (UserModel user: users) {
+																	<%for (CategoryModel category: categories) {
 	%>
 																	<tr>
-																		<td><%=user.getUsername()%></td>
-																		<td><%= user.getEmail()%></td>
-																		<%String charts_denied="";
-																		try{
-																			charts_denied=Ints.join(",", user.getCharts_denied());
-																			}catch (NullPointerException e){}
-																		String categories_denied="";
-																		try{
-																			categories_denied=Ints.join(",", user.getCategories_denied());
-																			}catch (NullPointerException e){}
-																		%>
-																		
-																		<td><%=categories_denied %></td>
-																		<td><%= charts_denied%></td>
-																		<td><a href="<%=request.getServletPath().replace("/", "") + "?edit="+user.getEmail() %>" /><img src="images/edit.png" alt="Edit Chart"/></a> 
-																		<a href="<%=request.getServletPath().replace("/", "") + "?delete="+user.getEmail() %>" /><img src="images/delete.png" alt="Delete Chart"/></a></td>
+																		<td><%=category.getName()%></td>
+																		<td><%= category.getDescription()%></td>
+																		<td><%= category.getCharts().size()%></td>
+																		<td><a href="<%=request.getServletPath().replace("/", "") + "?edit="+category.getId() %>" /><img src="images/edit.png" alt="Edit Chart"/></a> 
+																		<a href="<%=request.getServletPath().replace("/", "") + "?delete="+category.getId() %>" /><img src="images/delete.png" alt="Delete Chart"/></a></td>
 																	</tr>
 
 																	<%}%>

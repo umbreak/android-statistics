@@ -17,7 +17,7 @@ import utils.AuthManager;
 
 
 @Path("/date")
-public class Challenge {
+public class ChallengeResource {
 	@Context
 	UriInfo uriInfo;
 	@Context

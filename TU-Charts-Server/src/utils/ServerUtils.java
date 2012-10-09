@@ -1,7 +1,5 @@
 package utils;
 
-import jabx.model.ChartModel;
-import jabx.model.SerieModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,8 +12,12 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import models.ChartModel;
+import models.SerieModel;
+
 import com.google.common.base.CharMatcher;
 import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Longs;
 
 public enum ServerUtils {
 	i;
@@ -41,11 +43,11 @@ public enum ServerUtils {
 			Scanner scanner = new Scanner(file);
 			try{
 				scanner.nextLine();
-
 				setDateFormat(scanner.nextLine().split(";")[0]);
 				scanner.close();
 			}catch (NullPointerException e){
 				e.printStackTrace();
+				if (scanner != null) scanner.close();
 			}
 			boolean someNullElems=false;
 			scanner = new Scanner(file);
@@ -54,7 +56,7 @@ public enum ServerUtils {
 
 
 				ArrayList<Double>[] yVal = (ArrayList<Double>[])new ArrayList[titles.length-1];
-				List<Double> xVal = new ArrayList<>();
+				List<Long> xVal = new ArrayList<>();
 
 				for (int j = 0; j < yVal.length; j++) 
 					yVal[j] = new ArrayList<Double>();
@@ -67,7 +69,7 @@ public enum ServerUtils {
 						if (values.length > 1){
 							//The first element is the Xval
 							try {
-								xVal.add((double)dateFormat.parse(values[0]).getTime());
+								xVal.add(dateFormat.parse(values[0]).getTime());
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}     
@@ -105,7 +107,7 @@ public enum ServerUtils {
 				cal.setTimeInMillis(xVal.get(xVal.size()-1).longValue());
 				int lastYear=cal.get(Calendar.YEAR);
 				if (firstYear== lastYear) lastYear=0;
-				ChartModel chart = new ChartModel(name, description, Doubles.toArray(xVal), lines, firstYear,lastYear);
+				ChartModel chart = new ChartModel(name, description, Longs.toArray(xVal), lines, firstYear,lastYear);
 				chart.setxLegend(titles[0]);
 				return chart;
 

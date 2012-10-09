@@ -1,4 +1,4 @@
-package jabx.model;
+package models;
 
 import hibernate.types.StringIntType;
 
@@ -106,10 +106,11 @@ public class UserModel {
 	public void setCharts(Set<ChartModel> charts) {
 		this.charts = charts;
 	}
-	public void setChart(ChartModel chart) {
+	public void addChart(ChartModel chart) {
 		chart.setUser(this);
 		charts.add(chart);
 	}
+	
 	
 	@OneToMany(mappedBy="user", fetch=FetchType.EAGER)
 	@LazyCollection(LazyCollectionOption.FALSE)

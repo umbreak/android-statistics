@@ -1,6 +1,5 @@
 package hibernate.db;
 
-import jabx.model.UserModel;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
@@ -14,6 +13,8 @@ import java.util.UUID;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
+
+import models.UserModel;
 
 import utils.HashUtils;
 
@@ -47,12 +48,12 @@ public class ClientTester {
 
 		String uuid=UUID.randomUUID().toString();
 		String date=(service.path("rest").path("date").header("TU_challenge", uuid).accept(MediaType.APPLICATION_JSON_TYPE).get(String.class));
-		System.out.println("Date received from server to challenge="+date);
+//		System.out.println("Date received from server to challenge="+date);
 		didac.setEmail("Didac@tu-chemnitz.de");
 //		String hashed_password=HashUtils.i.getHash("Didac");
 		
 		String token=HashUtils.i.getHash("Didac"+date);
-		System.out.println(token);
+//		System.out.println(token);
 		didac.setPassword(token);
 		service.path("rest").path("users/login").header("TU_challenge", uuid).accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).post(didac);
 //		System.out.println( service.path("rest").path("site").header("Eetac_token", token).accept(MediaType.APPLICATION_JSON_TYPE).type(MediaType.APPLICATION_JSON_TYPE).get(String.class));

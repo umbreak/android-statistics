@@ -1,21 +1,22 @@
 package com.chart.loaders;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
-
+import static com.chart.AppUtils.NUM_MONTHS;
+import static com.chart.AppUtils.NUM_WEEKS;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.chart.memory.DiskCacheManager;
+import com.chart.pojos.BaseChartModel;
 import com.chart.pojos.ChartModel;
 import com.chart.restclient.Processor;
 
 public class GetInBackgroundLoader extends AsyncTaskLoader<Boolean> {
 	private final static String TAG="GetInBackgroundLoader";
-	private final static int NUM_MONTHS=12;
-	private final static int NUM_WEEKS=4;
 	private int width;
 	private int chart_id;
 	private int year,month;
@@ -42,66 +43,92 @@ public class GetInBackgroundLoader extends AsyncTaskLoader<Boolean> {
 	 * data to be published by the loader.
 	 */
 	@Override public Boolean loadInBackground() {
+		
+		Calendar cal= Calendar.getInstance();
+
+		Calendar actual = Calendar.getInstance();
+		actual.setTimeInMillis(System.currentTimeMillis());
 		Log.i(TAG,"Start GerInBackgroundLoader");
 		Log.w(TAG, "PUT - EVICT =" + (mMemoryCache.putCount()-mMemoryCache.evictionCount()));
 		//Don't do anything until the year is not selected (cause can be a huge amount of data to load)
 		if (year == 0) return false;
-
-		String weeksKey[]=null;
-		String monthsKey[]=null;
+		cal.set(Calendar.YEAR, year);
+		ArrayList<String > weeksKey=null;
+		ArrayList<String > monthsKey=null;
 
 		if (month !=0){
 			//Create the keys
-			weeksKey= new String[NUM_WEEKS];
-			for (int i = 0; i < NUM_WEEKS; i++) 
-				weeksKey[i]="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + month + "&week=" + (i+1) + "&day=0&type=" + type;
+			weeksKey = new ArrayList<String>();
+			cal.set(Calendar.MONTH, (month -1));
+			for (int i = 0; i < NUM_WEEKS; i++) {
+				cal.set(Calendar.WEEK_OF_MONTH, i);
+				if (cal.before(actual))
+					weeksKey.add("charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + month + "&week=" + (i+1) + "&day=0&type=" + type);
+			}
 		}
 
-		//Get List of months, in a random order (we don't know which one the user us gonna request. 0-12)
-		ArrayList<Integer> monthsValue= new ArrayList<Integer>();
-		for (int i = 1; i < NUM_MONTHS+1; i++) 
-			monthsValue.add(i);
-		Collections.shuffle(monthsValue);
-
 		//Create the keys
-		monthsKey= new String[NUM_MONTHS+1];
-		for (int i = 0; i < NUM_MONTHS; i++) 
-			monthsKey[i]="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + monthsValue.get(i).intValue() + "&week=0&day=0&type=" + type;
-		monthsKey[NUM_MONTHS]="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=0&week=0&day=0&type=" + type;
+		monthsKey = new ArrayList<String>();
+		cal.clear();
+		cal.set(Calendar.YEAR, year);
 
+		for (int i = 0; i < NUM_MONTHS; i++) {
+			cal.set(Calendar.MONTH, i);
+			if (cal.before(actual))
+				monthsKey.add("charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + i + "&week=0&day=0&type=" + type);
+		}
+		Collections.shuffle(monthsKey);
+		monthsKey.add("charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=0&week=0&day=0&type=" + type);
 		if (month != 0) retrieveElems(weeksKey);
 		retrieveElems(monthsKey);
 
 		return true;
 	}
 
-	private void retrieveElems(String key[]){
+	private void retrieveElems(ArrayList<String> keys){
 		ChartModel chart=null;
-		for (int i = 0; i < key.length; i++) {
-			chart=mMemoryCache.get(key[i].hashCode());
-			if (chart == null){ //If the month doesn't exist in the Memory Cache, try disk
-				if (mDiskCache.get(key[i].hashCode()) == null){ //If it doesn't exist in the Disk Cache, download
-					chart=Processor.i.getChart(key[i]);	
-					Log.i(TAG, "Inserting element '"+key[i]+ "' in the Memory Cache & Disk Cache");
-					if (chart!=null){
-						mMemoryCache.put(key[i].hashCode(), chart);
-						mDiskCache.putChart(key[i].hashCode(), chart);
-					}
+		for (String key : keys) {
+			int hashKey=key.hashCode();
 
+			chart=mMemoryCache.get(hashKey);
+			if (chart == null){ //If the month doesn't exist in the Memory Cache, try disk
+				if (mDiskCache.get(hashKey) == null){ //If it doesn't exist in the Disk Cache, download
+					fromInternet(key, hashKey);
 				}else{
-					chart=mDiskCache.getChart(key[i].hashCode());
+
+					chart=mDiskCache.getChart(hashKey);
 					if (chart !=null){
-						mMemoryCache.put(key[i].hashCode(), chart);
-						Log.i(TAG, "Obtained Data="+key[i]+ " from Disk Cache and inserted in Memory Cache");
-					} else
-						Log.i(TAG, "Obtained Data="+key[i]+ " from Disk Cache but it's EMPTY");
+						if (chart.expires < System.currentTimeMillis() && chart.expires > 0){
+							mDiskCache.remove(hashKey);
+							fromInternet(key, hashKey);
+						}else{
+							mMemoryCache.put(hashKey, chart);
+//							Log.i(TAG, "Obtained Data="+key+ " from Disk Cache and inserted in Memory Cache");
+						}
+					} 
+//					else
+//						Log.i(TAG, "Obtained Data="+key+ " from Disk Cache but it's EMPTY");
 
 				}
 			}else
-				Log.i(TAG, "Obtained Data=" + key[i] + " from the Memory Cache");
-
+				if (chart.expires < System.currentTimeMillis() && chart.expires > 0){
+					mMemoryCache.remove(hashKey);
+					mDiskCache.remove(hashKey);
+					fromInternet(key, hashKey);
+				}
+//				else
+//					Log.i(TAG, "Obtained Data=" + key + " from the Memory Cache");
 			chart=null;
 		}
+	}
+	private void fromInternet(String key, int hashKey){
+		ChartModel chart=Processor.i.getChart(key);	
+//		Log.i(TAG, "Inserting element '"+key+ "' in the Memory Cache & Disk Cache");
+		if (chart!=null){
+			mMemoryCache.put(hashKey, chart);
+			mDiskCache.putChart(hashKey, chart);
+		}
+//		Log.i(TAG, "Inserting element '"+key+ "' in the Memory Cache & Disk Cache");
 	}
 
 	/**

@@ -1,8 +1,10 @@
-package jabx.model;
+package models;
 
-import hibernate.types.StringDoubleType;
+import hibernate.types.StringLongType;
 
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -22,28 +24,31 @@ import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.google.common.base.Strings;
+import com.google.common.primitives.Longs;
+
 @XmlRootElement
 @Entity 
 //@PrimaryKeyJoinColumn(name="chart_id")
 
 @DiscriminatorValue("chartModel")
-@TypeDef(name="StringDouble", typeClass = StringDoubleType.class)
+@TypeDef(name="StringLong", typeClass = StringLongType.class)
 
 public class ChartModel extends BaseChartModel{
 	private UserModel user;
-	private double[] xValues;
+	private long[] xValues;
 	private Set<SerieModel> yValues = new LinkedHashSet<>();
 	private Set<CommentModel> comments = new HashSet<>();
 
 	public ChartModel() {
 		super();
 	}
-	public ChartModel(String name, String description, double[] xValues, Set<SerieModel> yValues) {
+	public ChartModel(String name, String description, long[] xValues, Set<SerieModel> yValues) {
 		super(name,description);
 		this.xValues=xValues;
 		this.yValues=yValues;
 	}
-	public ChartModel(String name, String description, double[] xValues, Set<SerieModel> yValues, int firstYear, int lastYear) {
+	public ChartModel(String name, String description, long[] xValues, Set<SerieModel> yValues, int firstYear, int lastYear) {
 		super(name,description,firstYear,lastYear);
 		this.xValues=xValues;
 		this.yValues=yValues;
@@ -63,13 +68,27 @@ public class ChartModel extends BaseChartModel{
 	//	@ElementCollection
 	//	@CollectionTable(name="x_values", joinColumns=@JoinColumn(name="chart_id"))
 	//	@Column(name="x_value")
-	@Type(type="StringDouble")
-	public double[] getxValues() {
+	@Type(type="StringLong")
+	public long[] getxValues() {
 		return xValues;
 	}
 
-	public void setxValues(double[] xValues) {
+	public void setxValues(long[] xValues) {
 		this.xValues = xValues;
+	}
+	private void addXValues(long[] newXValues){
+		xValues=Longs.concat(xValues,newXValues);
+	}
+	public void updateChart(ChartModel c){
+		if (!Strings.isNullOrEmpty(c.getName())) setName(c.getName());
+		if (!Strings.isNullOrEmpty(c.getDescription())) setDescription(c.getDescription());
+		if (!Strings.isNullOrEmpty(c.getxLegend())) setxLegend(c.getxLegend());
+		if (!!Strings.isNullOrEmpty(c.getyLegend())) setyLegend(c.getyLegend());
+		c.setLastYear(c.getLastYear());
+		setDate(new Date(System.currentTimeMillis()));
+
+		addXValues(c.getxValues());
+		addyValues(c.getyValues());	
 	}
 
 	//	@ManyToMany(fetch=FetchType.EAGER)
@@ -87,6 +106,12 @@ public class ChartModel extends BaseChartModel{
 	}
 	public void setyValues(Set<SerieModel> yValues) {
 		this.yValues = yValues;
+	}
+	private void addyValues(Set<SerieModel> newYValues){
+		for (SerieModel series: yValues) {
+			Iterator<SerieModel> newSeries= newYValues.iterator();
+			series.updateSeries(newSeries.next());
+		}
 	}
 	public void setyValue(SerieModel yValue) {
 		yValues.add(yValue);
@@ -114,4 +139,5 @@ public class ChartModel extends BaseChartModel{
 		comment.setChart(this);
 		comments.add(comment);
 	}
+	
 }

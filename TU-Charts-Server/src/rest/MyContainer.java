@@ -1,6 +1,6 @@
-package rest.resources;
+package rest;
 
-import hibernate.db.SessionFactoryHibernate;
+import hibernate.db.TestDatabase;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -20,7 +20,7 @@ public class MyContainer extends ServletContainer{
 	@Override
 	protected void initiate(ResourceConfig rc, WebApplication wa) {
 		super.initiate(rc, wa);
-		SessionFactoryHibernate.getSingleton();
+		TestDatabase.getSingleton();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	}
 

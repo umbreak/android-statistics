@@ -1,14 +1,15 @@
+<%@page import="models.UserModel"%>
 <%@page import="utils.ServerUtils"%>
 <%@page import="hibernate.db.DB_Process"%>
-<%@page import="jabx.model.BaseChartModel"%>
-<%@page import="jabx.model.ChartModel"%>
+<%@page import="models.BaseChartModel"%>
+<%@page import="models.ChartModel"%>
 <%@page import="java.util.List"%>
-<%@page import="jabx.model.BaseChartModel"%>
+<%@page import="models.BaseChartModel"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
-<%@page import="jabx.model.CategoryModel"%>
+<%@page import="models.CategoryModel"%>
 <%@page import="hibernate.db.DB_Process"%>
-<%@page import="jabx.model.ChartModel"%>
+<%@page import="models.ChartModel"%>
 <%@page import="java.util.Random"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.text.DateFormat"%>
@@ -80,7 +81,9 @@
 
 </head>
 <body>
-
+<%	String email=(String)session.getAttribute("email");
+	if (email == null)
+		response.sendRedirect("login.jsp");%>
 	<div id="art-page-background-glare-wrapper">
 		<div id="art-page-background-glare"></div>
 	</div>
@@ -234,6 +237,8 @@
 
 																														CategoryModel cat = DB_Process.i.getCategory(category);
 																														cat.addChart(c);
+																														UserModel user = DB_Process.i.getUser(email);
+																														user.addChart(c);
 																														DB_Process.i.setChart(c);
 															%><h4>
 																<span style="color: green">New Chart Added!
@@ -245,9 +250,11 @@
 															%><h4>
 																<span style="color: red">Chart Deleted!
 															</h4>
-															<%
-																}
-															%>
+															<%	
+																}else if (request.getParameter("update") != null){%>
+																<h4>
+																<span style="color: green">Chart <%=request.getParameter("update") %> updated!
+															</h4><%} %>
 
 														</div>
 
@@ -301,11 +308,9 @@
 														<td><%=chart.getName()%></td>
 														<td><%=chart.getDescription()%></td>
 														<td><%=chart.getCategory().getName()%></td>
-														<td><a
-															href="<%=request.getServletPath().replace("/", "") + "?edit="+ chart.getId()%>" /><img
-															src="images/edit.png" alt="Edit Chart" /></a> <a
-															href="<%=request.getServletPath().replace("/", "") + "?delete=" + chart.getId()%>" /><img
-															src="images/delete.png" alt="Delete Chart" /></a></td>
+<%-- 														<td><a href="<%=request.getServletPath().replace("/", "") + "?edit="+ chart.getId()%>" /><img src="images/edit.png" alt="Edit Chart" /></a> --%>
+ 											<td><a href="update.jsp?edit=<%=chart.getId()%>" /><img src="images/edit.png" alt="Edit Chart" /></a>				
+ 												<a href="<%=request.getServletPath().replace("/", "") + "?delete=" + chart.getId()%>" /><img src="images/delete.png" alt="Delete Chart" /></a></td>
 													</tr>
 
 													<%

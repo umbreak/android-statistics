@@ -2,10 +2,6 @@ package hibernate.db;
 
 
 
-import jabx.model.CategoryModel;
-import jabx.model.ChartModel;
-import jabx.model.SerieModel;
-import jabx.model.UserModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,6 +13,11 @@ import java.util.Properties;
 import java.util.Set;
 
 
+import models.CategoryModel;
+import models.ChartModel;
+import models.SerieModel;
+import models.UserModel;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -25,22 +26,22 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
 
-public class SessionFactoryHibernate {
+public class TestDatabase {
 
-	private static SessionFactoryHibernate instance;
+	private static TestDatabase instance;
 	private SessionFactory sessionFactory;
 	private static ServiceRegistry serviceRegistry;
 
 
-	public static SessionFactoryHibernate getSingleton(){
+	public static TestDatabase getSingleton(){
 		if (instance==null){
-			instance = new SessionFactoryHibernate();
+			instance = new TestDatabase();
 		}
 
 		return instance;
 	}
 
-	private SessionFactoryHibernate(){
+	private TestDatabase(){
 		Configuration configuration = new Configuration();
 		configuration.configure();
 		serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();        
@@ -69,13 +70,13 @@ public class SessionFactoryHibernate {
 		SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 		final int NUM_VALUES=50;
 		int month=2;
-		double[] xValues=new double[NUM_VALUES];
+		long [] xValues=new long [NUM_VALUES];
 		
 		int day[]=new int[]{1,5,8,14,22};
 		int num_day=0;
 		for (int i=0; i < NUM_VALUES; i++){
 			c.set(2012,month, day[num_day]);
-			xValues[i]=(double)c.getTimeInMillis();
+			xValues[i]=c.getTimeInMillis();
 			if (num_day == 4){
 				num_day=0;
 				month++;
@@ -164,11 +165,11 @@ public class SessionFactoryHibernate {
 		categories.get(6).addChart(charts.get(2));
 		categories.get(0).addChart(charts.get(3));
 
-		users.get(0).setChart(charts.get(0));
-		users.get(0).setChart(charts.get(1));
-		users.get(0).setChart(charts.get(2));
-		users.get(0).setChart(charts.get(3));
-		users.get(1).setChart(charts.get(4));
+		users.get(0).addChart(charts.get(0));
+		users.get(0).addChart(charts.get(1));
+		users.get(0).addChart(charts.get(2));
+		users.get(0).addChart(charts.get(3));
+		users.get(1).addChart(charts.get(4));
 
 
 		for (int i=0; i < lines.length; i++)

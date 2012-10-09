@@ -1,18 +1,15 @@
-<%@page import="jabx.model.UserTokenTime"%>
-<%@page import="utils.AuthManager"%>
-<%@page import="utils.HashUtils"%>
-<%@page import="jabx.model.UserModel"%>
+<%@page import="javax.annotation.processing.Processor"%>
 <%@page import="utils.ServerUtils"%>
 <%@page import="hibernate.db.DB_Process"%>
-<%@page import="jabx.model.BaseChartModel"%>
-<%@page import="jabx.model.ChartModel"%>
+<%@page import="models.BaseChartModel"%>
+<%@page import="models.ChartModel"%>
 <%@page import="java.util.List"%>
-<%@page import="jabx.model.BaseChartModel"%>
+<%@page import="models.BaseChartModel"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Map"%>
-<%@page import="jabx.model.CategoryModel"%>
+<%@page import="models.CategoryModel"%>
 <%@page import="hibernate.db.DB_Process"%>
-<%@page import="jabx.model.ChartModel"%>
+<%@page import="models.ChartModel"%>
 <%@page import="java.util.Random"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.text.DateFormat"%>
@@ -84,34 +81,12 @@
 
 </head>
 <body>
-	<%
-		int logged = 4;
-		if (request.getMethod().equalsIgnoreCase("POST")) {
-			String email = request.getParameter("email");
-			String password = request.getParameter("password");
-			password= HashUtils.i.getHash(password);
-			if (!(email.isEmpty() || password.isEmpty())) {
-				UserModel user = DB_Process.i.getUser(email);
-				if (user == null)
-					logged = 1;
-				else {
-					if (user.getPassword().equals(password)) {
-						logged = 0;
-						String token= AuthManager.getUniqueDate();
-						token=HashUtils.i.getHash(password + token);
-						AuthManager.i.getToken_table().put(token, new UserTokenTime(email));
-						Cookie cookie = new Cookie ("chemnitz_token",token);
-
- 						response.setHeader("chemnitz_token", token);
- 						response.addCookie(cookie);
-						response.sendRedirect("index.jsp");
-					} else
-						logged = 2;
-				}
-			}else
-				logged=3;
-		}
-	%>
+<%   
+	String id=request.getParameter("edit");
+   	 if (id == null){
+   		response.sendRedirect("index.jsp");
+   	 }else{
+%>
 
 	<div id="art-page-background-glare-wrapper">
 		<div id="art-page-background-glare"></div>
@@ -164,86 +139,146 @@
 											<div class="art-postcontent">
 												<div class="art-content-layout layout-item-0">
 													<div class="art-content-layout-row">
+														
 														<div class="art-layout-cell layout-item-1"
-															style="width: 45%;">
-															<h3>Login</h3>
+															style="width: 35%;">
+															<%
+																//to get the content type information from JSP Request Header
+																													String contentType = request.getContentType();
+																													Map<String, String> map = new HashMap<String, String>();
+																													//here we are checking the content type is not equal to Null and as well 
+																													// as the passed data from mulitpart/form-data is greater than or equal to 0
+																													if ((contentType != null)
+																															&& (contentType.indexOf("multipart/form-data") >= 0)) {
+																														Random rand = new Random();
+																														DiskFileItemFactory factory = new DiskFileItemFactory();
+/* 																														factory.setRepository(repository);
+ */																														ServletFileUpload upload = new ServletFileUpload(factory);
+
+																														// req es la HttpServletRequest que recibimos del formulario.
+																														// Los items obtenidos serán cada uno de los campos del formulario,
+																														// tanto campos normales como ficheros subidos.
+
+																														List<FileItem> items = upload.parseRequest(request);
+																														File fichero = null;
+																														// Se recorren todos los items, que son de tipo FileItem
+																														for (Object item : items) {
+																															FileItem uploaded = (FileItem) item;
+
+																															// Hay que comprobar si es un campo de formulario. Si no lo es, se guarda el fichero
+																															// subido donde nos interese
+																															if (!uploaded.isFormField()) {
+																																// No es campo de formulario, guardamos el fichero en algún sitio
+																																File directory = new File("webapps/TU-Charts-Server/tmp");
+																																if (!directory.exists())
+																																	directory.mkdir();
+																																fichero = new File(directory,(rand.nextInt(1000 - 100) + 100)+ uploaded.getName());
+																																uploaded.write(fichero);
+																															} else
+																																map.put(uploaded.getFieldName(), uploaded.getString());
+
+																														}
+
+																														String name = map.get("name");
+																														String description = map.get("description");
+																														String xLegend = map.get("xLegend");
+																														String yLegend = map.get("yLegend");
+																														String type = map.get("type");
+																														ChartModel newChart = ServerUtils.i.fromCSV(name, description, fichero);
+																														DB_Process.i.uploadChart(Integer.parseInt(id), newChart);
+															%><h4>
+																<span style="color: green">Chart Updated!
+															</h4>
+															<%
+															response.sendRedirect("index.jsp?update="+id);
+															} else{
+																ChartModel chart = DB_Process.i.getChart(Integer.valueOf(id)); 
+															%>
+															<div class="art-layout-cell layout-item-2"
+															style="width: 65%;">
+															<h3>Update Chart</h3>
 
 															<p>
 																<br />
 															</p>
 
-															<form method="post" action="login.jsp">
+															<form enctype="multipart/form-data" method="post"
+																action="update.jsp?edit=<%= id %>">
 																<table border="0" cellspacing="0" cellpadding="0"
 																	style="width: 100%; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px;">
 																	<tbody>
 																		<tr>
-																			<td width="29%">Email:</td>
+																			<td width="29%">Name:</td>
 
-																			<td width="71%"><input name="email" type="text"
+																			<td width="71%"><input name="name" type="text" value="<%=chart.getName()%>"
 																				class="input" /></td>
 																		</tr>
-																		<tr>
-																			<td width="29%">Password:</td>
 
-																			<td width="71%"><input name="password"
-																				type="password" class="input" /></td>
+																		<tr>
+																			<td>Description:</td>
+
+																			<td><textarea name="description" class="input"><%=chart.getDescription()%></textarea></td>
 																		</tr>
-
-
 																		<tr>
+																			<td>Load new values:</td>
+																			<td><input type="file" name="data"></td>
+																		</tr>
 																		<tr>
-																			<td colspan="2"><br /></td>
+																			<td colspan="2"><br /><input type="hidden" name="chart_id" value="<%=id%>" />
+																			</td>
 																		</tr>
 																	</tbody>
 																</table>
 																<input class="art-button" type="Submit" value="Submit">
-																<br /> <br />
+																<br />
+																<br />
 
 															</form>
 														</div>
-														<div class="art-layout-cell layout-item-2"
-															style="width: 55%;">
-															Manager for the TU-Charts. It's possible to manage:
-															<ul>
-																<li>The categories of the charts.</li>
-																<li>The charts.</li>
-																<li>The users that have access to the charts.</li>
-															</ul>
-															<% String message=null;
-															if (logged == 1) message="User innexistent";
-															else if (logged == 2) message="Password incorrect";
-															else if (logged == 3) message="User and/or password not filled";
-															if (message != null){%>
-															<h4><span style="color: red"><%= message%></h4>
 															<% }%>
-															<div class="cleared"></div>
 														</div>
 
-														<div class="cleared"></div>
 													</div>
+													<p>
+														<br />
+													</p>
+
+													<br />
+
+
 												</div>
-												<div class="cleared"></div>
+
 											</div>
+											<div class="cleared"></div>
 										</div>
-									</div>
-								</div>
-								<div class="cleared"></div>
-								<div class="art-footer">
-									<div class="art-footer-body">
-										<div class="art-footer-text">
-											<p>
-												Copyright © 2012, TU-Charts.<br /> <br />
-											</p>
-										</div>
+
 										<div class="cleared"></div>
 									</div>
 								</div>
 								<div class="cleared"></div>
 							</div>
 						</div>
-						<div class="cleared"></div>
-						<p class="art-page-footer"></p>
+					</div>
+				</div>
+				<div class="cleared"></div>
+				<div class="art-footer">
+					<div class="art-footer-body">
+						<div class="art-footer-text">
+							<p>
+								Copyright © 2012, TU-Charts.<br /> <br />
+							</p>
+						</div>
 						<div class="cleared"></div>
 					</div>
+				</div>
+				<div class="cleared"></div>
+			</div>
+		</div>
+		<div class="cleared"></div>
+		<p class="art-page-footer">
+		</p>
+		<div class="cleared"></div>
+	</div>
+<%} %>
 </body>
 </html>

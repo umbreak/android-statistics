@@ -27,9 +27,9 @@
         android:theme="@style/Theme.Styled" >
         <activity
             android:name=".ui.LoginActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:label="@string/app_name" 
-            android:theme="@style/Theme.Sherlock.Light.NoActionBar">
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Sherlock.Light.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,26 +48,30 @@
             android:name=".ui.ChartActivity"
             android:label="@string/app_name" >
         </activity>
-        
-                <!-- CHART_DETAILS_ACTIVITY activity -->
+
+        <!-- CHART_DETAILS_ACTIVITY activity -->
         <activity
             android:name=".ui.ChartDetailsAcitivy"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
-        
-                  <!-- HOME_ACTIVITY activity -->
+
+        <!-- HOME_ACTIVITY activity -->
         <activity
             android:name=".ui.HomeActivity"
             android:label="@string/app_name" >
         </activity>
-        
-                          <!-- PREFERENCE_ACTIVITY activity -->
+
+        <!-- PREFERENCE_ACTIVITY activity -->
         <activity
             android:name=".ui.PreferenceActivity"
             android:label="@string/app_name" >
         </activity>
-        
+        <!-- TEST activity -->
+        <activity
+            android:name=".ui.Test"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

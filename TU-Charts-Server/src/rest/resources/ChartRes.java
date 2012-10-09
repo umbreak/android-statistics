@@ -1,19 +1,14 @@
 package rest.resources;
 
-import hibernate.db.DB_Process;
-import jabx.model.ChartModel;
 import static utils.ServerUtils.TYPE_AVERAGE;
 import static utils.ServerUtils.TYPE_DISPERSION;
 import static utils.ServerUtils.TYPE_DUPLICATES;
 import static utils.ServerUtils.TYPE_DUPLICATES_2;
 import static utils.ServerUtils.TYPE_ORIGINAL;
-import jabx.model.SerieModel;
-import static utils.ServerUtils.NULL_VAL;
-import java.lang.reflect.InvocationTargetException;
+import hibernate.db.DB_Process;
+
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -34,31 +29,37 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import models.ChartModel;
+import models.SerieModel;
+
+import rest.AbstractChart;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Longs;
 
-public class ChartRes {
+public class ChartRes extends AbstractChart{
 	@Context UriInfo uriInfo;
 	@Context Request request;
 
 
 
-	private int id;
+	private ChartModel chart;
 	private String user_email;
-	public ChartRes(UriInfo uriInfo, Request request, int id, String user_email) {
+	public ChartRes(UriInfo uriInfo, Request request, ChartModel chart, String user_email) {
 		this.uriInfo = uriInfo;
 		this.request = request;
-		this.id = id;
+		this.chart = chart;
 		this.user_email=user_email;
 	}
 
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public ChartModel getChart(@DefaultValue("0") @QueryParam("x") int x, @DefaultValue("0") @QueryParam("y") int y, @DefaultValue("0") @QueryParam("month") int month,@DefaultValue("0") @QueryParam("week") int week , @QueryParam("day") int day, @QueryParam("year") int year, @DefaultValue("0") @QueryParam("type") int type) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException, ParseException {
+	public Response getChart(@DefaultValue("0") @QueryParam("x") int x, @DefaultValue("0") @QueryParam("y") int y, @DefaultValue("0") @QueryParam("month") int month,@DefaultValue("0") @QueryParam("week") int week , @QueryParam("day") int day, @QueryParam("year") int year, @DefaultValue("0") @QueryParam("type") int type) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException, ParseException {
 		try{
-			ChartModel chart=DB_Process.i.getChart(id);
-			//Return the month requested by parameter month
+			boolean expires=isDynamic(year, month, week, day, chart.getxValues());
+			//Return the date requested
 			if (month != 0 || day != 0 || year!=0 || week !=0){
 				List<Integer> matches=getMatches(year, month, week, day, chart.getxValues());
 				if (matches.size()==0)
@@ -66,23 +67,24 @@ public class ChartRes {
 				modifYval(matches,chart.getyValues());
 				chart.setxValues(modifXval(matches, chart.getxValues()));
 			}
-
-			if ((x == 0 && y == 0) || type == TYPE_ORIGINAL)
-				return chart;
-			//Num of elements inside each of the groups The division is rounded up
-//			int sizeGroup=(chart.getxValues().length + x -1) / x;
 			
+			if ((x == 0 && y == 0) || type == TYPE_ORIGINAL)
+				return response(chart, expires);
+			
+			//Num of elements inside each of the groups The division is rounded up
+			//			int sizeGroup=(chart.getxValues().length + x -1) / x;
+
 			int sizeGroup = (int)Math.ceil((float)chart.getxValues().length/x);
 			if (type == TYPE_DUPLICATES) sizeGroup*=2;
 
 			if (sizeGroup < 2)
-				return chart;
+				return response(chart, expires);
 			//Impossible to apply the reduction algorithm if there's more then one Y serie
 			if (type == TYPE_DUPLICATES && chart.getyValues().size() == 1)
 				type=TYPE_DUPLICATES_2;
-			
+
 			if (type == TYPE_DISPERSION && sizeGroup < 5)
-				return chart;
+				return response(chart, expires);
 
 			//			int[] repetitions=new int[((chart.getxValues().length + numXgroups -1) / numXgroups)];
 			List<List<Integer>> matchesMatrix= new ArrayList<>();
@@ -91,14 +93,14 @@ public class ChartRes {
 				//Splitting the Y values in groups of Yval/android_screen_height
 
 				List<List<Double>> groupYval=Lists.partition(Doubles.asList(serie.getYvalues()), sizeGroup);
-//				System.out.println("number of sub-lists=" + groupYval.size());
-//				System.out.println("Sublist size=" + groupYval.get(0).size());	
+				//				System.out.println("number of sub-lists=" + groupYval.size());
+				//				System.out.println("Sublist size=" + groupYval.get(0).size());	
 				//Choosing the average value of each group
 				if (type == TYPE_DUPLICATES_2){
 					double result[]=new double[0];
 					for (List<Double> list : groupYval) {
 						Set<Double> uniqueDoubles= Sets.newLinkedHashSet(list);
-						System.out.println("Duplicates in the array=" + (list.size() - uniqueDoubles.size()));
+						//						System.out.println("Duplicates in the array=" + (list.size() - uniqueDoubles.size()));
 						matchesMatrix.add(getSelectedPositions(uniqueDoubles, list));
 						result=Doubles.concat(result,Doubles.toArray(uniqueDoubles));
 					}
@@ -115,25 +117,21 @@ public class ChartRes {
 					serie.setYvalues(setMaxMinList(groupYval));
 				}
 				else
-					serie.setYvalues(meanList(groupYval));
+					serie.setYvalues(meanListY(groupYval));
 
 			}
 
 			//Choosing values from the X axis (average)
-			List<List<Double>> groupXval=Lists.partition(Doubles.asList(chart.getxValues()), sizeGroup);
-//			System.out.println("number of sub-dates=" + groupXval.size());
-//			System.out.println("SubDates size=" + groupXval.get(0).size());
-			//				for (Date d : groupXval.get(0))
-			//					System.out.println(d);
+			List<List<Long>> groupXval = Lists.partition(Longs.asList(chart.getxValues()), sizeGroup);
 			if (type==TYPE_DUPLICATES_2){
-				double result[]=new double[0];
+				long result[]=new long[0];
 				int pos=0;
-				for (List<Double> list: groupXval) {
+				for (List<Long> list: groupXval) {
 					List<Integer> listMatches=matchesMatrix.get(pos);
-					double[] concat=new double[listMatches.size()];
+					long[] concat=new long[listMatches.size()];
 					for (int i = 0; i < concat.length; i++) 
 						concat[i]=list.get(listMatches.get(i));
-					result=Doubles.concat(result,concat);
+					result=Longs.concat(result,concat);
 					pos++;
 				}
 				chart.setxValues(result);
@@ -141,11 +139,9 @@ public class ChartRes {
 				chart.setxValues(meanListForTwo(groupXval));
 			}
 			else if (type ==TYPE_AVERAGE)
-				chart.setxValues(meanList(groupXval));
-			//				System.out.println("get average of the first subgroup=" + chart.getxValues()[0]);
+				chart.setxValues(meanListX(groupXval));
 
-
-			return chart;
+			return response(chart, expires);
 
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -155,9 +151,9 @@ public class ChartRes {
 	@GET
 	@Path("series")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Set<SerieModel> getValues() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
+	public Set<SerieModel> getYValues() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		try{
-			return DB_Process.i.getChart(id).getyValues();
+			return chart.getyValues();
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
@@ -165,201 +161,8 @@ public class ChartRes {
 
 	@Path("comments")
 	public ChartCommentRes getComments(){
-		return new ChartCommentRes(uriInfo, request, id, user_email);
+		return new ChartCommentRes(uriInfo, request, chart, user_email);
 	}
 
-	private <T> T mean(List<T> array, Class<T> clazz){
-		double sum=0;
-
-		for (T val : array) {
-			if (clazz == Date.class)
-				sum+=((Date)val).getTime();
-			else
-				sum += ((Double)val);
-		}
-		try {
-			if (clazz == Date.class)
-				return clazz.getConstructor(long.class).newInstance((long)sum/array.size());
-			else
-				return clazz.getConstructor(double.class).newInstance((double)sum/array.size());
-
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException |InvocationTargetException | NoSuchMethodException | SecurityException e) 
-		{e.printStackTrace(); return null;} 
-	}
-
-	private double[] meanList(List<List<Double>> list){
-		double result[] = new double[list.size()];
-		int pos=0;
-		for (List<Double> values: list) {
-			result[pos] = mean(values,Double.class);
-			pos++;
-		}
-		return result;
-	}
-	private double[] meanListForTwo(List<List<Double>> list){
-		//		double result[] = new double[list.size()*2];
-		//		ArrayList<Double> result=new ArrayList<>();
-		int pos=0;
-		double result[];
-		final int pixelElems=list.get(0).size();
-		if (pixelElems > 3)
-			result = new double[list.size()*4];
-		else
-			result = new double[list.size()*2];
-
-		for (List<Double> values: list) {
-			//			result[pos]=values.get(0);
-			//			pos++;
-			//			result[pos]= values.get(values.size()-1);
-			//			pos++;
-			result[pos] = values.get(0);
-			pos++;
-			if (pixelElems > 3){
-				double mean=mean(values, Double.class);
-				result[pos]=mean-1;
-				pos++;
-				result[pos]=mean+1;
-				pos++;
-			}
-			result[pos] = values.get(values.size()-1);
-			pos++;
-		}
-		return result;
-	}
-
-	private List<Integer> getMatches(int y, int m,int w, int d, double[] xValues) throws ParseException{
-		List<Integer> result=new ArrayList<Integer>();
-		Calendar calendar= Calendar.getInstance();
-		calendar.clear();
-		calendar.set(Calendar.YEAR, y);
-
-		if (d != 0){
-			calendar.set(Calendar.MONTH, m-1);
-			calendar.set(Calendar.DAY_OF_MONTH, d);
-			long firstVal=calendar.getTimeInMillis();
-
-			calendar.set(Calendar.DAY_OF_MONTH, d+1);
-			long lastVal=calendar.getTimeInMillis()-1;
-
-			for (int i = 0; i < xValues.length; i++)
-				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
-					result.add(i);	
-
-			return result;
-
-		}else if (w != 0){
-			calendar.set(Calendar.MONTH, m-1);
-			if (w != 1)
-				calendar.set(Calendar.WEEK_OF_MONTH, w);
-			long firstVal=calendar.getTimeInMillis();
-
-			calendar.clear();
-			calendar.set(Calendar.YEAR, y);
-			if (w== 5)
-				calendar.set(Calendar.MONTH, m);
-			else{
-				calendar.set(Calendar.MONTH, m-1);
-				calendar.set(Calendar.WEEK_OF_MONTH, w+1);
-			}
-			long lastVal=calendar.getTimeInMillis()-1;
-			for (int i = 0; i < xValues.length; i++)
-				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
-					result.add(i);
-
-			return result;
-
-		}else if (m != 0){
-			calendar.set(Calendar.MONTH, m-1);
-			long firstVal=calendar.getTimeInMillis();
-
-			calendar.set(Calendar.MONTH, m);
-			long lastVal=calendar.getTimeInMillis()-1;
-
-			for (int i = 0; i < xValues.length; i++)
-				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
-					result.add(i);
-
-			return result;
-
-		}else{
-			long firstVal=calendar.getTimeInMillis();
-			calendar.set(Calendar.YEAR, y+1);
-			long lastVal=calendar.getTimeInMillis()-1;
-			for (int i = 0; i < xValues.length; i++)
-				if (xValues[i] >= firstVal && xValues[i] <= lastVal)
-					result.add(i);
-			return result;
-		}
-	}
-
-	private int find(List<Double> array, double value) {
-		for(int i=0; i<array.size(); i++) 
-			if(array.get(i) == value)
-				return i;
-		return -1;
-	}
-	private ArrayList<Integer> getSelectedPositions(Set<Double> uniqueDoubles, List<Double> list){
-		ArrayList<Integer> result= new ArrayList<>();
-		for (Double value : uniqueDoubles) {
-			result.add(find(list, value));
-		}
-		return result;
-	}
-	private void modifYval(List<Integer> xValues, Set<SerieModel> y_results_tmp){
-
-		//Modif Y Values
-		for (SerieModel serieModel : y_results_tmp) {
-			double[] data=new double[xValues.size()];
-			for (int i=0; i<xValues.size();i++)
-				data[i]=serieModel.getYvalues()[xValues.get(i)];
-			serieModel.setYvalues(data);
-		}
-	}
-	private double[] modifXval(List<Integer> xValues, double [] x_results_tmp){
-		double[] x_results=new double[xValues.size()];
-
-		//Modif X Values
-		for (int i=0; i< xValues.size(); i++)
-			x_results[i]=x_results_tmp[xValues.get(i)];
-
-		return x_results;
-	}
-	public static List<Double> deleteDuplicates(List<Double> list){
-		List<Double> result = new ArrayList<>();
-		int rep=0;
-		for (Double value : list) {
-			if (!result.contains(value)) result.add(value);
-			else{
-				result.add(NULL_VAL);
-				rep++;
-			}
-		}
-		return result;
-	}
-	public double[] setMaxMinList(List<List<Double>> groupYval){
-		//		int pos=0;
-		final int pixelElems=groupYval.get(0).size();
-					ArrayList<Double> result = new ArrayList<Double>();
-		for (List<Double> list : groupYval) {
-			double[] array_list=Doubles.toArray(list);
-			ArrayList<Double> newElems= new ArrayList<>();
-			newElems.add(array_list[0]);
-			newElems.add(array_list[array_list.length-1]);			
-			Double max = Doubles.min(array_list);
-			Double min = Doubles.max(array_list);
-			if (pixelElems > 3){
-				if (newElems.contains(max))
-					newElems.add(1,NULL_VAL);
-				else
-					newElems.add(1,max);
-				if (newElems.contains(min))
-					newElems.add(1,NULL_VAL);
-				else
-					newElems.add(1,min);
-			}
-			result.addAll(newElems);
-		}
-		return Doubles.toArray(result);
-	}
 
 }

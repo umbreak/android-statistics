@@ -1,4 +1,4 @@
-package jabx.model;
+package models;
 
 import java.util.Date;
 
@@ -45,8 +45,6 @@ public class BaseChartModel {
 	private int lastYear;
 	private Date date;
 	private CategoryModel category;
-	
-
 	public BaseChartModel(int id, String name, String description,
 			String xLegend, String yLegend, int votes, int firstYear,
 			int lastYear, Date date, CategoryModel category) {
@@ -138,7 +136,7 @@ public class BaseChartModel {
 	public void setLastYear(int lastYear) {
 		this.lastYear = lastYear;
 	}
-	@Temporal(TemporalType.TIMESTAMP) @NotNull @Column(updatable=false)
+	@Temporal(TemporalType.TIMESTAMP) @NotNull @Column(updatable=true)
 	public Date getDate() {
 		return date;
 	}

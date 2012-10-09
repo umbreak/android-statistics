@@ -65,8 +65,8 @@ public enum AppUtils {
 	public static final String DISK_CACHE_DIR="charts";
 	public static final int DISK_CACHE_SIZE = 1024 * 1024 * 20; // 20MB
 
-
-
+	public static final int NUM_WEEKS=5;
+	public static final int NUM_MONTHS=12;
 
 
 

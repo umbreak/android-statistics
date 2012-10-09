@@ -1,9 +1,6 @@
 package rest.resources;
 
 import hibernate.db.DB_Process;
-import jabx.model.UserModel;
-import jabx.model.UserModelPass;
-import jabx.model.UserTokenTime;
 
 import java.util.List;
 
@@ -27,6 +24,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import models.UserModel;
+import models.UserModelPass;
+import models.UserTokenTime;
 
 import utils.AuthManager;
 import utils.HashUtils;

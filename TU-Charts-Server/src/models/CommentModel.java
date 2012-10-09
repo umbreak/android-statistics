@@ -1,4 +1,4 @@
-package jabx.model;
+package models;
 import java.util.Date;
 
 import javax.persistence.CascadeType;

@@ -1,5 +1,7 @@
 package com.chart.loaders;
 
+import java.util.Calendar;
+
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.util.LruCache;
@@ -39,37 +41,53 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 	 */
 	@Override public ChartModel loadInBackground() {
 		Log.i(TAG, "Start ChartDataLoader");
+		//Ensure that the selected date is before in time than the actual date
+		Calendar cal= Calendar.getInstance();
+		Calendar actual = Calendar.getInstance();
+		actual.setTimeInMillis(System.currentTimeMillis());
+		cal.set(Calendar.MONTH, month);
+		cal.set(Calendar.YEAR, year);
+		if (day != 0)
+			cal.set(Calendar.DATE, day);
+		else
+			cal.set(Calendar.WEEK_OF_MONTH, week);
+		if (year != 0 && cal.after(actual))
+			return null;
+		//Start the retrieving process
 		ChartModel chart=null;
+
 		String key="charts/"+chart_id+ "?x=" + width + "&year=" + year + "&month=" + month + "&week=" + week + "&day=" + day + "&type=" + type;
 
 		Log.w(TAG, "key=" + key);
 		int hashKey=key.hashCode();
 		chart=mMemoryCache.get(hashKey);
 		if(chart != null){
-			if (chart.expires < System.currentTimeMillis()){
+			System.out.println("EXPIRES=" + chart.expires + " actual=" + System.currentTimeMillis());
+			if (chart.expires < System.currentTimeMillis() && chart.expires >0){
 				mDiskCache.remove(hashKey);
 			}else{
 				Log.i(TAG, "Data=" + key + " fetched from the Memory Cache");
 				return chart;
 			}
 		}
-
-			if (chart != null){
-				if (chart.expires < System.currentTimeMillis()){
-					mDiskCache.remove(hashKey);
-				}else{
-					Log.i(TAG, "Data=" + key + " fetched from the Disk Cache");
-					return chart;
-				}
+		chart=mDiskCache.getChart(hashKey);
+		if (chart != null){
+			System.out.println("EXPIRES=" + chart.expires + " actual=" + System.currentTimeMillis());
+			if (chart.expires < System.currentTimeMillis() && chart.expires > 0){
+				mDiskCache.remove(hashKey);
+			}else{
+				Log.i(TAG, "Data=" + key + " fetched from the Disk Cache");
+				return chart;
+			}
 		}
 
 
 		chart= Processor.i.getChart(key);
-		if (chart != null)
+		if (chart != null){
 			mMemoryCache.put(hashKey, chart);
-
-		Log.i(TAG, "Data=" + key + " fetched from INTERNET");
-		mDiskCache.putChart(hashKey, chart);
+			mDiskCache.putChart(hashKey, chart);
+			Log.i(TAG, "Data=" + key + " (" + hashKey + ") fetched from INTERNET");
+		}
 		return chart;
 	}
 

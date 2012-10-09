@@ -1,6 +1,5 @@
 package utils;
 
-import jabx.model.UserTokenTime;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +10,8 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import models.UserTokenTime;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
@@ -36,7 +37,16 @@ public enum AuthManager {
 			}
 		};
 
+		final Predicate < UserTokenTime > removeToken = new Predicate < UserTokenTime > (){
+			public boolean apply(UserTokenTime arg0) {
+				//900.000*2 millisec == 30min
+				return ((System.currentTimeMillis() - arg0.getCreation()) < 900000*2);
+			}
+		};
+
 		token_table= Maps.filterValues(token_table, removeDifference);
+		token_table= Maps.filterValues(token_table, removeToken);
+
 
 
 		//		TimerTask timerTask = new TimerTask() 

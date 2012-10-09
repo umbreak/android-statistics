@@ -1,11 +1,5 @@
 package hibernate.db;
 
-import jabx.model.BaseChartModel;
-import jabx.model.CategoryModel;
-import jabx.model.ChartModel;
-import jabx.model.CommentModel;
-import jabx.model.SerieModel;
-import jabx.model.UserModel;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +15,13 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
+
+import models.BaseChartModel;
+import models.CategoryModel;
+import models.ChartModel;
+import models.CommentModel;
+import models.SerieModel;
+import models.UserModel;
 
 public enum DB_Process {
 	i;
@@ -46,7 +47,7 @@ public enum DB_Process {
 		date_comparator = new Comparator<BaseChartModel>() {
 			@Override
 			public int compare(BaseChartModel o1, BaseChartModel o2) {
-				return o2.getId() - o1.getId();
+				return o2.getDate().compareTo(o1.getDate());
 			}
 		};
 		popularity_comparator = new Comparator<BaseChartModel>() {
@@ -68,7 +69,7 @@ public enum DB_Process {
 	public List <BaseChartModel> getCharts(int max) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
 		//utx.begin();
-		Query q= em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM jabx.model.BaseChartModel c");
+		Query q= em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM models.BaseChartModel c");
 		q.setMaxResults(max);
 		List<BaseChartModel> charts = q.getResultList();
 		em.close();
@@ -77,7 +78,7 @@ public enum DB_Process {
 
 	public List <BaseChartModel> getCharts() throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
-		List<BaseChartModel> charts = em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM jabx.model.BaseChartModel c").getResultList();
+		List<BaseChartModel> charts = em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM models.BaseChartModel c").getResultList();
 		em.close();
 		return charts;
 	}
@@ -88,12 +89,28 @@ public enum DB_Process {
 		em.close();
 		return chart;
 	}
+	public void uploadChart(int chart_id, ChartModel newChart)throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+		EntityManager em=factory.createEntityManager();
+		ChartModel chart = em.find(ChartModel.class, chart_id);
+
+		em.getTransaction().begin();
+		chart.updateChart(newChart);
+		
+		for (SerieModel series : chart.getyValues())
+			series=em.merge(series);
+		
+		chart=em.merge(chart);
+		em.flush();
+		em.getTransaction().commit();
+		em.close();
+	}
+	
 	public BaseChartModel getBaseChart(int chart_id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
 		//utx.begin();
 		BaseChartModel chart;
 		try{
-			chart = (BaseChartModel)em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.id =:chart_id").setParameter("chart_id", chart_id).getSingleResult();
+			chart = (BaseChartModel)em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM models.BaseChartModel c WHERE c.id =:chart_id").setParameter("chart_id", chart_id).getSingleResult();
 		}catch (RuntimeException e){ return null; }
 		em.close();
 		return chart;
@@ -103,7 +120,7 @@ public enum DB_Process {
 		EntityManager em=factory.createEntityManager();
 		//utx.begin();
 		CategoryModel category=em.find(CategoryModel.class, chart.getCategory().getId());
-		//		CategoryModel category=(CategoryModel)em.createQuery("jabx.model.CategoryModel as category WHERE category.name =:name").setParameter("name", chart.getCategory().getName()).getSingleResult();
+		//		CategoryModel category=(CategoryModel)em.createQuery("models.CategoryModel as category WHERE category.name =:name").setParameter("name", chart.getCategory().getName()).getSingleResult();
 		category.addChart(chart);
 		em.getTransaction().begin();
 		for (SerieModel serie: chart.getyValues()) 
@@ -148,7 +165,7 @@ public enum DB_Process {
 
 	public CommentModel getComment(int chart_id, int comment_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
-		CommentModel comment=(CommentModel)em.createQuery("jabx.model.CommentModel as comment WHERE comment.chart.id =:chart_id and comment.id =:comment_id").setParameter("chart_id", chart_id).setParameter("comment_id", comment_id).getSingleResult();
+		CommentModel comment=(CommentModel)em.createQuery("models.CommentModel as comment WHERE comment.chart.id =:chart_id and comment.id =:comment_id").setParameter("chart_id", chart_id).setParameter("comment_id", comment_id).getSingleResult();
 		em.close();
 		return comment;
 	}
@@ -192,7 +209,7 @@ public enum DB_Process {
 		EntityManager em=factory.createEntityManager();
 
 		//utx.begin();
-		List<CategoryModel> categories = em.createQuery("FROM jabx.model.CategoryModel as CategoryModel").getResultList();
+		List<CategoryModel> categories = em.createQuery("FROM models.CategoryModel as CategoryModel").getResultList();
 		Collections.sort(categories);
 		em.close();
 		return categories;
@@ -210,13 +227,13 @@ public enum DB_Process {
 
 	public CategoryModel getCategoryCharts(String name)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
-		CategoryModel category=(CategoryModel)em.createQuery("jabx.model.CategoryModel as category WHERE category.name =:name").setParameter("name", name).getSingleResult();
+		CategoryModel category=(CategoryModel)em.createQuery("models.CategoryModel as category WHERE category.name =:name").setParameter("name", name).getSingleResult();
 		return category; 		
 	}
 
 	public List <BaseChartModel> getCategoryCharts(int category_id)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
-		List<BaseChartModel> charts = em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM jabx.model.BaseChartModel c WHERE c.category.id =:category_id ").setParameter("category_id", category_id).getResultList();
+		List<BaseChartModel> charts = em.createQuery("SELECT new BaseChartModel (c.id, c.name, c.description, c.xLegend, c.yLegend, c.votes, c.firstYear, c.lastYear, c.date, c.category) FROM models.BaseChartModel c WHERE c.category.id =:category_id ").setParameter("category_id", category_id).getResultList();
 		em.close();
 		return charts; 		
 	}
@@ -224,7 +241,7 @@ public enum DB_Process {
 
 	public CategoryModel getCategory(String name)  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
-		CategoryModel category=(CategoryModel)em.createQuery("from jabx.model.CategoryModel as category where category.name =:name").setParameter("name", name).getSingleResult();
+		CategoryModel category=(CategoryModel)em.createQuery("from models.CategoryModel as category where category.name =:name").setParameter("name", name).getSingleResult();
 		em.close();
 		return category; 
 	}
@@ -253,7 +270,7 @@ public enum DB_Process {
 
 	public List <UserModel> getUsers()  throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
 		EntityManager em=factory.createEntityManager();
-		List<UserModel> users = em.createQuery("FROM jabx.model.UserModel as UserModel").getResultList();
+		List<UserModel> users = em.createQuery("FROM models.UserModel as UserModel").getResultList();
 		em.close();
 		return users;
 	}

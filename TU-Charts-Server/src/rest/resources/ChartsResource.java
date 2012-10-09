@@ -2,8 +2,6 @@ package rest.resources;
 
 import static utils.ServerUtils.NULL_VAL;
 import hibernate.db.DB_Process;
-import jabx.model.BaseChartModel;
-import jabx.model.UserTokenTime;
 import static utils.ServerUtils.MINIMUM_NEW_DATE;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,11 +30,20 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import rest.resources.CategoriesResource.PredicateCategories;
+
+import models.BaseChartModel;
+import models.CategoryModel;
+import models.ChartModel;
+import models.UserModel;
+import models.UserTokenTime;
+
 import utils.AuthManager;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 
 @Path("/charts")
 public class ChartsResource {
@@ -45,6 +52,7 @@ public class ChartsResource {
 	@Context ServletContext context;
 	@HeaderParam("chemnitz_token") @DefaultValue("") String token;
 	private String user_email;	
+	private UserModel user;
 
 	public ChartsResource() {
 		super();
@@ -55,9 +63,10 @@ public class ChartsResource {
 			UserTokenTime user_token_time=AuthManager.i.getToken_table().get(token);
 			user_email=user_token_time.getEmail();
 			user_token_time.updateLastAction();
+			user= DB_Process.i.getUser(user_email);
 		}catch (Exception e){
-			//			throw new WebApplicationException(Response.Status.FORBIDDEN);
-			System.out.println("NOT LOGGED");
+			throw new WebApplicationException(Response.Status.FORBIDDEN);
+			//			System.out.println("NOT LOGGED");
 		}
 	}
 
@@ -76,33 +85,21 @@ public class ChartsResource {
 				}
 				return result;
 			}
+			List<BaseChartModel> charts=DB_Process.i.getCharts();
+			Collection<BaseChartModel>	allowedCharts=Collections2.filter(charts, new PredicateChart(user.getCharts_denied()));
+			allowedCharts=Collections2.filter(allowedCharts, new PredicateChartCat(user.getCategories_denied()));
+
+
 			if (sort.equalsIgnoreCase("name"))
-				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getName_comparator()).sortedCopy(DB_Process.i.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getName_comparator()).sortedCopy(allowedCharts));
 			else if (sort.equalsIgnoreCase("popular"))
-				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getPopularity_comparator()).sortedCopy(DB_Process.i.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getPopularity_comparator()).sortedCopy(allowedCharts));
 			else
-				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(DB_Process.i.getCharts()));
+				return new ArrayList<BaseChartModel> (Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(allowedCharts));
 		}catch(NullPointerException e){
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 	}
-
-
-
-	//	private static class PreviousDate<BaseChartModel> implements Predicate<BaseChartModel>{
-	//		private Date date;	
-	//		private PreviousDate(Date date) {
-	//			this.date=date;
-	//		}
-	//		public boolean apply(BaseChartModel arg) {
-	//			return arg.
-	//			String result=arg0.toString().toLowerCase();
-	//			return result.equals(compare);
-	//		}
-	//	}
-
-
-
 
 	@GET
 	@Path("new")
@@ -115,6 +112,7 @@ public class ChartsResource {
 			Collection<BaseChartModel> dateCharts=null;
 
 			List<BaseChartModel> charts = DB_Process.i.getCharts();
+
 			Calendar cal=Calendar.getInstance();
 			cal.setTimeInMillis(System.currentTimeMillis());	
 			while (i < 3 && !found){
@@ -122,7 +120,8 @@ public class ChartsResource {
 				dateCharts= Collections2.filter(charts, new PredicateDate(cal.getTime()));
 				if (dateCharts.size() != 0 )found=true;
 				i++;
-			}	
+			}
+			dateCharts=Collections2.filter(dateCharts, new PredicateChart(user.getCharts_denied()));
 			return new ArrayList<>(Ordering.from(DB_Process.i.getDate_comparator()).sortedCopy(dateCharts));
 
 
@@ -141,9 +140,18 @@ public class ChartsResource {
 	}
 
 	@Path("{chart}")
-	public ChartRes getChart(@PathParam("chart") int id){
+	public ChartRes getChart(@PathParam("chart") int id) throws NotSupportedException, SystemException, RollbackException, HeuristicMixedException, HeuristicRollbackException{
 		checkLogin();
-		return new ChartRes(uriInfo, request, id, user_email);
+		ChartModel chart = DB_Process.i.getChart(id);
+		if (user.getCharts_denied() != null)
+			if (Ints.contains(user.getCharts_denied(), id))
+				throw new WebApplicationException(Response.Status.NOT_ACCEPTABLE);
+
+		if (user.getCategories_denied() != null)
+			if (Ints.contains(user.getCategories_denied(), chart.getCategory().getId()))
+				throw new WebApplicationException(Response.Status.NOT_ACCEPTABLE);
+
+		return new ChartRes(uriInfo, request, chart, user_email);
 	}
 
 	static class PredicateDate implements Predicate<BaseChartModel>{
@@ -156,8 +164,32 @@ public class ChartsResource {
 		public boolean apply(@Nullable BaseChartModel chart) {
 			return chart.getDate().after(date);
 		}
+	}
+	static class PredicateChart implements Predicate<BaseChartModel>{
+		private int chart_denied[];
+		public PredicateChart(int chart_denied[]) {
+			super();
+			this.chart_denied=chart_denied;
+		}
+		@Override
+		public boolean apply(@Nullable BaseChartModel chart) {
+			if (chart_denied == null) return true;
 
+			return !Ints.contains(chart_denied, chart.getId());
+		}
+	}
+	static class PredicateChartCat implements Predicate<BaseChartModel>{
+		private int categories_denied[];
+		public PredicateChartCat(int categories_denied[]) {
+			super();
+			this.categories_denied=categories_denied;
+		}
+		@Override
+		public boolean apply(@Nullable BaseChartModel chart) {
+			if (categories_denied == null) return true;
 
+			return !Ints.contains(categories_denied, chart.getCategory().getId());
+		}
 	}
 
 

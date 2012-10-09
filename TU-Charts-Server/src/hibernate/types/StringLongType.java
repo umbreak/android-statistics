@@ -1,37 +1,35 @@
 package hibernate.types;
 
-
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import models.UserModel;
-
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 import com.google.common.base.Strings;
-import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
+//Convert String to Long[]
 
-public class StringIntType implements UserType{
+public class StringLongType implements UserType{
 
 	@Override
 	public Object assemble(Serializable cached, Object owner)
 			throws HibernateException {
-		return (int[])cached;
+		return (long[])cached;
 	}
 
 	@Override
 	public Object deepCopy(Object arg0) throws HibernateException {
-		return (int[]) arg0;
+		return (long[]) arg0;
 	}
 
 	@Override
 	public Serializable disassemble(Object arg0) throws HibernateException {
-		return (int[])arg0;
+		return (long[])arg0;
 	}
 
 	@Override
@@ -56,14 +54,15 @@ public class StringIntType implements UserType{
 	public Object nullSafeGet(ResultSet rs, String[] names,
 			SessionImplementor arg2, Object owner) throws HibernateException,
 			SQLException {
-		int[] resul=null;
+		long[] resul=null;
 		try{
-		String value=rs.getString(names[0]);
+			String value=rs.getString(names[0]);
 			if (!Strings.isNullOrEmpty(value)){
+
 				String [] res_string=value.split(",");
-				resul = new int[res_string.length];
+				resul = new long[res_string.length];
 				for (int j = 0; j < resul.length; j++) 
-					resul[j]=Integer.valueOf(res_string[j]);
+					resul[j]=Long.valueOf(res_string[j]);
 			}
 		}catch (NullPointerException e){ return null;}
 		return resul;
@@ -76,22 +75,22 @@ public class StringIntType implements UserType{
 			ps.setNull(index, Types.LONGVARCHAR);
 
 		} else {
-			String res=Ints.join(",", (int[])value);
-//			res=res.replace("[", "");
-//			res=res.replace("]", "");			
+			String res=Longs.join(",", (long[])value);		
 			ps.setString(index, res);
 		}
 	}
 
 	@Override
-	public Object replace(Object original, Object target, Object user)
+	public Object replace(Object original, Object target, Object serie)
 			throws HibernateException {
+//		SerieModel s=(SerieModel)serie;
+//		s.setYvalues((double[])target);
 		return original;
 	}
 
 	@Override
 	public Class returnedClass() {
-		return Long[].class;
+		return long[].class;
 	}
 
 	@Override
