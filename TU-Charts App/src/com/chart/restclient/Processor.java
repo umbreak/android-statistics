@@ -78,7 +78,7 @@ public enum Processor {
 
 			String hashed_password=AppUtils.i.getHash(user.password);
 			token=AppUtils.i.getHash(hashed_password+challenge_date);
-			System.out.println("token="+token);
+//			System.out.println("token="+token);
 			user.password=token;
 
 			HttpEntity<UserModel> commentEntity = new HttpEntity<UserModel>(user, requestHeaders);
@@ -131,7 +131,7 @@ public enum Processor {
 	public CategoryModel[] getCategories(){
 		try{
 			ResponseEntity<CategoryModel[]> responseEntity = restTemplate.exchange(url + "categories", HttpMethod.GET, requestEntity, CategoryModel[].class);
-			System.out.println("category array=" + Arrays.toString(responseEntity.getBody()));
+//			System.out.println("category array=" + Arrays.toString(responseEntity.getBody()));
 			return responseEntity.getBody();
 
 		}catch(HttpClientErrorException e){

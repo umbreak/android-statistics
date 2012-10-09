@@ -66,7 +66,6 @@ public class RegisterLoader extends AsyncTaskLoader<Integer> {
 	 * Handles a request to start the Loader.
 	 */
 	@Override protected void onStartLoading() {
-		System.out.println("start loading");
 		if(result!= 0)
 			deliverResult(result);
 		else

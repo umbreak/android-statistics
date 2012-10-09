@@ -248,7 +248,6 @@ public class LoginActivity extends BaseSherlockActivity {
 
 		@Override
 		public void onLoadFinished(Loader<Integer> arg0, Integer resul) {
-			System.out.println("Finish=" + resul);
 			if (resul == 1){
 				Intent intent = new Intent(getSherlockActivity(), HomeActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

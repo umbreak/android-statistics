@@ -228,7 +228,7 @@ public class ListChartsActivity extends BaseSherlockActivity{
 			intent.setClass(getActivity(), ChartActivity.class);
 			intent.putExtra("chart", chart);			
 			addToLastSeen(chart.id);
-			System.out.println("1 chart id =" + chart.id + " name=" + chart.name + " date="+ chart.date.getTime() +  " expires=" + chart.expires);
+//			System.out.println("1 chart id =" + chart.id + " name=" + chart.name + " date="+ chart.date.getTime() +  " expires=" + chart.expires);
 			startActivity(intent);			
 		}
 

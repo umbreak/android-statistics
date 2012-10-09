@@ -68,10 +68,6 @@
             android:label="@string/app_name" >
         </activity>
         <!-- TEST activity -->
-        <activity
-            android:name=".ui.Test"
-            android:label="@string/app_name" >
-        </activity>
     </application>
 
 </manifest>

@@ -62,7 +62,7 @@ public class ChartGenerator extends AbstractChart{
 			else if (sel == 1) title=" (Month: " + new DateFormatSymbols().getMonths()[cal.get(Calendar.MONTH)] + ")";
 			else if (sel == 2) title=" (Week: " + cal.get(Calendar.WEEK_OF_MONTH) + ")";
 			else if (sel == 3) title=" (Day: " + cal.get(Calendar.DAY_OF_MONTH) + ")";
-			System.out.println(xMax + " " + xMin);
+//			System.out.println(xMax + " " + xMin);
 			if (xMax != Long.MAX_VALUE && xMin != Long.MAX_VALUE)
 				setChartSettings(renderer, chartEntry.name + title,chartEntry.xLegend, chartEntry.yLegend, xMin, xMax,
 						yMin, yMax, r.getColor(R.color.chart_darkgrey), Color.BLACK, context);

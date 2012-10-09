@@ -33,7 +33,7 @@ public class AddCommentLoaderCallback implements LoaderCallbacks<CommentModel>{
 
 	@Override
 	public void onLoadFinished(Loader<CommentModel> arg0, CommentModel data) {
-		System.out.println(data);
+//		System.out.println(data);
 		progress.addComment(data);
 	}
 

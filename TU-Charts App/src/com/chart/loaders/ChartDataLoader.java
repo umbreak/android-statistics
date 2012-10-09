@@ -62,7 +62,6 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 		int hashKey=key.hashCode();
 		chart=mMemoryCache.get(hashKey);
 		if(chart != null){
-			System.out.println("EXPIRES=" + chart.expires + " actual=" + System.currentTimeMillis());
 			if (chart.expires < System.currentTimeMillis() && chart.expires >0){
 				mDiskCache.remove(hashKey);
 			}else{
@@ -72,7 +71,6 @@ public class ChartDataLoader extends AsyncTaskLoader<ChartModel> {
 		}
 		chart=mDiskCache.getChart(hashKey);
 		if (chart != null){
-			System.out.println("EXPIRES=" + chart.expires + " actual=" + System.currentTimeMillis());
 			if (chart.expires < System.currentTimeMillis() && chart.expires > 0){
 				mDiskCache.remove(hashKey);
 			}else{
