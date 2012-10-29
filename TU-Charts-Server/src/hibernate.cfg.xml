@@ -51,13 +51,11 @@
 		<!-- ############################################ -->
 		<!-- # mapping files with external dependencies # -->
 		<!-- ############################################ -->
-		<mapping class="jabx.model.BaseChartModel" />
-		<mapping class="jabx.model.CategoryModel" />
-		<mapping class="jabx.model.ChartModel" />
-		<mapping class="jabx.model.CommentModel" />
-		<mapping class="jabx.model.SerieModel" />
-		<mapping class="jabx.model.UserModel" />
-<!-- 		<mapping resource="pojos.hbm.xml" />
- -->
+		<mapping class="models.BaseChartModel" />
+		<mapping class="models.CategoryModel" />
+		<mapping class="models.ChartModel" />
+		<mapping class="models.CommentModel" />
+		<mapping class="models.SerieModel" />
+		<mapping class="models.UserModel" />
 	</session-factory>
 </hibernate-configuration>

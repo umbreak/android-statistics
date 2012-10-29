@@ -5,12 +5,6 @@
              version="2.0">
    <persistence-unit name="manager1">
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <class>jabx.model.BaseChartModel</class>
-		<class>jabx.model.CategoryModel</class>
-		<class>jabx.model.ChartModel</class>
-		<class>jabx.model.CommentModel</class>
-		<class>jabx.model.SerieModel</class>
-		<class>jabx.model.UserModel</class>
 		
       	        <properties>
 					<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
@@ -31,7 +25,7 @@
          			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
 					<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/tu?autoReconnect=true" />
 					<property name="javax.persistence.jdbc.user" value="root" />
-					<property name="javax.persistence.jdbc.password" value="******" />
+					<property name="javax.persistence.jdbc.password" value="*****" />
 					<property name="show_sql" value="false" />	
             </properties>
    </persistence-unit>
